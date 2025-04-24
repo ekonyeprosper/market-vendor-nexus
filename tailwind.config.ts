@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -52,15 +53,18 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				sidebar: {
-					DEFAULT: 'hsl(var(--sidebar-background))',
-					foreground: 'hsl(var(--sidebar-foreground))',
-					primary: 'hsl(var(--sidebar-primary))',
-					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-					accent: 'hsl(var(--sidebar-accent))',
-					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-					border: 'hsl(var(--sidebar-border))',
-					ring: 'hsl(var(--sidebar-ring))'
+				market: {
+					50: '#f5f7ff',
+					100: '#ebf0fe',
+					200: '#d6e0fd',
+					300: '#b3c7fb',
+					400: '#8aa3f8',
+					500: '#6683f4',
+					600: '#3d57e9',
+					700: '#2e44d5',
+					800: '#2939ae',
+					900: '#283489',
+					950: '#1a2153'
 				}
 			},
 			borderRadius: {
