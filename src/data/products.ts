@@ -1,4 +1,3 @@
-
 export const products = [
   {
     id: "1",
@@ -66,5 +65,38 @@ export const products = [
     vendor: "LeatherCraft",
     rating: 4.9,
     reviews: 67
+  },
+  {
+    id: "7",
+    name: "Smart Home Security Camera",
+    price: 149.99,
+    description: "HD security camera with night vision and motion detection.",
+    image: "https://images.unsplash.com/photo-1557324232-b8917d8c3908?q=80&w=1000&auto=format&fit=crop",
+    category: "Electronics",
+    vendor: "SmartTech",
+    rating: 4.6,
+    reviews: 85
+  },
+  {
+    id: "8",
+    name: "Ergonomic Office Chair",
+    price: 299.99,
+    description: "Adjustable office chair with lumbar support.",
+    image: "https://images.unsplash.com/photo-1592078615290-033ee584e267?q=80&w=1000&auto=format&fit=crop",
+    category: "Home & Living",
+    vendor: "ComfortPlus",
+    rating: 4.8,
+    reviews: 132
+  },
+  {
+    id: "9",
+    name: "Fitness Smartwatch",
+    price: 179.99,
+    description: "Water-resistant smartwatch with health tracking features.",
+    image: "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?q=80&w=1000&auto=format&fit=crop",
+    category: "Electronics",
+    vendor: "FitTech",
+    rating: 4.7,
+    reviews: 94
   }
 ];
