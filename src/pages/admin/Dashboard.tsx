@@ -2,12 +2,21 @@
 import { BarChart3, Package, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Layout from "@/components/layout/Layout";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const AdminDashboard = () => {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <Link to="/admin/users">
+            <Button>
+              <Users className="mr-2 h-4 w-4" /> Manage Users
+            </Button>
+          </Link>
+        </div>
         
         {/* Stats Overview */}
         <div className="grid gap-4 md:grid-cols-3 mb-8">

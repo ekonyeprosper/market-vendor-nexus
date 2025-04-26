@@ -21,6 +21,8 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import Categories from "./pages/Categories";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import AddProduct from "./pages/seller/AddProduct";
+import UserManagement from "./pages/admin/UserManagement";
 
 // Create a new QueryClient instance inside the component
 const App = () => {
@@ -46,7 +48,9 @@ const App = () => {
               <Route path="/cart" element={<Cart />} />
               <Route path="/order-confirmation" element={<OrderConfirmation />} />
               <Route path="/seller/dashboard" element={<SellerDashboard />} />
+              <Route path="/seller/products/new" element={<AddProduct />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/admin/users" element={<UserManagement />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
