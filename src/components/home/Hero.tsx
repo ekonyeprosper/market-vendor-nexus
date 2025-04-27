@@ -56,7 +56,7 @@ const Hero = () => {
                   <ShoppingBag className="mr-2 h-4 w-4" /> Shop Now
                 </Button>
               </Link>
-              <Link to="/seller/register">
+              <Link to="/signup">
                 <Button variant="outline" size="lg" className="px-8 border-market-300">
                   Become a Seller
                 </Button>

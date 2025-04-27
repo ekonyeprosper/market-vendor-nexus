@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -87,8 +86,8 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-medium text-gray-900">Email</h3>
-                      <a href="mailto:support@example.com" className="text-market-600 hover:underline">
-                        support@example.com
+                      <a href="mailto:Campustrade52@gmail.com" className="text-market-600 hover:underline">
+                        Campustrade52@gmail.com
                       </a>
                     </div>
                   </div>
@@ -98,9 +97,9 @@ const Contact = () => {
                       <Phone className="h-5 w-5 text-market-600" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-gray-900">Phone</h3>
-                      <a href="tel:+15551234567" className="text-market-600 hover:underline">
-                        +1 (555) 123-4567
+                      <h3 className="font-medium text-gray-900">Hotline</h3>
+                      <a href="tel:+2348074219598" className="text-market-600 hover:underline">
+                        +234 807 421 9598
                       </a>
                     </div>
                   </div>
@@ -112,9 +111,9 @@ const Contact = () => {
                     <div>
                       <h3 className="font-medium text-gray-900">Address</h3>
                       <p className="text-gray-600">
-                        123 Market Street<br />
-                        San Francisco, CA 94105<br />
-                        United States
+                        Nkwelle<br />
+                        Anambra state<br />
+                        Nigeria
                       </p>
                     </div>
                   </div>
@@ -138,15 +137,20 @@ const Contact = () => {
                 <div className="px-6 py-6 bg-gray-50 border-t">
                   <h3 className="font-medium text-gray-900 mb-4">Follow Us</h3>
                   <div className="flex space-x-4">
-                    {['facebook', 'twitter', 'instagram', 'linkedin'].map((social) => (
+                    {[
+                      { name: 'facebook', url: 'https://www.facebook.com/share/14cxLG3SbH/?mibextid=wwXIfr' },
+                      { name: 'whatsapp', url: 'https://chat.whatsapp.com/ICk3GlCEG3Y7XghFEb1Z3m' }
+                    ].map((social) => (
                       <a 
-                        key={social}
-                        href="#" 
+                        key={social.name}
+                        href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="bg-white w-10 h-10 rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all"
                       >
                         <img 
-                          src={`https://cdn.simpleicons.org/${social}/6366F1`} 
-                          alt={social} 
+                          src={`https://cdn.simpleicons.org/${social.name}/6366F1`} 
+                          alt={social.name} 
                           className="w-5 h-5" 
                         />
                       </a>

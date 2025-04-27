@@ -1,35 +1,7 @@
-
-import { useState } from "react";
+import { categories } from "@/data/categories";
 import { Button } from "@/components/ui/button";
 import Layout from "@/components/layout/Layout";
 import { Link } from "react-router-dom";
-
-const categories = [
-  {
-    id: 1,
-    name: "Electronics",
-    image: "https://images.unsplash.com/photo-1498049794561-7780e7231661?q=80&w=600&auto=format&fit=crop",
-    productCount: 152,
-  },
-  {
-    id: 2,
-    name: "Home & Living",
-    image: "https://images.unsplash.com/photo-1484101403633-562f891dc89a?q=80&w=600&auto=format&fit=crop",
-    productCount: 89,
-  },
-  {
-    id: 3,
-    name: "Fashion",
-    image: "https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=600&auto=format&fit=crop",
-    productCount: 234,
-  },
-  {
-    id: 4,
-    name: "Sports & Outdoor",
-    image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=600&auto=format&fit=crop",
-    productCount: 67,
-  }
-];
 
 const Categories = () => {
   return (
