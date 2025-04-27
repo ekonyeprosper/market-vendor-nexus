@@ -4,7 +4,9 @@ import { useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { AdminSidebar } from "../admin/AdminSidebar";
+import { AdminFooter } from "../admin/AdminFooter";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { Folder } from "lucide-react";
 
 interface LayoutProps {
   children: ReactNode;
@@ -19,12 +21,16 @@ const Layout = ({ children }: LayoutProps) => {
       <SidebarProvider>
         <div className="flex min-h-screen w-full">
           <AdminSidebar />
-          <div className="flex-1">
+          <div className="flex flex-1 flex-col">
             <div className="flex h-16 items-center border-b px-4">
               <SidebarTrigger />
-              <h1 className="ml-4 text-lg font-semibold">Admin Dashboard</h1>
+              <span className="ml-4 flex items-center gap-2">
+                <Folder className="h-5 w-5 text-primary" />
+                <h1 className="text-lg font-semibold">Admin Dashboard</h1>
+              </span>
             </div>
-            <main className="p-6">{children}</main>
+            <main className="flex-1 p-6">{children}</main>
+            <AdminFooter />
           </div>
         </div>
       </SidebarProvider>

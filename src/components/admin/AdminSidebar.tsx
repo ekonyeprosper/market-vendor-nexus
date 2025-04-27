@@ -1,6 +1,13 @@
 
-import { LayoutDashboard, Users, Package, Settings, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import {
+  LayoutDashboard,
+  Users,
+  Package,
+  Settings,
+  FolderCog,
+  LogOut,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -8,29 +15,46 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 
 const menuItems = [
   {
-    title: "Dashboard",
-    icon: LayoutDashboard,
-    path: "/admin/dashboard",
+    group: "Overview",
+    items: [
+      {
+        title: "Dashboard",
+        icon: LayoutDashboard,
+        path: "/admin/dashboard",
+      },
+      {
+        title: "Products",
+        icon: Package,
+        path: "/admin/products",
+      },
+      {
+        title: "Users",
+        icon: Users,
+        path: "/admin/users",
+      },
+    ],
   },
   {
-    title: "Products",
-    icon: Package,
-    path: "/admin/products",
-  },
-  {
-    title: "Users",
-    icon: Users,
-    path: "/admin/users",
-  },
-  {
-    title: "Settings",
-    icon: Settings,
-    path: "/admin/settings",
+    group: "System",
+    items: [
+      {
+        title: "Settings",
+        icon: Settings,
+        path: "/admin/settings",
+      },
+      {
+        title: "File Manager",
+        icon: FolderCog,
+        path: "/admin/files",
+      },
+    ],
   },
 ];
 
@@ -48,22 +72,29 @@ export function AdminSidebar() {
         </Link>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarMenu>
-          {menuItems.map((item) => (
-            <SidebarMenuItem key={item.path}>
-              <SidebarMenuButton
-                asChild
-                tooltip={item.title}
-                isActive={location.pathname === item.path}
-              >
-                <Link to={item.path}>
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
+        {menuItems.map((group) => (
+          <SidebarGroup key={group.group}>
+            <SidebarGroupLabel>{group.group}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {group.items.map((item) => (
+                  <SidebarMenuItem key={item.path}>
+                    <SidebarMenuButton
+                      asChild
+                      tooltip={item.title}
+                      isActive={location.pathname === item.path}
+                    >
+                      <Link to={item.path}>
+                        <item.icon className="h-4 w-4" />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
     </Sidebar>
   );
