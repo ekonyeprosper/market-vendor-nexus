@@ -8,6 +8,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Search, Plus, Filter, Edit, Trash2, Eye } from "lucide-react";
 import { products } from "@/data/products";
 import { Link } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
 
 const AdminProducts = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -22,11 +23,14 @@ const AdminProducts = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-          <h1 className="text-3xl font-bold">Product Management</h1>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Product Management</h1>
+            <p className="text-muted-foreground mt-1">Manage and monitor your product catalog</p>
+          </div>
           <Link to="/admin/products/new">
-            <Button>
+            <Button className="shadow-sm">
               <Plus className="mr-2 h-4 w-4" /> Add New Product
             </Button>
           </Link>
@@ -34,12 +38,12 @@ const AdminProducts = () => {
 
         <Card className="mb-8">
           <CardHeader className="pb-3">
-            <CardTitle>Product Filters</CardTitle>
+            <CardTitle className="text-lg font-medium">Product Filters</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder="Search products..."
@@ -48,25 +52,21 @@ const AdminProducts = () => {
                   className="pl-10"
                 />
               </div>
-              <div>
-                <select
-                  className="w-full h-10 rounded-md border border-input bg-background px-3 py-2"
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                >
-                  <option value="">All Categories</option>
-                  {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <Button variant="outline" className="w-full">
-                  <Filter className="h-4 w-4 mr-2" /> More Filters
-                </Button>
-              </div>
+              <select
+                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                <option value="">All Categories</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+              <Button variant="outline" className="w-full">
+                <Filter className="h-4 w-4 mr-2" /> More Filters
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -76,7 +76,7 @@ const AdminProducts = () => {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="hover:bg-transparent">
                     <TableHead className="w-12">Image</TableHead>
                     <TableHead>Product Name</TableHead>
                     <TableHead>Category</TableHead>
@@ -88,32 +88,34 @@ const AdminProducts = () => {
                 </TableHeader>
                 <TableBody>
                   {filteredProducts.map((product) => (
-                    <TableRow key={product.id}>
+                    <TableRow key={product.id} className="hover:bg-muted/50">
                       <TableCell>
-                        <img 
-                          src={product.image} 
-                          alt={product.name} 
-                          className="w-10 h-10 object-cover rounded-md"
-                        />
+                        <div className="h-10 w-10 rounded-lg border bg-muted/30 p-1">
+                          <img 
+                            src={product.image} 
+                            alt={product.name} 
+                            className="h-full w-full object-cover rounded"
+                          />
+                        </div>
                       </TableCell>
                       <TableCell className="font-medium">{product.name}</TableCell>
                       <TableCell>{product.category}</TableCell>
                       <TableCell>${product.price.toFixed(2)}</TableCell>
                       <TableCell>{product.vendor}</TableCell>
                       <TableCell>
-                        <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-800">
+                        <Badge variant="secondary" className="bg-green-100 text-green-800 hover:bg-green-100">
                           Active
-                        </span>
+                        </Badge>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
                             <Eye className="h-4 w-4" />
                           </Button>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-500 hover:text-red-600">
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>

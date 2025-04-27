@@ -1,41 +1,15 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import Layout from "@/components/layout/Layout";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-} from "recharts";
-import {
-  Package,
-  ShoppingCart,
-  DollarSign,
-  Users,
-  Plus,
-  ArrowUpRight,
-  ArrowDownRight,
+  Package, ShoppingCart, DollarSign, Users, Plus, ArrowUpRight, ArrowDownRight,
 } from "lucide-react";
+import { StatCard } from "@/components/dashboard/StatCard";
+import { ChartCard } from "@/components/dashboard/ChartCard";
 
 // Sample data for charts
 const salesData = [
@@ -140,15 +114,15 @@ const SellerDashboard = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="flex flex-wrap items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold">Seller Dashboard</h1>
-            <p className="text-gray-600">Welcome back, TechGear!</p>
+            <h1 className="text-3xl font-bold tracking-tight">Seller Dashboard</h1>
+            <p className="text-muted-foreground mt-1">Welcome back, TechGear!</p>
           </div>
           <div className="mt-4 md:mt-0">
             <Link to="/seller/products/new">
-              <Button className="flex items-center">
+              <Button className="flex items-center shadow-sm">
                 <Plus className="w-4 h-4 mr-2" />
                 Add New Product
               </Button>
@@ -156,8 +130,8 @@ const SellerDashboard = () => {
           </div>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid w-full md:w-auto grid-cols-4 md:grid-cols-4 mb-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="bg-muted/50 p-1">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
@@ -165,146 +139,84 @@ const SellerDashboard = () => {
           </TabsList>
 
           <TabsContent value="dashboard" className="space-y-6">
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card>
-                <CardContent className="py-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-500">Total Sales</p>
-                      <p className="text-2xl font-bold">$12,628</p>
-                      <div className="flex items-center mt-1 text-green-600 text-sm font-medium">
-                        <ArrowUpRight className="w-4 h-4 mr-1" />
-                        <span>+12.5%</span>
-                      </div>
-                    </div>
-                    <div className="bg-market-50 p-3 rounded-lg">
-                      <DollarSign className="h-6 w-6 text-market-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="py-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-500">Orders</p>
-                      <p className="text-2xl font-bold">145</p>
-                      <div className="flex items-center mt-1 text-green-600 text-sm font-medium">
-                        <ArrowUpRight className="w-4 h-4 mr-1" />
-                        <span>+8.2%</span>
-                      </div>
-                    </div>
-                    <div className="bg-market-50 p-3 rounded-lg">
-                      <ShoppingCart className="h-6 w-6 text-market-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="py-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-500">Products</p>
-                      <p className="text-2xl font-bold">24</p>
-                      <div className="flex items-center mt-1 text-green-600 text-sm font-medium">
-                        <ArrowUpRight className="w-4 h-4 mr-1" />
-                        <span>+4 new</span>
-                      </div>
-                    </div>
-                    <div className="bg-market-50 p-3 rounded-lg">
-                      <Package className="h-6 w-6 text-market-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="py-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-500">Customers</p>
-                      <p className="text-2xl font-bold">89</p>
-                      <div className="flex items-center mt-1 text-red-600 text-sm font-medium">
-                        <ArrowDownRight className="w-4 h-4 mr-1" />
-                        <span>-2.5%</span>
-                      </div>
-                    </div>
-                    <div className="bg-market-50 p-3 rounded-lg">
-                      <Users className="h-6 w-6 text-market-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              <StatCard
+                icon={DollarSign}
+                title="Total Sales"
+                value="$12,628"
+                trend={{ value: 12.5, isPositive: true }}
+              />
+              <StatCard
+                icon={ShoppingCart}
+                title="Orders"
+                value="145"
+                trend={{ value: 8.2, isPositive: true }}
+              />
+              <StatCard
+                icon={Package}
+                title="Products"
+                value="24"
+                trend={{ value: 4, isPositive: true }}
+              />
+              <StatCard
+                icon={Users}
+                title="Customers"
+                value="89"
+                trend={{ value: 2.5, isPositive: false }}
+              />
             </div>
 
-            {/* Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Sales Overview</CardTitle>
-                  <CardDescription>Your sales performance for the past 7 months</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-[300px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={salesData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="sales" fill="#6683f4" radius={[4, 4, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="grid gap-6 md:grid-cols-2">
+              <ChartCard
+                title="Sales Overview"
+                description="Your sales performance for the past 7 months"
+              >
+                <BarChart data={salesData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="sales" fill="#6683f4" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ChartCard>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Performance</CardTitle>
-                  <CardDescription>Daily sales trends for the past 30 days</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-[300px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={salesData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Line type="monotone" dataKey="sales" stroke="#6683f4" strokeWidth={2} />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
+              <ChartCard
+                title="Recent Performance"
+                description="Daily sales trends for the past 30 days"
+              >
+                <LineChart data={salesData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line 
+                    type="monotone" 
+                    dataKey="sales" 
+                    stroke="#6683f4" 
+                    strokeWidth={2} 
+                  />
+                </LineChart>
+              </ChartCard>
             </div>
 
-            {/* Product Performance Table */}
             <Card>
-              <CardHeader>
-                <CardTitle>Top Performing Products</CardTitle>
-                <CardDescription>Your best selling products this month</CardDescription>
-              </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
+                <h3 className="font-semibold mb-4">Top Performing Products</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        <th className="px-4 py-3">Product Name</th>
-                        <th className="px-4 py-3">Units Sold</th>
-                        <th className="px-4 py-3">Revenue</th>
+                      <tr className="text-left border-b border-border">
+                        <th className="pb-3 font-medium text-muted-foreground">Product Name</th>
+                        <th className="pb-3 font-medium text-muted-foreground">Units Sold</th>
+                        <th className="pb-3 font-medium text-muted-foreground">Revenue</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-border">
                       {productPerformance.map((product, index) => (
-                        <tr key={index} className="text-gray-700">
-                          <td className="px-4 py-3 font-medium">{product.name}</td>
-                          <td className="px-4 py-3">{product.sales}</td>
-                          <td className="px-4 py-3">${product.revenue.toLocaleString()}</td>
+                        <tr key={index} className="text-sm">
+                          <td className="py-3 font-medium">{product.name}</td>
+                          <td className="py-3">{product.sales}</td>
+                          <td className="py-3">${product.revenue.toLocaleString()}</td>
                         </tr>
                       ))}
                     </tbody>
