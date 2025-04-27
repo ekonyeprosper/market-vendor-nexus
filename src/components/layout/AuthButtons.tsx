@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
-export const AuthButtons = ({ mobile = false, onNavigate?: () => void }) => {
+export const AuthButtons = ({ mobile = false, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) => {
   return (
     <>
       <Link to="/login" className={mobile ? "flex-1" : ""}>

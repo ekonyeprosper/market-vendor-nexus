@@ -1,7 +1,7 @@
 
 import { Link } from "react-router-dom";
 
-export const NavLinks = ({ mobile = false, onNavigate?: () => void }) => {
+export const NavLinks = ({ mobile = false, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) => {
   const links = [
     { to: "/", label: "Home" },
     { to: "/products", label: "Shop" },
