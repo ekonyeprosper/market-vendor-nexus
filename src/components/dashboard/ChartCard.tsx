@@ -1,11 +1,12 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResponsiveContainer } from "recharts";
+import { ReactElement } from "react";
 
 interface ChartCardProps {
   title: string;
   description?: string;
-  children: React.ReactNode;
+  children: ReactElement; // Changed from ReactNode to ReactElement
 }
 
 export const ChartCard = ({ title, description, children }: ChartCardProps) => {
