@@ -4,21 +4,21 @@ import { Card, CardContent } from "@/components/ui/card";
 const testimonials = [
   {
     id: 1,
-    quote: "As a small business owner, MarketVendorNexus has been a game-changer for me. The platform is easy to use, and I've been able to reach customers I never would have found otherwise.",
+    quote: "As a small business owner, CampusTrade has been a game-changer for me. The platform is easy to use, and I've been able to reach customers I never would have found otherwise.",
     name: "Sarah Johnson",
     title: "Owner, Handmade Crafts",
     image: "https://i.pravatar.cc/150?img=1",
   },
   {
     id: 2,
-    quote: "The analytics tools provided by MarketVendorNexus have helped me understand my customers better and grow my sales by over 40% in just three months.",
+    quote: "The analytics tools provided by CampusTrade have helped me understand my customers better and grow my sales by over 40% in just three months.",
     name: "Michael Chen",
     title: "Electronics Vendor",
     image: "https://i.pravatar.cc/150?img=8",
   },
   {
     id: 3,
-    quote: "I was hesitant to move my business online, but the support team at MarketVendorNexus made the transition seamless. Now I can't imagine running my store any other way.",
+    quote: "I was hesitant to move my business online, but the support team at CampusTrade made the transition seamless. Now I can't imagine running my store any other way.",
     name: "Emma Rodriguez",
     title: "Vintage Boutique Owner",
     image: "https://i.pravatar.cc/150?img=5",

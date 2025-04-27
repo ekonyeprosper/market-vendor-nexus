@@ -7,7 +7,7 @@ const Footer = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="font-semibold text-lg mb-4">MarketVendorNexus</h3>
+            <h3 className="font-semibold text-lg mb-4">CampusTrade</h3>
             <p className="text-gray-600 mb-4">
               Connecting local vendors and customers in a seamless online marketplace experience.
             </p>
@@ -134,8 +134,8 @@ const Footer = () => {
                 </a>
               </p>
               <p>
-                <a href="mailto:info@marketvendornexus.com" className="hover:text-market-600">
-                  info@marketvendornexus.com
+                <a href="mailto:info@CampusTrade.com" className="hover:text-market-600">
+                  info@CampusTrade.com
                 </a>
               </p>
             </address>
@@ -145,7 +145,7 @@ const Footer = () => {
         <div className="border-t mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-600 text-sm mb-4 md:mb-0">
-              © {new Date().getFullYear()} MarketVendorNexus. All rights reserved.
+              © {new Date().getFullYear()} CampusTrade. All rights reserved.
             </p>
             <div className="flex space-x-4">
               <Link to="/privacy" className="text-gray-600 hover:text-market-600 text-sm">
