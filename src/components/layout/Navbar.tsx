@@ -1,6 +1,5 @@
-
 import { Link } from "react-router-dom";
-import { ShoppingCart, User, Menu } from "lucide-react";
+import { ShoppingCart, User, Menu, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -14,33 +13,10 @@ const Navbar = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <div className="bg-market-600 text-white p-2 rounded-lg">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-6 w-6"
-              >
-                <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" />
-                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-                <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" />
-                <path d="M2 7h20" />
-                <path d="M22 7v3a2 2 0 0 1-2 2v0a2 2 0 0 1-2-2V7" />
-                <path d="M18 12V7" />
-                <path d="M22 7v3a2 2 0 0 1-2 2h-3" />
-                <path d="M14 7v3a2 2 0 0 1-2 2v0a2 2 0 0 1-2-2V7" />
-                <path d="M10 12V7" />
-                <path d="M6 7v3a2 2 0 0 1-2 2v0a2 2 0 0 1-2-2V7" />
-                <path d="M2 7v3a2 2 0 0 0 2 2h3" />
-              </svg>
+            <div className="bg-primary text-primary-foreground p-2 rounded-lg">
+              <Package className="h-6 w-6" />
             </div>
-            <span className="text-xl font-semibold">MarketVendorNexus</span>
+            <span className="text-xl font-semibold">CampusTrade</span>
           </Link>
 
           {/* Desktop Navigation */}
