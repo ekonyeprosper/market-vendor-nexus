@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -317,17 +316,19 @@ const Products = () => {
                       />
                       <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                     </div>
-                    <SheetTrigger asChild>
-                      <Button variant="outline" className="md:hidden" onClick={() => setMobileFiltersOpen(true)}>
-                        <SlidersHorizontal className="h-5 w-5 mr-2" />
-                        Filters
-                        {activeFiltersCount > 0 && (
-                          <Badge className="ml-2 bg-market-600" variant="default">
-                            {activeFiltersCount}
-                          </Badge>
-                        )}
-                      </Button>
-                    </SheetTrigger>
+                    <Sheet>
+                      <SheetTrigger asChild>
+                        <Button variant="outline" className="md:hidden">
+                          <SlidersHorizontal className="h-5 w-5 mr-2" />
+                          Filters
+                          {activeFiltersCount > 0 && (
+                            <Badge className="ml-2 bg-market-600" variant="default">
+                              {activeFiltersCount}
+                            </Badge>
+                          )}
+                        </Button>
+                      </SheetTrigger>
+                    </Sheet>
                   </div>
                   <div className="flex w-full sm:w-auto items-center gap-4">
                     <div className="flex items-center space-x-2">
