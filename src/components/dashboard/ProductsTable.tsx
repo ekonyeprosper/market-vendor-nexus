@@ -5,7 +5,7 @@ import { Edit, Eye, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface Product {
-  id: number;
+  id: string; // Changed from number to string to match the actual data
   name: string;
   category: string;
   price: number;

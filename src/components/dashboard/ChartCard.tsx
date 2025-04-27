@@ -6,7 +6,7 @@ import { ReactElement } from "react";
 interface ChartCardProps {
   title: string;
   description?: string;
-  children: ReactElement; // Changed from ReactNode to ReactElement
+  children: ReactElement;
 }
 
 export const ChartCard = ({ title, description, children }: ChartCardProps) => {
