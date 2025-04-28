@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { useToast } from "@/hooks/use-toast";
 import Layout from "@/components/layout/Layout";
 import { Shield, Mail } from "lucide-react";
+import { useVerifyOTPMutation } from "@/services/api/authApi";
 
 const OTPVerification = () => {
   const location = useLocation();
@@ -15,6 +15,7 @@ const OTPVerification = () => {
   const [otp, setOtp] = useState("");
   const [countdown, setCountdown] = useState(60);
   const [isResending, setIsResending] = useState(false);
+  const [verifyOTP, { isLoading }] = useVerifyOTPMutation();
   
   // Extract email from location state
   const email = location.state?.email || "";
@@ -63,7 +64,7 @@ const OTPVerification = () => {
     }
   };
   
-  const handleVerifyOTP = () => {
+  const handleVerifyOTP = async () => {
     if (otp.length < 6) {
       toast({
         title: "Error",
@@ -73,20 +74,30 @@ const OTPVerification = () => {
       return;
     }
     
-    // For demo purposes, any 6-digit code is accepted
-    // In a real application, this would validate against an API
-    
-    toast({
-      title: "Success",
-      description: "Verification successful! Your account has been verified.",
-    });
-    
-    // Navigate to seller dashboard after successful verification
-    setTimeout(() => {
-      navigate("/seller/dashboard");
-    }, 1500);
+    try {
+      const result = await verifyOTP({
+        email,
+        otp
+      }).unwrap();
+      
+      toast({
+        title: "Success",
+        description: result.message || "Verification successful! Your account has been verified.",
+      });
+      
+      // Navigate to seller dashboard after successful verification
+      setTimeout(() => {
+        navigate("/seller/dashboard");
+      }, 1500);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to verify OTP. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
-  
+
   return (
     <Layout>
       <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 bg-gradient-to-b from-purple-50 to-white">
@@ -127,8 +138,9 @@ const OTPVerification = () => {
               <Button 
                 onClick={handleVerifyOTP} 
                 className="w-full bg-market-600 hover:bg-market-700"
+                disabled={isLoading}
               >
-                Verify Account
+                {isLoading ? "Verifying..." : "Verify Account"}
               </Button>
               
               <div className="text-center">

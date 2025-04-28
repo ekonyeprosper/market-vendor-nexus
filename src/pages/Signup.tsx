@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast";
 import Layout from "@/components/layout/Layout";
 import { Shield, User, Mail, Lock, IdCard } from "lucide-react";
+import { useRegisterSellerMutation } from "@/services/api/authApi";
 
 const Signup = () => {
   const { toast } = useToast();
@@ -51,7 +51,9 @@ const Signup = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [registerSeller, { isLoading }] = useRegisterSellerMutation();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validation
@@ -93,15 +95,40 @@ const Signup = () => {
     }
     
     // If all validations pass, proceed to OTP verification
-    console.log("Registration data:", { ...formData, idDocument });
-    
-    // Navigate to OTP verification page
-    navigate("/otp-verification", { 
-      state: { 
+    try {
+      const formPayload = {
         email: formData.email,
-        phone: formData.phone
-      }
-    });
+        password: formData.password,
+        fullName: formData.fullName,
+        businessName: formData.businessName,
+        phone: formData.phone,
+        address: formData.address,
+        governmentId: idDocument as File,
+        agreeTerms: formData.agreeTerms
+      };
+
+      const result = await registerSeller(formPayload).unwrap();
+      
+      toast({
+        title: "Success",
+        description: "Registration successful! Proceeding to verification.",
+      });
+
+      // Navigate to OTP verification page
+      navigate("/otp-verification", { 
+        state: { 
+          email: formData.email,
+          phone: formData.phone
+        }
+      });
+    } catch (error) {
+      console.log(error)
+      toast({
+        title: "Error",
+        description: "Registration failed. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -302,8 +329,12 @@ const Signup = () => {
                 </Label>
               </div>
               
-              <Button type="submit" className="w-full bg-market-600 hover:bg-market-700">
-                Create Seller Account
+              <Button 
+                type="submit" 
+                className="w-full bg-market-600 hover:bg-market-700"
+                disabled={isLoading}
+              >
+                {isLoading ? "Creating Account..." : "Create Seller Account"}
               </Button>
             </form>
           </CardContent>
