@@ -5,7 +5,7 @@ import {
   Users,
   Package,
   Settings,
-  FolderCog,
+  FileText,
   LogOut,
   BarChart3,
   ShoppingCart,
@@ -40,14 +40,14 @@ const menuItems = [
         path: "/admin/products",
       },
       {
-        title: "Users",
-        icon: Users,
-        path: "/admin/users",
-      },
-      {
         title: "Orders",
         icon: ShoppingCart,
         path: "/admin/orders",
+      },
+      {
+        title: "Users",
+        icon: Users,
+        path: "/admin/users",
       },
       {
         title: "Analytics",
@@ -60,13 +60,8 @@ const menuItems = [
     group: "System",
     items: [
       {
-        title: "Settings",
-        icon: Settings,
-        path: "/admin/settings",
-      },
-      {
         title: "File Manager",
-        icon: FolderCog,
+        icon: FileText,
         path: "/admin/files",
       },
       {
@@ -78,6 +73,11 @@ const menuItems = [
         title: "Help & Support",
         icon: HelpCircle,
         path: "/admin/support",
+      },
+      {
+        title: "Settings",
+        icon: Settings,
+        path: "/admin/settings",
       },
     ],
   },
