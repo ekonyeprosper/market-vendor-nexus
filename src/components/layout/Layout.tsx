@@ -1,4 +1,3 @@
-
 import { ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
@@ -6,7 +5,7 @@ import Footer from "./Footer";
 import { AdminSidebar } from "../admin/AdminSidebar";
 import { AdminFooter } from "../admin/AdminFooter";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { Folder, User } from "lucide-react";
+import { Bell, Folder, User } from "lucide-react";
 
 interface LayoutProps {
   children: ReactNode;

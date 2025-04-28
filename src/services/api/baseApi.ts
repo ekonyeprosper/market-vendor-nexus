@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { RootState } from '@/store/store';
+import { RootState } from '../store/store';
 
 export const BASE_URL = "https://market-vendor.onrender.com" 
 
@@ -17,3 +17,4 @@ export const baseApi = createApi({
   }),
   endpoints: () => ({}),
 });
+
