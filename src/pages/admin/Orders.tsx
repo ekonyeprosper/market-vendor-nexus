@@ -61,7 +61,10 @@ const OrdersPage = () => {
                     <TableCell>
                       <Badge
                         variant={
-                          order.status === "Delivered" ? "success" : "warning"
+                          order.status === "Delivered" ? "default" : "secondary"
+                        }
+                        className={
+                          order.status === "Delivered" ? "bg-green-500 hover:bg-green-600" : "bg-amber-500 hover:bg-amber-600"
                         }
                       >
                         {order.status}
