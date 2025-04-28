@@ -1,8 +1,11 @@
-import { Package, Users } from "lucide-react";
+
+import { Package, Users, BarChart3, CalendarIcon, Clock } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { ProductsTable } from "@/components/dashboard/ProductsTable";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import { SalesChart } from "@/components/dashboard/SalesChart";
+import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
 import { products } from "@/data/products";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -19,66 +22,61 @@ const AdminDashboard = () => {
   const featuredProducts = products.slice(0, 5);
 
   return (
-    <div className="space-y-8">
-      <DashboardHeader 
-        title="Overview"
-        subtitle="Monitor and manage your marketplace"
-        actionIcon={Package}
-        actionLabel="Manage Products"
-        actionLink="/admin/products"
-      />
-      
-      <DashboardStats stats={stats} />
+    <Layout>
+      <div className="space-y-6">
+        <DashboardHeader 
+          title="Dashboard Overview"
+          subtitle="Welcome back! Here's what's happening today"
+          actionIcon={Package}
+          actionLabel="Manage Products"
+          actionLink="/admin/products"
+        />
+        
+        <DashboardStats stats={stats} />
 
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>Recent Products</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          <ProductsTable products={featuredProducts} />
-        </CardContent>
-      </Card>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Sales Chart */}
+          <Card className="md:col-span-2 shadow-sm">
+            <CardHeader className="pb-2">
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-lg font-medium">Sales Overview</CardTitle>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Last 30 days</span>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <SalesChart />
+            </CardContent>
+          </Card>
 
-      {/* Activity Feed */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Activity</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center gap-4">
-              <div className="h-10 w-10 rounded-full bg-market-100 flex items-center justify-center text-market-600">
-                <Users className="h-5 w-5" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium">New user registered</p>
-                <p className="text-xs text-gray-500">2 minutes ago</p>
-              </div>
+          {/* Activity Feed */}
+          <Card className="shadow-sm">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg font-medium">Recent Activity</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ActivityFeed />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Products Table */}
+        <Card className="shadow-sm">
+          <CardHeader className="pb-2">
+            <div className="flex justify-between items-center">
+              <CardTitle className="text-lg font-medium">Recent Products</CardTitle>
+              <a href="/admin/products" className="text-sm text-primary hover:underline">
+                View all
+              </a>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                <Package className="h-5 w-5" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium">New product added</p>
-                <p className="text-xs text-gray-500">1 hour ago</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-                <Package className="h-5 w-5" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium">Sales report generated</p>
-                <p className="text-xs text-gray-500">3 hours ago</p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            <ProductsTable products={featuredProducts} />
+          </CardContent>
+        </Card>
+      </div>
+    </Layout>
   );
 };
 

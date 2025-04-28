@@ -14,7 +14,7 @@ interface DashboardStatsProps {
 
 export const DashboardStats = ({ stats }: DashboardStatsProps) => {
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
       <StatCard
         icon={DollarSign}
         title="Total Sales"
@@ -25,14 +25,14 @@ export const DashboardStats = ({ stats }: DashboardStatsProps) => {
       <StatCard
         icon={Package}
         title="Active Products"
-        value={stats.activeProducts}
+        value={stats.activeProducts.toLocaleString()}
         trend={{ value: 8, isPositive: true }}
         bgColor="bg-blue-50"
       />
       <StatCard
         icon={Users}
         title="Active Users"
-        value={stats.activeUsers}
+        value={stats.activeUsers.toLocaleString()}
         trend={{ value: 12, isPositive: true }}
         bgColor="bg-emerald-50"
       />

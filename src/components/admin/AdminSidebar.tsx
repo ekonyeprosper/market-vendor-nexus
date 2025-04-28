@@ -7,6 +7,10 @@ import {
   Settings,
   FolderCog,
   LogOut,
+  BarChart3,
+  ShoppingCart,
+  Bell,
+  HelpCircle,
 } from "lucide-react";
 import {
   Sidebar,
@@ -18,6 +22,7 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarFooter,
 } from "@/components/ui/sidebar";
 
 const menuItems = [
@@ -39,6 +44,16 @@ const menuItems = [
         icon: Users,
         path: "/admin/users",
       },
+      {
+        title: "Orders",
+        icon: ShoppingCart,
+        path: "/admin/orders",
+      },
+      {
+        title: "Analytics",
+        icon: BarChart3,
+        path: "/admin/analytics",
+      },
     ],
   },
   {
@@ -53,6 +68,16 @@ const menuItems = [
         title: "File Manager",
         icon: FolderCog,
         path: "/admin/files",
+      },
+      {
+        title: "Notifications",
+        icon: Bell,
+        path: "/admin/notifications",
+      },
+      {
+        title: "Help & Support",
+        icon: HelpCircle,
+        path: "/admin/support",
       },
     ],
   },
@@ -96,6 +121,18 @@ export function AdminSidebar() {
           </SidebarGroup>
         ))}
       </SidebarContent>
+      <SidebarFooter className="border-t p-4">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip="Logout">
+              <Link to="/login">
+                <LogOut className="h-4 w-4" />
+                <span>Logout</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   );
 }
