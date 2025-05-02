@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -21,74 +20,46 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ArrowLeft, MoreHorizontal, Search, User, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-
-// Sample user data
-const users = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john.doe@example.com",
-    role: "Customer",
-    status: "Active",
-    joinedDate: "2023-01-15",
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    email: "jane.smith@example.com",
-    role: "Seller",
-    status: "Active",
-    joinedDate: "2023-02-20",
-  },
-  {
-    id: 3,
-    name: "Robert Johnson",
-    email: "robert.johnson@example.com",
-    role: "Customer",
-    status: "Inactive",
-    joinedDate: "2023-03-10",
-  },
-  {
-    id: 4,
-    name: "Sarah Williams",
-    email: "sarah.williams@example.com",
-    role: "Seller",
-    status: "Pending",
-    joinedDate: "2023-04-05",
-  },
-  {
-    id: 5,
-    name: "Michael Brown",
-    email: "michael.brown@example.com",
-    role: "Admin",
-    status: "Active",
-    joinedDate: "2023-01-05",
-  },
-  {
-    id: 6,
-    name: "Emily Davis",
-    email: "emily.davis@example.com",
-    role: "Customer",
-    status: "Active",
-    joinedDate: "2023-05-18",
-  },
-  {
-    id: 7,
-    name: "David Wilson",
-    email: "david.wilson@example.com",
-    role: "Seller",
-    status: "Active",
-    joinedDate: "2023-06-22",
-  },
-];
+import { useToast } from "@/hooks/use-toast";
+import { useVerifySellerMutation, useGetUsersQuery } from "@/services/api/adminApi";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const UserManagement = () => {
+  const { toast } = useToast();
+  const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const [roleFilter, setRoleFilter] = useState<string>("");
+  const [verificationFilter, setVerificationFilter] = useState<string>("");
   
-  const filteredUsers = users.filter(user => 
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+  const [verifySeller, { isLoading: isVerifying }] = useVerifySellerMutation();
+  const { data: usersData, isLoading } = useGetUsersQuery({ 
+    page,
+    limit: 20,
+    ...(roleFilter && { role: roleFilter }),
+    ...(verificationFilter === 'unverified' && { adminVerified: false }),
+  });
+
+  // Filter users based on search term
+  const filteredUsers = usersData?.users.filter(user => 
+    user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleVerifySeller = async (sellerId: string) => {
+    try {
+      const result = await verifySeller(sellerId).unwrap();
+      toast({
+        title: "Success",
+        description: result.message || "Seller verified successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.data?.message || "Failed to verify seller",
+        variant: "destructive",
+      });
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -136,7 +107,29 @@ const UserManagement = () => {
             </Button>
           </div>
         </div>
-        
+        <div className="flex items-center gap-4 mb-6">
+          <Select value={roleFilter} onValueChange={setRoleFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by role" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="seller">Sellers</SelectItem>
+              <SelectItem value="customer">Customers</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {roleFilter === 'seller' && (
+            <Select value={verificationFilter} onValueChange={setVerificationFilter}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Verification status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All sellers</SelectItem>
+                <SelectItem value="unverified">Unverified only</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        </div>
         <Card>
           <CardHeader className="bg-gray-50 py-4">
             <div className="flex items-center justify-between">
@@ -146,61 +139,83 @@ const UserManagement = () => {
                   All Users
                 </div>
               </CardTitle>
-              <Badge variant="outline">{users.length} Total Users</Badge>
+              <Badge variant="outline">
+                {usersData?.pagination.total || 0} Total Users
+              </Badge>
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Joined Date</TableHead>
-                  <TableHead className="w-[80px]">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredUsers.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell className="font-medium">{user.name}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
-                        {user.role}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(user.status)}`}>
-                        {user.status}
-                      </span>
-                    </TableCell>
-                    <TableCell>{user.joinedDate}</TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>View details</DropdownMenuItem>
-                          <DropdownMenuItem>Edit user</DropdownMenuItem>
-                          {user.status === "Active" ? (
-                            <DropdownMenuItem className="text-amber-600">Deactivate</DropdownMenuItem>
-                          ) : (
-                            <DropdownMenuItem className="text-green-600">Activate</DropdownMenuItem>
-                          )}
-                          <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
+            {isLoading ? (
+              <div className="flex justify-center py-8">Loading...</div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>Email Status</TableHead>
+                    <TableHead>Admin Verification</TableHead>
+                    <TableHead>Joined Date</TableHead>
+                    <TableHead className="w-[80px]">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredUsers?.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell className="font-medium">{user.fullName}</TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
+                          {user.role}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(user.isVerified ? "Active" : "Pending")}`}>
+                          {user.isVerified ? "Verified" : "Pending"}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        {user.role === 'seller' && (
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            user.adminVerified 
+                              ? "bg-green-100 text-green-800" 
+                              : "bg-yellow-100 text-yellow-800"
+                          }`}>
+                            {user.adminVerified ? "Approved" : "Pending Review"}
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <span className="sr-only">Open menu</span>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem>View details</DropdownMenuItem>
+                            <DropdownMenuItem>Edit user</DropdownMenuItem>
+                            {user.role === "seller" && !user.adminVerified && (
+                              <DropdownMenuItem 
+                                onClick={() => handleVerifySeller(user.id)}
+                                disabled={isVerifying}
+                                className="text-green-600"
+                              >
+                                {isVerifying ? "Verifying..." : "Verify Seller"}
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </CardContent>
         </Card>
       </div>

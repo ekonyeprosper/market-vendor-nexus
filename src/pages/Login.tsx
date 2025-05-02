@@ -33,7 +33,6 @@ const Login = () => {
     
     try {
       const result = await login({ email, password }).unwrap();
-      console.log(result)
       dispatch(setCredentials(result));
       
       if (rememberMe) {
@@ -46,7 +45,7 @@ const Login = () => {
       });
       
       // Navigate based on user role
-      const userRole = result.user.role;
+      const userRole = result.user?.role;
       if (userRole === 'admin') {
         navigate("/admin/dashboard");
       } else if (userRole === 'seller') {

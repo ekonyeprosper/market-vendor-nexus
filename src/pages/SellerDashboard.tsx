@@ -10,6 +10,9 @@ import {
 } from "lucide-react";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { ChartCard } from "@/components/dashboard/ChartCard";
+import { useGetProfileQuery } from "@/services/api/userApi";
+import { AlertTriangle, CheckCircle2, Info } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // Sample data for charts
 const salesData = [
@@ -111,18 +114,72 @@ const orders = [
 
 const SellerDashboard = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const { data: profile, isLoading } = useGetProfileQuery();
+
+  const renderVerificationAlert = () => {
+    if (!profile?.adminVerified) {
+      return (
+        <Alert variant="default" className="mb-6 border-yellow-500 text-yellow-800">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Account Pending Verification</AlertTitle>
+          <AlertDescription>
+            Your seller account is currently under review. You can still browse the dashboard, but you won't be able to list products until your account is verified by an administrator.
+          </AlertDescription>
+        </Alert>
+      );
+    }
+    return null;
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-NG', {
+      style: 'currency',
+      currency: 'NGN',
+      minimumFractionDigits: 0
+    }).format(amount);
+  };
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-8 max-w-7xl">
+          <div>Loading...</div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8 max-w-7xl">
+        {renderVerificationAlert()}
+        
         <div className="flex flex-wrap items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Seller Dashboard</h1>
-            <p className="text-muted-foreground mt-1">Welcome back, TechGear!</p>
+            <div className="flex items-center gap-2 mt-1">
+              <p className="text-muted-foreground">
+                Welcome back, {profile?.businessName || 'Seller'}!
+              </p>
+              {profile?.adminVerified ? (
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  <CheckCircle2 className="w-3 h-3 mr-1" /> Verified Seller
+                </span>
+              ) : (
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                  <Info className="w-3 h-3 mr-1" /> Pending Verification
+                </span>
+              )}
+            </div>
           </div>
+
           <div className="mt-4 md:mt-0">
             <Link to="/seller/products/new">
-              <Button className="flex items-center shadow-sm">
+              <Button 
+                className="flex items-center shadow-sm"
+                disabled={!profile?.adminVerified}
+                title={!profile?.adminVerified ? "Account verification required" : ""}
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 Add New Product
               </Button>
@@ -143,7 +200,7 @@ const SellerDashboard = () => {
               <StatCard
                 icon={DollarSign}
                 title="Total Sales"
-                value="$12,628"
+                value={formatCurrency(12628)}
                 trend={{ value: 12.5, isPositive: true }}
               />
               <StatCard
@@ -180,7 +237,7 @@ const SellerDashboard = () => {
                 </BarChart>
               </ChartCard>
 
-              <ChartCard
+              {/* <ChartCard
                 title="Recent Performance"
                 description="Daily sales trends for the past 30 days"
               >
@@ -196,10 +253,10 @@ const SellerDashboard = () => {
                     strokeWidth={2} 
                   />
                 </LineChart>
-              </ChartCard>
+              </ChartCard> */}
             </div>
 
-            <Card>
+            {/* <Card>
               <CardContent className="p-6">
                 <h3 className="font-semibold mb-4">Top Performing Products</h3>
                 <div className="overflow-x-auto">
@@ -223,7 +280,7 @@ const SellerDashboard = () => {
                   </table>
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
           </TabsContent>
 
           <TabsContent value="products" className="space-y-4">
@@ -247,7 +304,7 @@ const SellerDashboard = () => {
                   <CardContent className="p-4">
                     <h3 className="font-medium line-clamp-1">{product.name}</h3>
                     <div className="flex justify-between items-center mt-2">
-                      <span className="font-bold">${product.price}</span>
+                      <span className="font-bold">{formatCurrency(product.price)}</span>
                       <span className="text-sm text-gray-500">Stock: {product.inventory}</span>
                     </div>
                     <div className="mt-4 flex gap-2">
@@ -305,7 +362,7 @@ const SellerDashboard = () => {
                             </span>
                           </td>
                           <td className="px-4 py-4">{order.items}</td>
-                          <td className="px-4 py-4">${order.total}</td>
+                          <td className="px-4 py-4">{formatCurrency(order.total)}</td>
                           <td className="px-4 py-4">
                             <Button variant="ghost" size="sm">
                               Details

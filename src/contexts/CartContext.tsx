@@ -1,8 +1,7 @@
-
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { toast } from "@/hooks/use-toast";
 
-interface CartItem {
+export interface CartItem {
   id: string;
   name: string;
   price: number;
@@ -10,7 +9,7 @@ interface CartItem {
   image: string;
 }
 
-interface CartContextType {
+export interface CartContextType {
   items: CartItem[];
   addToCart: (product: any, quantity: number) => void;
   removeFromCart: (productId: string) => void;
@@ -19,7 +18,7 @@ interface CartContextType {
   total: number;
 }
 
-const CartContext = createContext<CartContextType | undefined>(undefined);
+export const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -86,13 +85,5 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       {children}
     </CartContext.Provider>
   );
-};
-
-export const useCart = () => {
-  const context = useContext(CartContext);
-  if (context === undefined) {
-    throw new Error('useCart must be used within a CartProvider');
-  }
-  return context;
 };
 

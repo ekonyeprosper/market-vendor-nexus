@@ -6,7 +6,9 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { useToast } from "@/hooks/use-toast";
 import Layout from "@/components/layout/Layout";
 import { Shield, Mail } from "lucide-react";
-import { useVerifyOTPMutation } from "@/services/api/authApi";
+import { useVerifyOTPMutation, useResendOTPMutation } from "@/services/api/authApi";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "@/services/store/slices/authSlice";
 
 const OTPVerification = () => {
   const location = useLocation();
@@ -16,7 +18,9 @@ const OTPVerification = () => {
   const [countdown, setCountdown] = useState(60);
   const [isResending, setIsResending] = useState(false);
   const [verifyOTP, { isLoading }] = useVerifyOTPMutation();
-  
+  const [resendOTP, { isLoading: isResendingOTP }] = useResendOTPMutation();
+  const dispatch = useDispatch();
+
   // Extract email from location state
   const email = location.state?.email || "";
   
@@ -47,20 +51,27 @@ const OTPVerification = () => {
     return () => clearInterval(timer);
   }, [email, navigate, toast]);
   
-  const handleResendOTP = () => {
+  const handleResendOTP = async () => {
     if (countdown === 0) {
       setIsResending(true);
       
-      // Simulate API call to resend OTP
-      setTimeout(() => {
+      try {
+        const result = await resendOTP({ email }).unwrap();
         setCountdown(60);
-        setIsResending(false);
         
         toast({
-          title: "OTP Resent",
-          description: `A new verification code has been sent to ${email}`,
+          title: "Success",
+          description: result.message || "A new verification code has been sent to your email",
         });
-      }, 1500);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: error.data?.message || "Failed to resend verification code",
+          variant: "destructive",
+        });
+      } finally {
+        setIsResending(false);
+      }
     }
   };
   
@@ -80,9 +91,20 @@ const OTPVerification = () => {
         otp
       }).unwrap();
       
+      // Store the token and update auth state
+      dispatch(setCredentials({ 
+        token: result.token,
+        user: {
+          email,
+          role: 'seller',
+          id: '',  // Will be extracted from token in a real app
+          name: '' // Will be extracted from token in a real app
+        }
+      }));
+
       toast({
         title: "Success",
-        description: result.message || "Verification successful! Your account has been verified.",
+        description: result.message || "Email verified successfully!",
       });
       
       // Navigate to seller dashboard after successful verification
@@ -92,7 +114,7 @@ const OTPVerification = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to verify OTP. Please try again.",
+        description: error.data?.message || "Failed to verify OTP. Please try again.",
         variant: "destructive",
       });
     }
@@ -151,9 +173,9 @@ const OTPVerification = () => {
                   variant="ghost"
                   className="text-market-600 hover:text-market-700 text-sm mt-1"
                   onClick={handleResendOTP}
-                  disabled={countdown > 0 || isResending}
+                  disabled={countdown > 0 || isResending || isResendingOTP}
                 >
-                  {isResending 
+                  {isResending || isResendingOTP
                     ? "Sending..." 
                     : countdown > 0 
                       ? `Resend in ${countdown}s` 

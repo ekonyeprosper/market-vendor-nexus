@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +26,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
 import { ImagePlus, Upload, Trash } from "lucide-react";
+import { useCreateProductMutation } from '@/services/api/productsApi';
 
 const categories = [
   "Electronics",
@@ -54,14 +54,18 @@ const productSchema = z.object({
   inventory: z.string().refine((val) => !isNaN(parseInt(val)) && parseInt(val) >= 0, {
     message: "Inventory must be a non-negative number.",
   }),
-  featured: z.boolean().default(false),
   tags: z.string().optional(),
   sku: z.string().optional(),
+  discount: z.string().refine((val) => val === '' || (!isNaN(parseFloat(val)) && parseFloat(val) >= 0 && parseFloat(val) <= 100), {
+    message: "Discount must be a number between 0 and 100.",
+  }).optional(),
 });
 
 const ProductUploadForm = () => {
   const [loading, setLoading] = useState(false);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [createProduct] = useCreateProductMutation();
 
   const form = useForm<z.infer<typeof productSchema>>({
     resolver: zodResolver(productSchema),
@@ -71,9 +75,9 @@ const ProductUploadForm = () => {
       category: "",
       description: "",
       inventory: "",
-      featured: false,
       tags: "",
       sku: "",
+      discount: "",
     },
   });
 
@@ -81,13 +85,17 @@ const ProductUploadForm = () => {
     const files = e.target.files;
     if (files) {
       const newImages: string[] = [];
+      const newFiles: File[] = [];
+      
       Array.from(files).forEach(file => {
+        newFiles.push(file);
         const reader = new FileReader();
         reader.onload = (event) => {
           if (event.target?.result) {
             newImages.push(event.target.result as string);
             if (newImages.length === files.length) {
               setPreviewImages(prev => [...prev, ...newImages]);
+              setImageFiles(prev => [...prev, ...newFiles]);
             }
           }
         };
@@ -97,21 +105,46 @@ const ProductUploadForm = () => {
   };
 
   const removeImage = (index: number) => {
-    setPreviewImages(previewImages.filter((_, i) => i !== index));
+    setPreviewImages(prev => prev.filter((_, i) => i !== index));
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  const onSubmit = (data: z.infer<typeof productSchema>) => {
-    setLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Product data:", data);
-      console.log("Images:", previewImages);
+  const onSubmit = async (data: z.infer<typeof productSchema>) => {
+    try {
+      setLoading(true);
+      const formData = new FormData();
+      
+      // Add basic product data
+      formData.append('name', data.name);
+      formData.append('description', data.description);
+      formData.append('price', data.price);
+      formData.append('category', data.category);
+      formData.append('initialInventory', data.inventory);
+      
+      // Add optional fields if they exist
+      if (data.discount) formData.append('discount', data.discount);
+      if (data.sku) formData.append('sku', data.sku);
+      if (data.tags) formData.append('tags', data.tags);
+
+      // Add all images
+      imageFiles.forEach((file) => {
+        formData.append('images', file);
+      });
+
+      // Send to API
+      const result = await createProduct(formData).unwrap();
+      
       toast.success("Product uploaded successfully!");
       form.reset();
       setPreviewImages([]);
+      setImageFiles([]);
+
+    } catch (error) {
+      toast.error("Failed to upload product. Please try again.");
+      console.error('Upload error:', error);
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -204,6 +237,30 @@ const ProductUploadForm = () => {
                     </FormItem>
                   )}
                 />
+
+                <FormField
+                  control={form.control}
+                  name="discount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Discount (%)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          min="0" 
+                          max="100" 
+                          step="0.01"
+                          placeholder="Enter discount percentage"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Enter a percentage between 0 and 100
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
               <div className="space-y-6">
@@ -255,27 +312,6 @@ const ProductUploadForm = () => {
                         <Input placeholder="Enter product SKU" {...field} />
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="featured"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel>Featured Product</FormLabel>
-                        <FormDescription>
-                          This product will appear on the homepage
-                        </FormDescription>
-                      </div>
                     </FormItem>
                   )}
                 />

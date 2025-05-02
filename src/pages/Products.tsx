@@ -16,7 +16,7 @@ import {
   ChevronUp 
 } from "lucide-react";
 import Layout from "@/components/layout/Layout";
-import { products } from "@/data/products";
+import { products as staticProducts } from "@/data/products";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
@@ -45,6 +45,8 @@ import {
   SheetFooter,
   SheetClose
 } from "@/components/ui/sheet";
+import { useGetPublicProductsQuery } from "@/services/api/productsApi";
+import { useCart } from "@/services/hooks/useCart";
 
 const Products = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,51 +57,33 @@ const Products = () => {
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [page, setPage] = useState(1);
 
-  const categories = Array.from(new Set(products.map(p => p.category)));
-  const brands = Array.from(new Set(products.map(p => p.vendor)));
-  
-  const minPrice = 0;
-  const maxPrice = 500;
-  
-  const filteredProducts = products.filter(product => {
-    // Search query filter
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         product.description.toLowerCase().includes(searchQuery.toLowerCase());
-                         
-    // Category filter
-    const matchesCategory = !selectedCategory || product.category === selectedCategory;
-    
-    // Price range filter
-    const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
-    
-    // Brand filter
-    const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(product.vendor);
-    
-    // Rating filter
-    const matchesRating = !selectedRating || product.rating >= selectedRating;
-    
-    return matchesSearch && matchesCategory && matchesPrice && matchesBrand && matchesRating;
+  const { addToCart } = useCart();
+
+  const { data: response, isLoading, isFetching } = useGetPublicProductsQuery({
+    page,
+    limit: 12,
+    category: selectedCategory || undefined,
+    search: searchQuery || undefined,
+    // minPrice: priceRange[0],
+    // maxPrice: priceRange[1],
+    sort: sortOption === 'featured' ? undefined : sortOption
   });
-  
-  // Sort products
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    switch (sortOption) {
-      case "price_low":
-        return a.price - b.price;
-      case "price_high":
-        return b.price - a.price;
-      case "rating":
-        return b.rating - a.rating;
-      case "newest":
-        return new Date(b.id).getTime() - new Date(a.id).getTime();
-      default: // featured
-        return 0;
-    }
-  });
+
+  const products = response?.products || [];
+  const pagination = response?.pagination || {
+    total: 0,
+    pages: 0,
+    currentPage: "1",
+    limit: "10"
+  };
+
+  const categories = Array.from(new Set(products.map(p => p.category.name)));
+  const brands = Array.from(new Set(products.map(p => p.sellerId.businessName)));
 
   const handleBrandToggle = (brand: string) => {
-    setSelectedBrands(prev =>
+    setSelectedBrands(prev => 
       prev.includes(brand)
         ? prev.filter(b => b !== brand)
         : [...prev, brand]
@@ -113,40 +97,45 @@ const Products = () => {
   const clearAllFilters = () => {
     setSearchQuery("");
     setSelectedCategory("");
-    setPriceRange([minPrice, maxPrice]);
+    setPriceRange([0, 500]);
     setSelectedBrands([]);
     setSelectedRating(null);
-  };
-  
-  const activeFiltersCount = (
+  };          
+
+  const activeFiltersCount = 
     (selectedCategory ? 1 : 0) +
     (selectedBrands.length > 0 ? 1 : 0) +
     (selectedRating ? 1 : 0) +
-    ((priceRange[0] > minPrice || priceRange[1] < maxPrice) ? 1 : 0)
-  );
+    ((priceRange[0] > 0 || priceRange[1] < 500) ? 1 : 0);
 
-  // Filter section for desktop
+  const handleAddToCart = (product: any) => {
+    addToCart({
+      id: product._id,
+      name: product.name,
+      price: product.price.current,
+      quantity: 1,
+      image: product.images[0].url
+    }, 1);
+  };
+
   const FiltersSection = () => (
     <div className="space-y-6">
-      {/* Price Range */}
       <div>
         <h3 className="font-medium mb-3">Price Range</h3>
         <Slider
-          defaultValue={[minPrice, maxPrice]}
-          min={minPrice}
-          max={maxPrice}
+          defaultValue={[0, 500]}            
+          min={0}
+          max={500}
           step={10}
           value={priceRange}
           onValueChange={setPriceRange}
           className="mb-4"
         />
         <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-600">${priceRange[0]}</span>
-          <span className="text-sm text-gray-600">${priceRange[1]}</span>
+          <span className="text-sm text-gray-600">{formatCurrency(priceRange[0])}</span>
+          <span className="text-sm text-gray-600">{formatCurrency(priceRange[1])}</span>
         </div>
       </div>
-      
-      {/* Categories */}
       <Accordion type="single" collapsible className="w-full" defaultValue="categories">
         <AccordionItem value="categories">
           <AccordionTrigger className="font-medium">Categories</AccordionTrigger>
@@ -162,7 +151,7 @@ const Products = () => {
                   All Categories
                 </Button>
               </div>
-              {categories.map((category) => (
+              {categories?.map((category) => (
                 <div key={category} className="flex items-center">
                   <Button
                     variant={selectedCategory === category ? "default" : "ghost"}
@@ -179,7 +168,6 @@ const Products = () => {
         </AccordionItem>
       </Accordion>
       
-      {/* Brands */}
       <Accordion type="single" collapsible className="w-full" defaultValue="brands">
         <AccordionItem value="brands">
           <AccordionTrigger className="font-medium">Brands</AccordionTrigger>
@@ -205,7 +193,6 @@ const Products = () => {
         </AccordionItem>
       </Accordion>
       
-      {/* Ratings */}
       <Accordion type="single" collapsible className="w-full" defaultValue="ratings">
         <AccordionItem value="ratings">
           <AccordionTrigger className="font-medium">Ratings</AccordionTrigger>
@@ -250,6 +237,75 @@ const Products = () => {
     </div>
   );
 
+  const renderProductCard = (product: any) => (
+    <Card key={product?._id} className="overflow-hidden group">
+      <div className="relative">
+        <Link to={`/products/${product?._id}`}>
+          <div className="aspect-square overflow-hidden">
+            <img 
+              src={product.images.find(img => img.isDefault)?.url || product.images[0]?.url}
+              alt={product.name}
+              className="w-full h-full object-cover transition-transform group-hover:scale-105"
+            />
+          </div>
+        </Link>
+        <Button
+          size="icon"
+          variant="ghost"
+          className="absolute top-2 right-2 h-8 w-8 rounded-full bg-white/80 hover:bg-white"
+        >
+          <Heart className="h-4 w-4" />
+        </Button>
+      </div>
+      <CardContent className="p-4">
+        <Link to={`/products/${product._id}`}>
+          <h3 className="font-semibold mb-1 line-clamp-2 hover:text-market-600 transition-colors">
+            {product.name}
+          </h3>
+        </Link>
+        <div className="flex items-center text-sm mb-2">
+          <Link to={`/vendor/${product.sellerId._id}`} className="text-market-600 hover:underline">
+            {product.sellerId.businessName}
+          </Link>
+          <span className="mx-2 text-gray-300">•</span>
+          <div className="flex items-center">
+            <Star className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />
+            <span>{product.metadata.rating.average || 0}</span>
+          </div>
+        </div>
+        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>
+        <div className="flex justify-between items-center">
+          <div>
+            <span className="font-bold">{formatCurrency(product.price.current)}</span>
+            {product.price.discount > 0 && (
+              <span className="text-sm text-gray-500 line-through ml-2">
+                {formatCurrency(product.price.current * (1 + product.price.discount/100))}
+              </span>
+            )}
+          </div>
+          <Button 
+            size="sm" 
+            className="rounded-full w-8 h-8 p-0 bg-market-600 hover:bg-market-700"
+            onClick={(e) => {
+              e.preventDefault(); // Prevent navigation
+              handleAddToCart(product);
+            }}
+          >
+            <ShoppingCart className="h-4 w-4" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-NG', {
+      style: 'currency',
+      currency: 'NGN',
+      minimumFractionDigits: 0
+    }).format(amount);
+  };
+
   return (
     <Layout>
       <div className="bg-gray-50 py-8">
@@ -266,7 +322,6 @@ const Products = () => {
           </div>
 
           <div className="flex flex-col md:flex-row gap-8">
-            {/* Desktop Filters Sidebar */}
             <div className="hidden md:block w-64 flex-shrink-0">
               <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-100">
                 <div className="flex items-center justify-between mb-6">
@@ -281,7 +336,6 @@ const Products = () => {
               </div>
             </div>
             
-            {/* Mobile Filter Button */}
             <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
               <SheetContent side="left" className="w-[85%] sm:max-w-md">
                 <SheetHeader className="mb-6">
@@ -295,14 +349,13 @@ const Products = () => {
                 </div>
                 <SheetFooter className="mt-6">
                   <SheetClose asChild>
-                    <Button className="w-full">View {filteredProducts.length} products</Button>
+                    <Button className="w-full">View {products.length} products</Button>
                   </SheetClose>
                 </SheetFooter>
               </SheetContent>
             </Sheet>
 
             <div className="flex-1">
-              {/* Search and Sort Controls */}
               <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mb-6">
                 <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
                   <div className="flex flex-1 w-full sm:w-auto gap-2">
@@ -374,7 +427,6 @@ const Products = () => {
                   </div>
                 </div>
                 
-                {/* Active filters */}
                 {activeFiltersCount > 0 && (
                   <div className="mt-4 flex flex-wrap gap-2">
                     {selectedCategory && (
@@ -404,10 +456,10 @@ const Products = () => {
                       </Badge>
                     )}
                     
-                    {(priceRange[0] > minPrice || priceRange[1] < maxPrice) && (
+                    {(priceRange[0] > 0 || priceRange[1] < 500) && (
                       <Badge variant="secondary" className="flex items-center gap-1">
                         ${priceRange[0]} - ${priceRange[1]}
-                        <button onClick={() => setPriceRange([minPrice, maxPrice])}>
+                        <button onClick={() => setPriceRange([0, 500])}>
                           <X className="h-3 w-3 ml-1" />
                         </button>
                       </Badge>
@@ -425,72 +477,21 @@ const Products = () => {
                 )}
               </div>
               
-              {/* Results Count */}
               <div className="mb-4">
                 <p className="text-sm text-gray-600">
-                  Showing <span className="font-medium">{sortedProducts.length}</span> products
+                  Showing <span className="font-medium">{products.length}</span> of{" "}
+                  <span className="font-medium">{pagination.total}</span> products
                 </p>
               </div>
 
-              {/* Product Grid/List */}
-              {sortedProducts.length > 0 ? (
+              {products.length > 0 ? (
                 viewMode === "grid" ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {sortedProducts.map((product) => (
-                      <Card key={product.id} className="overflow-hidden group">
-                        <div className="relative">
-                          <Link to={`/products/${product.id}`}>
-                            <div className="aspect-square overflow-hidden">
-                              <img 
-                                src={product.image}
-                                alt={product.name}
-                                className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                              />
-                            </div>
-                          </Link>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="absolute top-2 right-2 h-8 w-8 rounded-full bg-white/80 hover:bg-white"
-                          >
-                            <Heart className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        <CardContent className="p-4">
-                          <Link to={`/products/${product.id}`}>
-                            <h3 className="font-semibold mb-1 line-clamp-2 hover:text-market-600 transition-colors">{product.name}</h3>
-                          </Link>
-                          <div className="flex items-center text-sm mb-2">
-                            <Link to={`/vendor/${product.vendor}`} className="text-market-600 hover:underline">
-                              {product.vendor}
-                            </Link>
-                            <span className="mx-2 text-gray-300">•</span>
-                            <div className="flex items-center">
-                              <Star className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />
-                              <span>{product.rating}</span>
-                            </div>
-                          </div>
-                          <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>
-                          <div className="flex justify-between items-center">
-                            <div>
-                              <span className="font-bold">${product.price}</span>
-                              {product.originalPrice && (
-                                <span className="text-sm text-gray-500 line-through ml-2">
-                                  ${product.originalPrice}
-                                </span>
-                              )}
-                            </div>
-                            <Button size="sm" className="rounded-full w-8 h-8 p-0 bg-market-600 hover:bg-market-700">
-                              <ShoppingCart className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                    {products?.map(renderProductCard)}
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {sortedProducts.map((product) => (
+                    {products.map((product) => (
                       <Card key={product.id} className="overflow-hidden">
                         <div className="flex">
                           <Link to={`/products/${product.id}`} className="w-40 h-40 flex-shrink-0">
@@ -507,20 +508,20 @@ const Products = () => {
                               <div>
                                 <Link to={`/categories/${product.category}`}>
                                   <Badge variant="outline" className="mb-2">
-                                    {product.category}
+                                    {product?.category}
                                   </Badge>
                                 </Link>
                                 <Link to={`/products/${product.id}`}>
                                   <h3 className="font-semibold text-lg mb-1 hover:text-market-600 transition-colors">{product.name}</h3>
                                 </Link>
                                 <div className="flex items-center text-sm mb-2">
-                                  <Link to={`/vendor/${product.vendor}`} className="text-market-600 hover:underline">
-                                    {product.vendor}
+                                  <Link to={`/vendor/${product?.vendor}`} className="text-market-600 hover:underline">
+                                    {product?.vendor}
                                   </Link>
                                   <span className="mx-2 text-gray-300">•</span>
                                   <div className="flex items-center">
                                     <Star className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />
-                                    <span>{product.rating}</span>
+                                    <span>{product?.rating}</span>
                                   </div>
                                 </div>
                               </div>
@@ -533,14 +534,21 @@ const Products = () => {
                             
                             <div className="flex justify-between items-center">
                               <div>
-                                <span className="font-bold">${product.price}</span>
-                                {product.originalPrice && (
+                                <span className="font-bold">{formatCurrency(product.price)}</span>
+                                {product?.originalPrice && (
                                   <span className="text-sm text-gray-500 line-through ml-2">
-                                    ${product.originalPrice}
+                                    {formatCurrency(product?.originalPrice)}
                                   </span>
                                 )}
                               </div>
-                              <Button size="sm" className="bg-market-600 hover:bg-market-700">
+                              <Button 
+                                size="sm" 
+                                className="bg-market-600 hover:bg-market-700"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleAddToCart(product);
+                                }}
+                              >
                                 <ShoppingCart className="h-4 w-4 mr-2" /> Add to Cart
                               </Button>
                             </div>
@@ -560,6 +568,27 @@ const Products = () => {
                   <h3 className="text-lg font-medium text-gray-900 mb-1">No products found</h3>
                   <p className="text-gray-500 mb-6">Try changing your search or filter criteria</p>
                   <Button onClick={clearAllFilters}>Clear all filters</Button>
+                </div>
+              )}
+
+              {pagination.pages > 1 && (
+                <div className="mt-8 flex justify-center">
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      disabled={page === 1 || isFetching}
+                      onClick={() => setPage(p => Math.max(1, p - 1))}
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      variant="outline"
+                      disabled={page === pagination.pages || isFetching}
+                      onClick={() => setPage(p => Math.min(pagination.pages, p + 1))}
+                    >
+                      Next
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>

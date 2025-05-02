@@ -4,10 +4,15 @@ export interface LoginRequest {
 }
 
 export interface User {
-  id: string;
   email: string;
-  name: string;
-  role: string;
+  fullName: string;
+  phoneNumber: string;
+  role: 'admin' | 'seller' | 'customer';
+  isVerified: boolean;
+  businessName?: string;
+  businessAddress?: string;
+  adminVerified?: boolean;
+  permissions?: string[];
 }
 
 export interface LoginResponse {
@@ -38,6 +43,29 @@ export interface VerifyOTPRequest {
 }
 
 export interface VerifyOTPResponse {
+  token: string;
+  message: string;
+}
+
+export interface ResendOTPRequest {
+  email: string;
+}
+
+export interface ResendOTPResponse {
   success: boolean;
   message: string;
+}
+
+export interface UserProfile {
+  _id: string;
+  businessName: string;
+  businessAddress: string;
+  governmentId: string;
+  email: string;
+  fullName: string;
+  phoneNumber: string;
+  role: string;
+  isVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
 }

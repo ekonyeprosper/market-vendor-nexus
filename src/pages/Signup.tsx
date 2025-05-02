@@ -96,18 +96,28 @@ const Signup = () => {
     
     // If all validations pass, proceed to OTP verification
     try {
-      const formPayload = {
-        email: formData.email,
-        password: formData.password,
-        fullName: formData.fullName,
-        businessName: formData.businessName,
-        phone: formData.phone,
-        address: formData.address,
-        governmentId: idDocument as File,
-        agreeTerms: formData.agreeTerms
-      };
+      const formDataToSend = new FormData();
+      formDataToSend.append('email', formData.email);
+      formDataToSend.append('password', formData.password);
+      formDataToSend.append('fullName', formData.fullName);
+      formDataToSend.append('businessName', formData.businessName);
+      formDataToSend.append('phoneNumber', formData.phone);
+      formDataToSend.append('businessAddress', formData.address);
+      if (idDocument) {
+        formDataToSend.append('governmentId', idDocument);
+      }
 
-      const result = await registerSeller(formPayload).unwrap();
+      // Option 1: Convert to object to see values
+      const formDataObj = Object.fromEntries(formDataToSend.entries());
+      console.log('Form Data Contents:', formDataObj);
+
+      // Option 2: Loop through and log each entry
+      for (let [key, value] of formDataToSend.entries()) {
+        console.log(`${key}:`, value);
+      }
+
+      // Uncomment this to continue with the API call
+      const result = await registerSeller(formDataToSend).unwrap();
       
       toast({
         title: "Success",
@@ -122,7 +132,7 @@ const Signup = () => {
         }
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       toast({
         title: "Error",
         description: "Registration failed. Please try again.",
