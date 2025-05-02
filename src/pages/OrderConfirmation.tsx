@@ -3,8 +3,15 @@ import { CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
+import { formatCurrency } from "@/utils/format";
 
 const OrderConfirmation = () => {
+  // Retrieve order details from localStorage or use a default value
+  const orderRef = `#${Math.floor(100000 + Math.random() * 900000)}`;
+  const orderAmount = localStorage.getItem('orderAmount') ? 
+    Number(localStorage.getItem('orderAmount')) : 
+    9999;
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-16">
@@ -22,11 +29,11 @@ const OrderConfirmation = () => {
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span>Order Number</span>
-                <span className="font-mono">#12345</span>
+                <span className="font-mono">{orderRef}</span>
               </div>
               <div className="flex justify-between">
                 <span>Total Amount</span>
-                <span>$99.99</span>
+                <span>{formatCurrency(orderAmount)}</span>
               </div>
             </div>
           </div>

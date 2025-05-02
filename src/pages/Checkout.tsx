@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
+import { formatCurrency } from "@/utils/format";
 import {
   Form,
   FormControl,
@@ -55,39 +56,80 @@ const Checkout = () => {
     },
   });
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-NG', {
-      style: 'currency',
+  const initializePaystack = (email: string, amount: number, metadata: any) => {
+    // @ts-ignore - PayStack will be loaded globally
+    const handler = window.PaystackPop?.setup({
+      key: 'pk_test_your_paystack_public_key_here', // Replace with your actual public key
+      email,
+      amount: amount * 100, // PayStack expects amount in kobo (smallest currency unit)
       currency: 'NGN',
-      minimumFractionDigits: 0
-    }).format(amount);
+      ref: `order_${new Date().getTime()}`,
+      metadata: metadata,
+      callback: function(response: any) {
+        // Handle successful payment
+        clearCart();
+        toast({
+          title: "Payment successful!",
+          description: "Thank you for your purchase.",
+        });
+        navigate("/order-confirmation");
+      },
+      onClose: function() {
+        // Handle when user closes payment modal
+        setIsSubmitting(false);
+        toast({
+          title: "Payment cancelled",
+          description: "You can try again when you're ready.",
+          variant: "destructive",
+        });
+      }
+    });
+    
+    handler.openIframe();
   };
 
   const onSubmit = async (data: CheckoutFormValues) => {
     setIsSubmitting(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Prepare order data
+      const orderData = {
+        customer: {
+          fullName: data.fullName,
+          email: data.email,
+          phoneNumber: data.phoneNumber,
+          address: data.address,
+          city: data.city,
+          state: data.state,
+          zipCode: data.zipCode,
+          additionalInfo: data.additionalInfo
+        },
+        items: items,
+        total: total
+      };
       
-      // This is where you would normally send the order data to your backend
-      console.log("Order submitted:", { ...data, items, total });
+      console.log("Order data:", orderData);
       
-      // Clear cart and redirect to confirmation
-      clearCart();
-      toast({
-        title: "Order placed successfully!",
-        description: "Thank you for your purchase.",
-      });
-      navigate("/order-confirmation");
+      // Initialize PayStack payment
+      initializePaystack(
+        data.email, 
+        total, 
+        {
+          customer_name: data.fullName,
+          order_items: JSON.stringify(items.map(item => item.name))
+        }
+      );
+      
+      // Note: We don't clear cart or navigate here because that will be handled
+      // by the PayStack callback if payment is successful
     } catch (error) {
+      setIsSubmitting(false);
       toast({
-        title: "Error placing order",
+        title: "Error processing order",
         description: "Please try again later.",
         variant: "destructive",
       });
-    } finally {
-      setIsSubmitting(false);
+      console.error("Checkout error:", error);
     }
   };
 
@@ -233,7 +275,7 @@ const Checkout = () => {
                     className="w-full md:w-auto"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "Processing..." : "Place Order"}
+                    {isSubmitting ? "Processing..." : "Proceed to Payment"}
                   </Button>
                 </form>
               </Form>

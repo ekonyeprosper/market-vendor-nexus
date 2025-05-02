@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/contexts/CartContext";
-import { createElement } from "react";
+import { createElement, useEffect } from "react";
 import { Provider } from 'react-redux';
 import { store } from '@/services/store/store';
 
@@ -35,6 +35,21 @@ import VendorDetail from "./pages/VendorDetail";
 
 // Create a new QueryClient instance inside the component
 const App = () => {
+  useEffect(() => {
+    // Add PayStack Script
+    const script = document.createElement('script');
+    script.src = 'https://js.paystack.co/v1/inline.js';
+    script.async = true;
+    document.body.appendChild(script);
+    
+    return () => {
+      // Clean up
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
+  }, []);
+
   return (
     <Provider store={store}>
       <CartProvider>
