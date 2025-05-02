@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -79,8 +80,22 @@ const Products = () => {
     limit: "10"
   };
 
-  const categories = Array.from(new Set(products.map(p => p.category.name)));
-  const brands = Array.from(new Set(products.map(p => p.sellerId.businessName)));
+  // Extract categories and brands with proper type handling
+  const categories = Array.from(
+    new Set(
+      products
+        .map(p => p.category?.name)
+        .filter(Boolean) as string[]
+    )
+  );
+  
+  const brands = Array.from(
+    new Set(
+      products
+        .map(p => p.sellerId?.businessName)
+        .filter(Boolean) as string[]
+    )
+  );
 
   const handleBrandToggle = (brand: string) => {
     setSelectedBrands(prev => 
@@ -151,7 +166,7 @@ const Products = () => {
                   All Categories
                 </Button>
               </div>
-              {categories?.map((category) => (
+              {categories.map((category) => (
                 <div key={category} className="flex items-center">
                   <Button
                     variant={selectedCategory === category ? "default" : "ghost"}
