@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -32,6 +31,8 @@ import FileManagerPage from "./pages/admin/FileManager";
 import NotificationsPage from "./pages/admin/Notifications";
 import SupportPage from "./pages/admin/Support";
 import VendorDetail from "./pages/VendorDetail";
+import PaymentCallback from "@/pages/PaymentCallback";
+import CustomerDashboard from "./pages/customer/CustomerDashboard";
 
 // Create a new QueryClient instance inside the component
 const App = () => {
@@ -81,6 +82,8 @@ const App = () => {
               <Route path="/admin/files" element={<FileManagerPage />} />
               <Route path="/admin/notifications" element={<NotificationsPage />} />
               <Route path="/admin/support" element={<SupportPage />} />
+              <Route path="/payment/verify/:reference" element={<PaymentCallback />} />
+              <Route path="/customer/dashboard" element={<CustomerDashboard />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

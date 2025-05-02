@@ -1,10 +1,42 @@
 import { baseApi } from './baseApi';
-import { Product, ProductFilters, PaginatedResponse } from '../types/product.types';
+import { Product, ProductFilters, PaginatedResponse, AdminProductsResponse } from '../types/product.types';
+
+interface SellerProductsResponse {
+  seller: {
+    businessName: string;
+    businessAddress: string;
+  };
+  products: Product[];
+  pagination: {
+    total: number;
+    pages: number;
+    currentPage: number;
+    limit: number;
+  };
+}
+
+interface DashboardStats {
+  totalSales: number;
+  totalOrders: number;
+  totalProducts: number;
+  salesGrowth: number;
+  productGrowth: number;
+  orderGrowth: number;
+  salesOverview: Array<{
+    month: string;
+    amount: number;
+  }>;
+}
+
+interface UpdateProductStatusResponse {
+  id: string;
+  name: string;
+  status: 'active' | 'draft';
+  updatedAt: string;
+}
 
 export const productsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // ...existing endpoints...
-
     getProduct: builder.query<Product, string>({
       query: (id) => `/api/products/${id}`,
     }),
@@ -50,9 +82,14 @@ export const productsApi = baseApi.injectEndpoints({
       }),
     }),
 
-    getSellerProducts: builder.query<any, any>({
+    getSellerProducts: builder.query<any, {
+      page?: number;
+      limit?: number;
+      status?: string;
+      sort?: string;
+    }>({
       query: (params) => ({
-        url: '/api/products/seller',
+        url: '/api/products/seller/products', // Updated route
         params: {
           page: params.page || 1,
           limit: params.limit || 10,
@@ -77,18 +114,66 @@ export const productsApi = baseApi.injectEndpoints({
       }),
     }),
 
-    getAdminProducts: builder.query<any, any>({
+    getAdminProducts: builder.query<AdminProductsResponse, {
+      page?: number;
+      limit?: number;
+      sort?: string;
+    }>({
       query: (params) => ({
-        url: '/api/products/admin/list',
+        url: '/api/products/admin/active',
         params: {
           page: params.page || 1,
-          limit: params.limit || 20,
-          status: params.status,
-          sellerId: params.sellerId,
-          search: params.search,
-          sort: params.sort
-        },
+          limit: params.limit || 10,
+          sort: params.sort || '-createdAt'
+        }
       }),
+    }),
+
+    getPublicSellerProducts: builder.query<SellerProductsResponse, { 
+      sellerId: string;
+      page?: number;
+      limit?: number;
+      excludeProduct?: string;  
+    }>({
+      query: ({ sellerId, ...params }) => ({
+        url: `/api/products/seller/${sellerId}/public`, // Updated route
+        params: {
+          page: params.page || 1,
+          limit: params.limit || 12,
+          ...params
+        }
+      }),
+    }),
+
+    getSellerDashboardStats: builder.query<DashboardStats, void>({
+      query: () => '/api/products/seller/dashboard' // Updated route
+    }),
+
+    updateProductStatus: builder.mutation<UpdateProductStatusResponse, {
+      productId: string;
+      status: 'active' | 'draft';
+    }>({
+      query: ({ productId, status }) => ({
+        url: `/api/products/${productId}/status`,
+        method: 'PATCH',
+        body: { status }
+      }),
+      // Optimistically update the cache
+      onQueryStarted: async ({ productId, status }, { dispatch, queryFulfilled }) => {
+        const patchResult = dispatch(
+          productsApi.util.updateQueryData('getSellerProducts', undefined, (draft) => {
+            const product = draft.products.find(p => p._id === productId);
+            if (product) {
+              product.status = status;
+            }
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      }
     }),
   }),
 });
@@ -104,4 +189,7 @@ export const {
   useGetSellerProductsQuery,
   useGetPublicProductsQuery,
   useGetAdminProductsQuery,
+  useGetPublicSellerProductsQuery,
+  useGetSellerDashboardStatsQuery,
+  useUpdateProductStatusMutation,
 } = productsApi;

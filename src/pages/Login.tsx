@@ -50,8 +50,8 @@ const Login = () => {
         navigate("/admin/dashboard");
       } else if (userRole === 'seller') {
         navigate("/seller/dashboard");
-      } else {
-        navigate("/");
+      }  else if(userRole === 'customer') {
+        navigate("/customer/dashboard");
       }
     } catch (error) {
       console.log(error)

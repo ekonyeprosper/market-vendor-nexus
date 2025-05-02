@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -22,17 +21,18 @@ import {
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useCreateCustomerOrderMutation, useInitiateCustomerPaymentMutation } from '@/services/api/ordersApi';
 
-// Define the form schema
 const formSchema = z.object({
-  fullName: z.string().min(3, "Full name must be at least 3 characters"),
-  email: z.string().email("Please enter a valid email address"),
+  fullName: z.string().min(2, "Name must be at least 2 characters"),
   phoneNumber: z.string().min(10, "Please enter a valid phone number"),
-  address: z.string().min(5, "Address must be at least 5 characters"),
+  street: z.string().min(5, "Street address must be at least 5 characters"),
   city: z.string().min(2, "City must be at least 2 characters"),
   state: z.string().min(2, "State must be at least 2 characters"),
+  country: z.string().min(2, "Country must be at least 2 characters"),
   zipCode: z.string().optional(),
-  additionalInfo: z.string().optional(),
+  deliveryMethod: z.enum(['standard', 'express']),
+  specialInstructions: z.string().optional(),
 });
 
 type CheckoutFormValues = z.infer<typeof formSchema>;
@@ -41,95 +41,66 @@ const Checkout = () => {
   const { items, total, clearCart } = useCart();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [createOrder] = useCreateCustomerOrderMutation();
+  const [initiatePayment] = useInitiateCustomerPaymentMutation();
 
   const form = useForm<CheckoutFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       fullName: "",
-      email: "",
       phoneNumber: "",
-      address: "",
+      street: "",
       city: "",
       state: "",
+      country: "",
       zipCode: "",
-      additionalInfo: "",
+      deliveryMethod: "standard",
+      specialInstructions: "",
     },
   });
-
-  const initializePaystack = (email: string, amount: number, metadata: any) => {
-    // @ts-ignore - PayStack will be loaded globally
-    const handler = window.PaystackPop?.setup({
-      key: 'pk_test_your_paystack_public_key_here', // Replace with your actual public key
-      email,
-      amount: amount * 100, // PayStack expects amount in kobo (smallest currency unit)
-      currency: 'NGN',
-      ref: `order_${new Date().getTime()}`,
-      metadata: metadata,
-      callback: function(response: any) {
-        // Handle successful payment
-        clearCart();
-        toast({
-          title: "Payment successful!",
-          description: "Thank you for your purchase.",
-        });
-        navigate("/order-confirmation");
-      },
-      onClose: function() {
-        // Handle when user closes payment modal
-        setIsSubmitting(false);
-        toast({
-          title: "Payment cancelled",
-          description: "You can try again when you're ready.",
-          variant: "destructive",
-        });
-      }
-    });
-    
-    handler.openIframe();
-  };
 
   const onSubmit = async (data: CheckoutFormValues) => {
     setIsSubmitting(true);
     
     try {
-      // Prepare order data
+      // Create order
       const orderData = {
-        customer: {
+        items: items.map(item => ({
+          productId: item.id,
+          quantity: item.quantity
+        })),
+        deliveryInfo: {
           fullName: data.fullName,
-          email: data.email,
           phoneNumber: data.phoneNumber,
-          address: data.address,
+          street: data.street,
           city: data.city,
           state: data.state,
+          country: data.country,
           zipCode: data.zipCode,
-          additionalInfo: data.additionalInfo
-        },
-        items: items,
-        total: total
-      };
-      
-      console.log("Order data:", orderData);
-      
-      // Initialize PayStack payment
-      initializePaystack(
-        data.email, 
-        total, 
-        {
-          customer_name: data.fullName,
-          order_items: JSON.stringify(items.map(item => item.name))
+          deliveryMethod: data.deliveryMethod,
+          specialInstructions: data.specialInstructions
         }
-      );
+      };
+
+      const orderResult = await createOrder(orderData).unwrap();
       
-      // Note: We don't clear cart or navigate here because that will be handled
-      // by the PayStack callback if payment is successful
+      // Initiate payment
+      const paymentResult = await initiatePayment(orderResult._id).unwrap();
+      
+      // Store reference for verification
+      localStorage.setItem('paymentReference', paymentResult.reference);
+      
+      // Redirect to payment URL
+      window.location.href = paymentResult.paymentUrl;
+      
     } catch (error) {
-      setIsSubmitting(false);
       toast({
-        title: "Error processing order",
-        description: "Please try again later.",
-        variant: "destructive",
+        title: "Error",
+        description: "Failed to process order. Please try again.",
+        variant: "destructive"
       });
-      console.error("Checkout error:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -146,36 +117,20 @@ const Checkout = () => {
               
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="fullName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Full Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter your full name" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter your email address" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  
+                  <FormField
+                    control={form.control}
+                    name="fullName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter your full name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   <FormField
                     control={form.control}
                     name="phoneNumber"
@@ -189,13 +144,13 @@ const Checkout = () => {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
-                    name="address"
+                    name="street"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Delivery Address</FormLabel>
+                        <FormLabel>Street Address</FormLabel>
                         <FormControl>
                           <Textarea 
                             placeholder="Enter your street address" 
@@ -251,13 +206,44 @@ const Checkout = () => {
                       )}
                     />
                   </div>
-                  
+
                   <FormField
                     control={form.control}
-                    name="additionalInfo"
+                    name="country"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Additional Information (Optional)</FormLabel>
+                        <FormLabel>Country</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Country" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="deliveryMethod"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Delivery Method</FormLabel>
+                        <FormControl>
+                          <select {...field} className="form-select">
+                            <option value="standard">Standard</option>
+                            <option value="express">Express</option>
+                          </select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="specialInstructions"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Special Instructions (Optional)</FormLabel>
                         <FormControl>
                           <Textarea 
                             placeholder="Additional delivery instructions, landmarks, etc."

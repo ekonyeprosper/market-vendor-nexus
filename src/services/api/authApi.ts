@@ -41,6 +41,16 @@ export const authApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
+    registerCustomer: builder.mutation<
+      { message: string }, 
+      FormData
+    >({
+      query: (data) => ({
+        url: '/api/auth/register/customer',
+        method: 'POST',
+        body: data,
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -49,5 +59,6 @@ export const {
   useLoginMutation, 
   useRegisterSellerMutation, 
   useVerifyOTPMutation,
-  useResendOTPMutation 
+  useResendOTPMutation,
+  useRegisterCustomerMutation,
 } = authApi;

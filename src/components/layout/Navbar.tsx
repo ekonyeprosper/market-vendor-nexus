@@ -34,7 +34,7 @@ const Navbar = () => {
       case 'seller':
         return '/seller/dashboard';
       default:
-        return '/';
+        return '/customer/dashboard';
     }
   };
 

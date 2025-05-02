@@ -10,6 +10,7 @@ import {
   BarChart3,
   ShoppingCart,
   Bell,
+  FolderTree,
   HelpCircle,
 } from "lucide-react";
 import {
@@ -43,6 +44,11 @@ const menuItems = [
         title: "Orders",
         icon: ShoppingCart,
         path: "/admin/orders",
+      },
+      {
+        title: "Categories",
+        path: "/admin/categories",
+        icon: FolderTree
       },
       {
         title: "Users",

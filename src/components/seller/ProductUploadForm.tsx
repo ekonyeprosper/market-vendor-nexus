@@ -27,18 +27,9 @@ import * as z from "zod";
 import { toast } from "sonner";
 import { ImagePlus, Upload, Trash } from "lucide-react";
 import { useCreateProductMutation } from '@/services/api/productsApi';
+import { useGetCategoriesQuery } from "@/services/api/categoriesApi";
 
-const categories = [
-  "Electronics",
-  "Fashion",
-  "Home & Living",
-  "Sports & Outdoor",
-  "Books",
-  "Beauty & Health",
-  "Toys & Games",
-];
-
-const productSchema = z.object({
+const formSchema = z.object({
   name: z.string().min(3, {
     message: "Product name must be at least 3 characters.",
   }),
@@ -47,7 +38,7 @@ const productSchema = z.object({
   }),
   category: z.string({
     required_error: "Please select a category.",
-  }),
+  }).min(1, "Please select a category."), // Will store category ID instead of name
   description: z.string().min(20, {
     message: "Description must be at least 20 characters.",
   }),
@@ -66,13 +57,16 @@ const ProductUploadForm = () => {
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [createProduct] = useCreateProductMutation();
+  const { data: categoriesData, isLoading: categoriesLoading } = useGetCategoriesQuery({
+    isActive: true
+  });
 
-  const form = useForm<z.infer<typeof productSchema>>({
-    resolver: zodResolver(productSchema),
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       price: "",
-      category: "",
+      category: "", // Category ID will be stored here
       description: "",
       inventory: "",
       tags: "",
@@ -109,7 +103,7 @@ const ProductUploadForm = () => {
     setImageFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  const onSubmit = async (data: z.infer<typeof productSchema>) => {
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
       const formData = new FormData();
@@ -118,7 +112,7 @@ const ProductUploadForm = () => {
       formData.append('name', data.name);
       formData.append('description', data.description);
       formData.append('price', data.price);
-      formData.append('category', data.category);
+      formData.append('category', data.category); // Sending category ID
       formData.append('initialInventory', data.inventory);
       
       // Add optional fields if they exist
@@ -176,7 +170,7 @@ const ProductUploadForm = () => {
                   name="price"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Price ($)</FormLabel>
+                      <FormLabel>Price (₦)</FormLabel>
                       <FormControl>
                         <Input 
                           type="number" 
@@ -198,8 +192,9 @@ const ProductUploadForm = () => {
                     <FormItem>
                       <FormLabel>Category</FormLabel>
                       <Select 
+                        disabled={categoriesLoading}
                         onValueChange={field.onChange} 
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -207,9 +202,9 @@ const ProductUploadForm = () => {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {categories.map((category) => (
-                            <SelectItem key={category} value={category.toLowerCase()}>
-                              {category}
+                          {categoriesData?.categories.map((category) => (
+                            <SelectItem key={category.id} value={category.id}>
+                              {category.name}
                             </SelectItem>
                           ))}
                         </SelectContent>

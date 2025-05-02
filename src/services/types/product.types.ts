@@ -57,3 +57,58 @@ export interface PaginatedResponse {
     limit: string;
   };
 }
+
+export interface AdminProduct {
+  id: string;
+  name: string;
+  description: string;
+  price: {
+    current: number;
+    discount?: number;
+    compareAt?: number;
+  };
+  category: {
+    id: string;
+    name: string;
+  };
+  seller: {
+    id: string;
+    businessName: string;
+    email: string;
+    phoneNumber: string;
+  };
+  inventory: {
+    quantity: number;
+    sku: string;
+    lowStockAlert: number;
+  };
+  images: Array<{
+    url: string;
+    isDefault: boolean;
+  }>;
+  metadata: {
+    rating: {
+      average: number;
+      count: number;
+    };
+    views: number;
+    sales: number;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminProductsResponse {
+  products: AdminProduct[];
+  stats: {
+    totalProducts: number;
+    totalValue: number;
+    lowStock: number;
+  };
+  pagination: {
+    total: number;
+    pages: number;
+    currentPage: number;
+    limit: number;
+  };
+}

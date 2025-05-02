@@ -1,16 +1,22 @@
-
 import { CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { formatCurrency } from "@/utils/format";
+import { useEffect } from "react";
 
 const OrderConfirmation = () => {
-  // Retrieve order details from localStorage or use a default value
-  const orderRef = `#${Math.floor(100000 + Math.random() * 900000)}`;
+  // Get verified order details
+  const orderRef = localStorage.getItem('orderReference') || `#${Math.floor(100000 + Math.random() * 900000)}`;
   const orderAmount = localStorage.getItem('orderAmount') ? 
     Number(localStorage.getItem('orderAmount')) : 
-    9999;
+    0;
+
+  useEffect(() => {
+    // Clear payment data after showing confirmation
+    localStorage.removeItem('orderReference');
+    localStorage.removeItem('orderAmount');
+  }, []);
 
   return (
     <Layout>

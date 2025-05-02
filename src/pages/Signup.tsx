@@ -8,12 +8,14 @@ import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast";
 import Layout from "@/components/layout/Layout";
 import { Shield, User, Mail, Lock, IdCard } from "lucide-react";
-import { useRegisterSellerMutation } from "@/services/api/authApi";
+import { useRegisterSellerMutation, useRegisterCustomerMutation } from "@/services/api/authApi";
 
 const Signup = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  const [userType, setUserType] = useState<'customer' | 'seller'>('customer');
   
   const [formData, setFormData] = useState({
     fullName: "",
@@ -51,14 +53,15 @@ const Signup = () => {
     }
   };
 
+  const [registerCustomer] = useRegisterCustomerMutation();
   const [registerSeller, { isLoading }] = useRegisterSellerMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validation
-    if (!formData.fullName || !formData.email || !formData.password || !formData.confirmPassword || 
-        !formData.businessName || !formData.phone || !formData.address) {
+    // Base validation for all users
+    if (!formData.fullName || !formData.email || !formData.password || 
+        !formData.confirmPassword || !formData.phone) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -67,72 +70,60 @@ const Signup = () => {
       return;
     }
 
-    if (formData.password !== formData.confirmPassword) {
+    // Seller-specific validation
+    if (userType === 'seller' && (!formData.businessName || !formData.address || !idDocument)) {
       toast({
         title: "Error",
-        description: "Passwords do not match",
+        description: "Please complete all seller information",
         variant: "destructive",
       });
       return;
     }
-    
-    if (!idDocument) {
-      toast({
-        title: "Error",
-        description: "Please upload a valid ID document",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if (!formData.agreeTerms) {
-      toast({
-        title: "Error",
-        description: "You must agree to the terms and conditions",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    // If all validations pass, proceed to OTP verification
+
     try {
       const formDataToSend = new FormData();
       formDataToSend.append('email', formData.email);
       formDataToSend.append('password', formData.password);
       formDataToSend.append('fullName', formData.fullName);
-      formDataToSend.append('businessName', formData.businessName);
       formDataToSend.append('phoneNumber', formData.phone);
-      formDataToSend.append('businessAddress', formData.address);
-      if (idDocument) {
-        formDataToSend.append('governmentId', idDocument);
+
+      if (userType === 'seller') {
+        formDataToSend.append('businessName', formData.businessName);
+        formDataToSend.append('businessAddress', formData.address);
+        if (idDocument) {
+          formDataToSend.append('governmentId', idDocument);
+        }
+        await registerSeller(formDataToSend).unwrap();
+      } else {
+        await registerCustomer(formDataToSend).unwrap();
       }
 
-      // Option 1: Convert to object to see values
-      const formDataObj = Object.fromEntries(formDataToSend.entries());
-      console.log('Form Data Contents:', formDataObj);
-
-      // Option 2: Loop through and log each entry
-      for (let [key, value] of formDataToSend.entries()) {
-        console.log(`${key}:`, value);
-      }
-
-      // Uncomment this to continue with the API call
-      const result = await registerSeller(formDataToSend).unwrap();
-      
       toast({
         title: "Success",
-        description: "Registration successful! Proceeding to verification.",
+        description: userType === 'seller' 
+          ? "Registration successful! Proceeding to verification."
+          : "Registration successful! Please check your email for OTP verification.",
       });
 
-      // Navigate to OTP verification page
-      navigate("/otp-verification", { 
-        state: { 
-          email: formData.email,
-          phone: formData.phone
-        }
-      });
+      // Navigate based on user type
+      if (userType === 'seller') {
+        navigate("/otp-verification", { 
+          state: { 
+            email: formData.email,
+            phone: formData.phone,
+            type: 'seller'
+          }
+        });
+      } else {
+        navigate("/otp-verification", { 
+          state: { 
+            email: formData.email,
+            type: 'customer'
+          }
+        });
+      }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       toast({
         title: "Error",
         description: "Registration failed. Please try again.",
@@ -153,6 +144,22 @@ const Signup = () => {
             <p className="text-gray-600 text-sm">
               Join our marketplace as a verified seller
             </p>
+            <div className="flex justify-center gap-4 mt-4">
+              <Button
+                type="button"
+                variant={userType === 'customer' ? 'default' : 'outline'}
+                onClick={() => setUserType('customer')}
+              >
+                Register as Customer
+              </Button>
+              <Button
+                type="button"
+                variant={userType === 'seller' ? 'default' : 'outline'}
+                onClick={() => setUserType('seller')}
+              >
+                Register as Seller
+              </Button>
+            </div>
           </CardHeader>
 
           <CardContent>
@@ -176,17 +183,19 @@ const Signup = () => {
                     />
                   </div>
                   
-                  <div>
-                    <Label htmlFor="businessName">Business Name*</Label>
-                    <Input
-                      id="businessName"
-                      name="businessName"
-                      value={formData.businessName}
-                      onChange={handleChange}
-                      placeholder="Your Business LLC"
-                      className="mt-1"
-                    />
-                  </div>
+                  {userType === 'seller' && (
+                    <div>
+                      <Label htmlFor="businessName">Business Name*</Label>
+                      <Input
+                        id="businessName"
+                        name="businessName"
+                        value={formData.businessName}
+                        onChange={handleChange}
+                        placeholder="Your Business LLC"
+                        className="mt-1"
+                      />
+                    </div>
+                  )}
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -219,17 +228,19 @@ const Signup = () => {
                   </div>
                 </div>
 
-                <div>
-                  <Label htmlFor="address">Business Address*</Label>
-                  <Input
-                    id="address"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    placeholder="123 Market St, City, State, ZIP"
-                    className="mt-1"
-                  />
-                </div>
+                {userType === 'seller' && (
+                  <div>
+                    <Label htmlFor="address">Business Address*</Label>
+                    <Input
+                      id="address"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleChange}
+                      placeholder="123 Market St, City, State, ZIP"
+                      className="mt-1"
+                    />
+                  </div>
+                )}
               </div>
               
               {/* Security Information */}
@@ -274,56 +285,58 @@ const Signup = () => {
               </div>
               
               {/* ID Verification */}
-              <div className="space-y-4 pt-2">
-                <h3 className="font-medium text-market-600 flex items-center gap-2">
-                  <IdCard className="h-4 w-4" /> Identity Verification
-                </h3>
-                
-                <div className="border-dashed border-2 border-gray-300 rounded-md p-4 text-center">
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    accept="image/*,.pdf"
-                    className="hidden"
-                  />
+              {userType === 'seller' && (
+                <div className="space-y-4 pt-2">
+                  <h3 className="font-medium text-market-600 flex items-center gap-2">
+                    <IdCard className="h-4 w-4" /> Identity Verification
+                  </h3>
                   
-                  {!idPreview ? (
-                    <div className="py-4">
-                      <IdCard className="mx-auto h-12 w-12 text-gray-400" />
-                      <p className="mt-2 text-sm text-gray-500">Upload a valid government ID (Passport, Driver's License, ID Card)</p>
-                      <Button 
-                        type="button"
-                        variant="outline" 
-                        onClick={() => fileInputRef.current?.click()}
-                        className="mt-2"
-                      >
-                        Select File
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="py-2">
-                      {idDocument?.type.startsWith('image/') ? (
-                        <img src={idPreview} alt="ID Preview" className="max-h-40 mx-auto object-contain" />
-                      ) : (
-                        <div className="flex items-center justify-center gap-2 text-market-600">
-                          <IdCard className="h-6 w-6" />
-                          <span>{idDocument?.name}</span>
-                        </div>
-                      )}
-                      <Button 
-                        type="button"
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="mt-2"
-                      >
-                        Change File
-                      </Button>
-                    </div>
-                  )}
+                  <div className="border-dashed border-2 border-gray-300 rounded-md p-4 text-center">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                      accept="image/*,.pdf"
+                      className="hidden"
+                    />
+                    
+                    {!idPreview ? (
+                      <div className="py-4">
+                        <IdCard className="mx-auto h-12 w-12 text-gray-400" />
+                        <p className="mt-2 text-sm text-gray-500">Upload a valid government ID (Passport, Driver's License, ID Card)</p>
+                        <Button 
+                          type="button"
+                          variant="outline" 
+                          onClick={() => fileInputRef.current?.click()}
+                          className="mt-2"
+                        >
+                          Select File
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="py-2">
+                        {idDocument?.type.startsWith('image/') ? (
+                          <img src={idPreview} alt="ID Preview" className="max-h-40 mx-auto object-contain" />
+                        ) : (
+                          <div className="flex items-center justify-center gap-2 text-market-600">
+                            <IdCard className="h-6 w-6" />
+                            <span>{idDocument?.name}</span>
+                          </div>
+                        )}
+                        <Button 
+                          type="button"
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="mt-2"
+                        >
+                          Change File
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
               
               {/* Terms and Conditions */}
               <div className="flex items-start space-x-2 pt-2">
@@ -344,7 +357,7 @@ const Signup = () => {
                 className="w-full bg-market-600 hover:bg-market-700"
                 disabled={isLoading}
               >
-                {isLoading ? "Creating Account..." : "Create Seller Account"}
+                {isLoading ? "Creating Account..." : `Create ${userType === 'seller' ? 'Seller' : 'Customer'} Account`}
               </Button>
             </form>
           </CardContent>
