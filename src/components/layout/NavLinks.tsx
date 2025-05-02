@@ -1,7 +1,16 @@
 
 import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
-export const NavLinks = ({ mobile = false, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) => {
+export const NavLinks = ({ 
+  mobile = false, 
+  onNavigate,
+  className
+}: { 
+  mobile?: boolean; 
+  onNavigate?: () => void;
+  className?: string;
+}) => {
   const links = [
     { to: "/", label: "Home" },
     { to: "/products", label: "Shop" },
@@ -16,9 +25,11 @@ export const NavLinks = ({ mobile = false, onNavigate }: { mobile?: boolean; onN
         <Link
           key={link.to}
           to={link.to}
-          className={`text-gray-700 hover:text-market-600 ${
-            mobile ? "py-2" : ""
-          }`}
+          className={cn(
+            "text-gray-700 hover:text-market-600 transition-colors",
+            mobile ? "py-2 text-lg font-medium" : "",
+            className
+          )}
           onClick={onNavigate}
         >
           {link.label}
