@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Trash2, Plus, Minus } from "lucide-react";
@@ -114,9 +115,11 @@ const Cart = () => {
                 <span>{formatCurrency(total)}</span>
               </div>
             </div>
-            <Button className="w-full mt-4">
-              Proceed to Checkout
-            </Button>
+            <Link to="/checkout">
+              <Button className="w-full mt-4">
+                Proceed to Checkout
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

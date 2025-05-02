@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,6 +16,7 @@ import OTPVerification from "./pages/OTPVerification";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import SellerDashboard from "./pages/SellerDashboard";
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -29,6 +31,7 @@ import AnalyticsPage from "./pages/admin/Analytics";
 import FileManagerPage from "./pages/admin/FileManager";
 import NotificationsPage from "./pages/admin/Notifications";
 import SupportPage from "./pages/admin/Support";
+import VendorDetail from "./pages/VendorDetail";
 
 // Create a new QueryClient instance inside the component
 const App = () => {
@@ -50,7 +53,9 @@ const App = () => {
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/cart" element={<Cart />} />
+              <Route path="/checkout" element={<Checkout />} />
               <Route path="/order-confirmation" element={<OrderConfirmation />} />
+              <Route path="/vendor/:vendorId" element={<VendorDetail />} />
               <Route path="/seller/dashboard" element={<SellerDashboard />} />
               <Route path="/seller/products/new" element={<AddProduct />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />

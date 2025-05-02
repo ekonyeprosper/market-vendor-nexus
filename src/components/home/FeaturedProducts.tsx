@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Star, ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useCart } from "@/services/hooks/useCart";
 
 const products = [
   {
@@ -47,6 +48,17 @@ const products = [
 ];
 
 const FeaturedProducts = () => {
+  const { addToCart } = useCart();
+
+  const handleAddToCart = (product: any) => {
+    addToCart({
+      id: product.id.toString(),
+      name: product.name,
+      price: product.price,
+      image: product.image
+    }, 1);
+  };
+
   return (
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
@@ -111,7 +123,11 @@ const FeaturedProducts = () => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-bold">${product.price.toFixed(2)}</span>
-                  <Button size="sm" className="rounded-full w-9 h-9 p-0">
+                  <Button 
+                    size="sm" 
+                    className="rounded-full w-9 h-9 p-0"
+                    onClick={() => handleAddToCart(product)}
+                  >
                     <ShoppingCart className="h-4 w-4" />
                   </Button>
                 </div>
