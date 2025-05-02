@@ -81,7 +81,7 @@ export const MobileMenu = ({
                 <div className="space-y-3">
                   {user && (
                     <div className="p-3 bg-gray-50 rounded-lg">
-                      <p className="font-medium">{user.name || user.email}</p>
+                      <p className="font-medium">{user.fullName || user.email}</p>
                       <p className="text-sm text-gray-500">{user.email}</p>
                     </div>
                   )}
