@@ -13,27 +13,7 @@ export interface PublicSellerProfile {
   joinedDate: string;
 }
 
-export interface ProfileResponse {
-  _id: string;
-  businessName?: string;
-  businessAddress?: string;
-  governmentId?: string;
-  email: string;
-  fullName: string;
-  phoneNumber: string;
-  role: string;
-  isVerified: boolean;
-  createdAt: string;
-  updatedAt: string;
-  addresses?: {
-    id: string;
-    street: string;
-    city: string;
-    state: string;
-    country: string;
-    isDefault: boolean;
-  }[];
-}
+export interface ProfileResponse extends UserProfile {}
 
 export const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({

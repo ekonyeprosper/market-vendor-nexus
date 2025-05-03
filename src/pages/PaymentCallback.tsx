@@ -15,7 +15,8 @@ export const PaymentCallback = () => {
 
   useEffect(() => {
     if (data?.order) {
-      localStorage.setItem('orderAmount', data.order.totals.final.toString());
+      const orderAmount = data.order.totals?.final || data.order.total || 0;
+      localStorage.setItem('orderAmount', orderAmount.toString());
       localStorage.setItem('orderReference', data.payment.reference);
       navigate('/order-confirmation');
     } else if (error) {

@@ -1,9 +1,11 @@
+
 export interface LoginRequest {
   email: string;
   password: string;
 }
 
 export interface User {
+  _id?: string;
   email: string;
   fullName: string;
   phoneNumber: string;
@@ -13,6 +15,30 @@ export interface User {
   businessAddress?: string;
   adminVerified?: boolean;
   permissions?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface UserProfile {
+  _id: string;
+  email: string;
+  fullName: string;
+  phoneNumber: string;
+  role: string;
+  isVerified: boolean;
+  businessName?: string;
+  businessAddress?: string;
+  governmentId?: string;
+  createdAt: string;
+  updatedAt: string;
+  addresses?: {
+    id: string;
+    street: string;
+    city: string;
+    state: string;
+    country: string;
+    isDefault: boolean;
+  }[];
 }
 
 export interface LoginResponse {
@@ -54,18 +80,4 @@ export interface ResendOTPRequest {
 export interface ResendOTPResponse {
   success: boolean;
   message: string;
-}
-
-export interface UserProfile {
-  _id: string;
-  businessName: string;
-  businessAddress: string;
-  governmentId: string;
-  email: string;
-  fullName: string;
-  phoneNumber: string;
-  role: string;
-  isVerified: boolean;
-  createdAt: string;
-  updatedAt: string;
 }

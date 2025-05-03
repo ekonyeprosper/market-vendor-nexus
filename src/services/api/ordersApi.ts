@@ -1,3 +1,4 @@
+
 import { baseApi } from './baseApi';
 
 interface OrderItem {
@@ -16,10 +17,11 @@ interface ShippingAddress {
   zipCode?: string;
 }
 
-interface CreateOrderRequest {
-  guestEmail: string;
+export interface CreateOrderRequest {
+  guestEmail?: string;
   items: OrderItem[];
-  shippingAddress: ShippingAddress;
+  deliveryInfo?: ShippingAddress;
+  shippingAddress?: ShippingAddress;
 }
 
 interface InitiatePaymentResponse {
@@ -27,7 +29,7 @@ interface InitiatePaymentResponse {
   reference: string;
 }
 
-interface PaymentResponse {
+export interface PaymentResponse {
   payment: {
     paymentUrl: string;
     reference: string;
@@ -35,15 +37,17 @@ interface PaymentResponse {
     currency: string;
   };
   order: {
-    id: string;
+    _id?: string;
+    id?: string;
     status: string;
-    totals: {
+    totals?: {
       final: number;
     };
+    total?: number;
   };
 }
 
-interface VerificationResponse {
+export interface VerificationResponse {
   order: {
     _id: string;
     status: string;
@@ -54,12 +58,17 @@ interface VerificationResponse {
 }
 
 export interface Order {
-  id: string;
-  customer: string;
-  date: string;
-  status: 'Processing' | 'Shipped' | 'Delivered';
-  items: number;
-  total: number;
+  id?: string;
+  orderId?: string;
+  customer?: string;
+  date?: string;
+  orderDate?: string;
+  status: 'Processing' | 'Shipped' | 'Delivered' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  items: { productId: string, quantity: number }[];
+  total?: number;
+  totals?: {
+    final: number;
+  };
 }
 
 interface OrdersResponse {
@@ -81,7 +90,7 @@ export const ordersApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
-    createCustomerOrder: builder.mutation<any, CreateOrderRequest>({
+    createCustomerOrder: builder.mutation<{ _id: string }, CreateOrderRequest>({
       query: (data) => ({
         url: '/api/orders/customer/create',
         method: 'POST',
