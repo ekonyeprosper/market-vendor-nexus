@@ -40,6 +40,7 @@ export const productsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getProduct: builder.query<Product, string>({
       query: (id) => `/api/products/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Products', id }],
     }),
 
     getPublicProduct: builder.query<Product, string>({
@@ -66,6 +67,7 @@ export const productsApi = baseApi.injectEndpoints({
         method: 'POST',
         body: data,
       }),
+      invalidatesTags: [{ type: 'Products', id: 'LIST' }],
     }),
 
     updateProduct: builder.mutation<Product, { id: string; data: FormData }>({
@@ -74,6 +76,7 @@ export const productsApi = baseApi.injectEndpoints({
         method: 'PUT',
         body: data,
       }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'Products', id }],
     }),
 
     deleteProduct: builder.mutation<void, string>({
@@ -81,6 +84,10 @@ export const productsApi = baseApi.injectEndpoints({
         url: `/api/products/${id}`,
         method: 'DELETE',
       }),
+      invalidatesTags: (result, error, id) => [
+        { type: 'Products', id },
+        { type: 'Products', id: 'LIST' }
+      ],
     }),
 
     getSellerProducts: builder.query<{
@@ -106,6 +113,7 @@ export const productsApi = baseApi.injectEndpoints({
           sort: params.sort || '-createdAt'
         },
       }),
+      providesTags: [{ type: 'Products', id: 'LIST' }],
     }),
 
     getPublicProducts: builder.query<PaginatedResponse, ProductFilters>({
@@ -136,6 +144,7 @@ export const productsApi = baseApi.injectEndpoints({
           sort: params.sort || '-createdAt'
         }
       }),
+      providesTags: ['Products'],
     }),
 
     getPublicSellerProducts: builder.query<SellerProductsResponse, { 
@@ -167,22 +176,7 @@ export const productsApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: { status }
       }),
-      // Optimistically update the cache
-      onQueryStarted: async ({ productId, status }, { dispatch, queryFulfilled }) => {
-        const patchResult = dispatch(
-          productsApi.util.updateQueryData('getSellerProducts', {}, (draft) => {
-            const product = draft.products.find(p => p._id === productId);
-            if (product) {
-              product.status = status;
-            }
-          })
-        );
-        try {
-          await queryFulfilled;
-        } catch {
-          patchResult.undo();
-        }
-      }
+      invalidatesTags: ['Products'],
     }),
   }),
 });

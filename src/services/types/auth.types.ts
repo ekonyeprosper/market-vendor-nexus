@@ -5,7 +5,8 @@ export interface LoginRequest {
 }
 
 export interface User {
-  _id?: string;
+  _id?: string; // Backend might use _id
+  id?: string;  // Frontend might reference as id
   email: string;
   fullName: string;
   phoneNumber: string;
@@ -21,6 +22,7 @@ export interface User {
 
 export interface UserProfile {
   _id: string;
+  id?: string; // Adding for consistency
   email: string;
   fullName: string;
   phoneNumber: string;

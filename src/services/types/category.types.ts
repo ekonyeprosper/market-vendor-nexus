@@ -1,5 +1,7 @@
+
 export interface Category {
   id: string;
+  _id?: string; // Adding for consistency with backend
   name: string;
   slug: string;
   description: string;

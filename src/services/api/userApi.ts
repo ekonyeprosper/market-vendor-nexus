@@ -20,6 +20,7 @@ export const userApi = baseApi.injectEndpoints({
         url: '/api/auth/profile',
         method: 'GET',
       }),
+      providesTags: ['Profile'],
     }),
     getPublicSellerProfile: builder.query<PublicSellerProfile, string>({
       query: (sellerId) => `/api/auth/seller/${sellerId}/public`,

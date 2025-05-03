@@ -54,13 +54,17 @@ export interface VerificationResponse {
   order: {
     _id: string;
     status: string;
-    total: number;
+    total?: number;
+    totals?: {
+      final: number;
+    };
   };
   verified: boolean;
 }
 
 export interface Order {
   id?: string;
+  _id?: string;
   orderId?: string;
   customer?: string;
   date?: string;
@@ -110,6 +114,7 @@ export const ordersApi = baseApi.injectEndpoints({
     }),
     getSellerOrders: builder.query<OrdersResponse, void>({
       query: () => '/api/orders/seller',
+      providesTags: ['Orders'],
     }),
     getCustomerOrders: builder.query<OrdersResponse, {
       page?: number;
@@ -121,7 +126,8 @@ export const ordersApi = baseApi.injectEndpoints({
           page: params.page || 1,
           limit: params.limit || 10
         }
-      })
+      }),
+      providesTags: ['Orders'],
     }),
   }),
 });

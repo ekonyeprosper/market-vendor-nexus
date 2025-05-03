@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -52,7 +53,7 @@ const UserManagement = () => {
         title: "Success",
         description: result.message || "Seller verified successfully",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
         description: error.data?.message || "Failed to verify seller",
@@ -162,7 +163,7 @@ const UserManagement = () => {
                 </TableHeader>
                 <TableBody>
                   {filteredUsers?.map((user) => (
-                    <TableRow key={user.id}>
+                    <TableRow key={user._id || user.id}>
                       <TableCell className="font-medium">{user.fullName}</TableCell>
                       <TableCell>{user.email}</TableCell>
                       <TableCell>
@@ -200,7 +201,7 @@ const UserManagement = () => {
                             <DropdownMenuItem>Edit user</DropdownMenuItem>
                             {user.role === "seller" && !user.adminVerified && (
                               <DropdownMenuItem 
-                                onClick={() => handleVerifySeller(user.id)}
+                                onClick={() => handleVerifySeller(user._id || user.id || "")}
                                 disabled={isVerifying}
                                 className="text-green-600"
                               >

@@ -1,5 +1,7 @@
+
 export interface User {
   _id: string;
+  id?: string; // Adding alias field for consistency
   email: string;
   fullName: string;
   phoneNumber: string;
@@ -30,4 +32,5 @@ export interface UsersQueryParams {
   limit?: number;
   role?: string;
   isVerified?: boolean;
+  adminVerified?: boolean;
 }

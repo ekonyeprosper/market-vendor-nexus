@@ -5,11 +5,11 @@ import { RootState } from '../store/store';
 export const BASE_URL = "https://market-vendor.onrender.com";
 // export const BASE_URL = "http://localhost:3000";
 
-export type TagTypes = 'Categories';
+export type TagTypes = 'Categories' | 'Products' | 'Users' | 'Orders' | 'Profile';
 
 export const baseApi = createApi({
   reducerPath: 'api',
-  tagTypes: ['Categories'],
+  tagTypes: ['Categories', 'Products', 'Users', 'Orders', 'Profile'],
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
     prepareHeaders: (headers, { getState }) => {
