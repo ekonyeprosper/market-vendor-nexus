@@ -1,3 +1,4 @@
+
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useVerifyPaymentQuery } from '@/services/api/ordersApi';
@@ -5,10 +6,10 @@ import { toast } from '@/hooks/use-toast';
 import Layout from "@/components/layout/Layout";
 
 export const PaymentCallback = () => {
-  const { reference } = useParams();
+  const { reference } = useParams<{ reference: string }>();
   const navigate = useNavigate();
   
-  const { data, isLoading, error } = useVerifyPaymentQuery(reference!, { 
+  const { data, isLoading, error } = useVerifyPaymentQuery(reference || '', { 
     skip: !reference 
   });
 

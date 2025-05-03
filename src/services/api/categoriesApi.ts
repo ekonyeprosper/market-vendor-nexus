@@ -1,3 +1,4 @@
+
 import { baseApi } from './baseApi';
 import { Category, CategoriesResponse, CreateCategoryDto } from '../types/category.types';
 
@@ -25,7 +26,7 @@ export const categoriesApi = baseApi.injectEndpoints({
           : [{ type: 'Categories' as const, id: 'LIST' }]
     }),
 
-    createCategory: builder.mutation<any, any>({
+    createCategory: builder.mutation<Category, CreateCategoryDto>({
       query: (data) => ({
         url: '/api/categories',
         method: 'POST',
