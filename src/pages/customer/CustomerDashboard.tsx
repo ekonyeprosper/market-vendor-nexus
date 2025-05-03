@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -13,11 +14,15 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import OrderDetailsDialog from "@/components/customer/OrderDetailsDialog";
+import { Order } from "@/services/types/order.types";
 
 const CustomerDashboard = () => {
   const [activeTab, setActiveTab] = useState("orders");
   const [ordersPage, setOrdersPage] = useState(1);
   const [ordersLimit] = useState(10);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [orderDialogOpen, setOrderDialogOpen] = useState(false);
 
   const { data: profile, isLoading: profileLoading } = useGetProfileQuery();
   const { data: ordersData, isLoading: ordersLoading } = useGetCustomerOrdersQuery({
@@ -74,6 +79,11 @@ const CustomerDashboard = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleViewOrderDetails = (order: Order) => {
+    setSelectedOrder(order);
+    setOrderDialogOpen(true);
   };
 
   if (profileLoading) {
@@ -246,7 +256,12 @@ const CustomerDashboard = () => {
                             </td>
                             <td className="px-6 py-4 font-semibold">{formatCurrency(order.totals.final)}</td>
                             <td className="px-6 py-4 text-right">
-                              <Button variant="outline" size="sm" className="border-market-200 text-market-600 hover:bg-market-50 hover:text-market-700">
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => handleViewOrderDetails(order)} 
+                                className="border-market-200 text-market-600 hover:bg-market-50 hover:text-market-700"
+                              >
                                 View Details <ArrowRight className="ml-1 h-4 w-4" />
                               </Button>
                             </td>
@@ -406,6 +421,13 @@ const CustomerDashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
+      
+      {/* Order Details Dialog */}
+      <OrderDetailsDialog 
+        order={selectedOrder} 
+        open={orderDialogOpen} 
+        onOpenChange={setOrderDialogOpen} 
+      />
     </Layout>
   );
 };
