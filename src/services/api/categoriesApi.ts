@@ -32,7 +32,7 @@ export const categoriesApi = baseApi.injectEndpoints({
         method: 'POST',
         body: data
       }),
-      invalidatesTags: [{ type: 'Categories' as const, id: 'LIST' }]
+      invalidatesTags: [{ type: 'Categories', id: 'LIST' }]
     })
   })
 });

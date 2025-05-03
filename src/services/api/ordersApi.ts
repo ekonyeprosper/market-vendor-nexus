@@ -48,11 +48,13 @@ export interface PaymentResponse {
 }
 
 export interface VerificationResponse {
+  payment: {
+    reference: string;
+  };
   order: {
     _id: string;
     status: string;
     total: number;
-    reference: string;
   };
   verified: boolean;
 }

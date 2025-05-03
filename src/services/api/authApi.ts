@@ -1,10 +1,10 @@
+
 import { baseApi } from './baseApi';
 import { 
   LoginRequest, 
   LoginResponse, 
   ResendOTPRequest,
   ResendOTPResponse, 
-  SellerRegistrationRequest, 
   RegistrationResponse, 
   VerifyOTPRequest, 
   VerifyOTPResponse 
@@ -12,7 +12,7 @@ import {
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation<any, LoginRequest>({
+    login: builder.mutation<LoginResponse, LoginRequest>({
       query: (credentials) => ({
         url: '/api/auth/login',
         method: 'POST',

@@ -13,11 +13,9 @@ export interface PublicSellerProfile {
   joinedDate: string;
 }
 
-export interface ProfileResponse extends UserProfile {}
-
 export const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getProfile: builder.query<ProfileResponse, void>({
+    getProfile: builder.query<UserProfile, void>({
       query: () => ({
         url: '/api/auth/profile',
         method: 'GET',
