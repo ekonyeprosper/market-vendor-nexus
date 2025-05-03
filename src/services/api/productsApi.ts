@@ -1,3 +1,4 @@
+
 import { baseApi } from './baseApi';
 import { Product, ProductFilters, PaginatedResponse, AdminProductsResponse } from '../types/product.types';
 
@@ -45,7 +46,7 @@ export const productsApi = baseApi.injectEndpoints({
       query: (id) => `/api/products/public/${id}`,
     }),
 
-    getRelatedProducts: builder.query<any, any>({
+    getRelatedProducts: builder.query<{ products: Product[] }, { id: string; limit?: number }>({
       query: ({ id, limit = 4 }) => ({
         url: `/api/products/related/${id}`,
         params: { limit }
@@ -82,14 +83,22 @@ export const productsApi = baseApi.injectEndpoints({
       }),
     }),
 
-    getSellerProducts: builder.query<any, {
+    getSellerProducts: builder.query<{
+      products: Product[];
+      pagination: {
+        total: number;
+        pages: number;
+        currentPage: number;
+        limit: number;
+      };
+    }, {
       page?: number;
       limit?: number;
       status?: string;
       sort?: string;
     }>({
       query: (params) => ({
-        url: '/api/products/seller/products', // Updated route
+        url: '/api/products/seller/products',
         params: {
           page: params.page || 1,
           limit: params.limit || 10,
@@ -99,7 +108,7 @@ export const productsApi = baseApi.injectEndpoints({
       }),
     }),
 
-    getPublicProducts: builder.query<any, any>({
+    getPublicProducts: builder.query<PaginatedResponse, ProductFilters>({
       query: (params) => ({
         url: '/api/products/public',
         params: {
@@ -136,7 +145,7 @@ export const productsApi = baseApi.injectEndpoints({
       excludeProduct?: string;  
     }>({
       query: ({ sellerId, ...params }) => ({
-        url: `/api/products/seller/${sellerId}/public`, // Updated route
+        url: `/api/products/seller/${sellerId}/public`,
         params: {
           page: params.page || 1,
           limit: params.limit || 12,
@@ -146,7 +155,7 @@ export const productsApi = baseApi.injectEndpoints({
     }),
 
     getSellerDashboardStats: builder.query<DashboardStats, void>({
-      query: () => '/api/products/seller/dashboard' // Updated route
+      query: () => '/api/products/seller/dashboard'
     }),
 
     updateProductStatus: builder.mutation<UpdateProductStatusResponse, {
@@ -161,7 +170,7 @@ export const productsApi = baseApi.injectEndpoints({
       // Optimistically update the cache
       onQueryStarted: async ({ productId, status }, { dispatch, queryFulfilled }) => {
         const patchResult = dispatch(
-          productsApi.util.updateQueryData('getSellerProducts', undefined, (draft) => {
+          productsApi.util.updateQueryData('getSellerProducts', {}, (draft) => {
             const product = draft.products.find(p => p._id === productId);
             if (product) {
               product.status = status;

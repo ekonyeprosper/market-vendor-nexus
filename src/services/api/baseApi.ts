@@ -9,7 +9,7 @@ export type TagTypes = 'Categories';
 
 export const baseApi = createApi({
   reducerPath: 'api',
-  tagTypes: ['Categories'] as const,
+  tagTypes: ['Categories'],
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
     prepareHeaders: (headers, { getState }) => {

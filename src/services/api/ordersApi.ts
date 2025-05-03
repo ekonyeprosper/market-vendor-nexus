@@ -8,7 +8,7 @@ interface OrderItem {
 
 interface ShippingAddress {
   fullName: string;
-  email: string;
+  email?: string;
   phoneNumber: string;
   street: string;
   city: string;
@@ -24,7 +24,7 @@ export interface CreateOrderRequest {
   shippingAddress?: ShippingAddress;
 }
 
-interface InitiatePaymentResponse {
+export interface InitiatePaymentResponse {
   paymentUrl: string;
   reference: string;
 }
@@ -105,7 +105,7 @@ export const ordersApi = baseApi.injectEndpoints({
         method: 'POST',
       }),
     }),
-    verifyPayment: builder.query<PaymentResponse, string>({
+    verifyPayment: builder.query<VerificationResponse, string>({
       query: (reference) => `/api/orders/verify/${reference}`,
     }),
     getSellerOrders: builder.query<OrdersResponse, void>({
