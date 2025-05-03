@@ -1,4 +1,3 @@
-
 import { baseApi } from './baseApi';
 import { UserProfile } from '../types/auth.types';
 
@@ -13,6 +12,11 @@ export interface PublicSellerProfile {
   joinedDate: string;
 }
 
+export interface UpdateProfileResponse {
+  message: string;
+  profile: UserProfile;
+}
+
 export const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getProfile: builder.query<UserProfile, void>({
@@ -25,8 +29,29 @@ export const userApi = baseApi.injectEndpoints({
     getPublicSellerProfile: builder.query<PublicSellerProfile, string>({
       query: (sellerId) => `/api/auth/seller/${sellerId}/public`,
     }),
+    updateSellerProfile: builder.mutation<UpdateProfileResponse, FormData>({
+      query: (data) => ({
+        url: '/api/auth/profile/seller/update',
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['Profile'],
+    }),
+    updateCustomerProfile: builder.mutation<UpdateProfileResponse, FormData>({
+      query: (data) => ({
+        url: '/api/auth/profile/customer/update',
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['Profile'],
+    }),
   }),
   overrideExisting: false,
 });
 
-export const { useGetProfileQuery, useGetPublicSellerProfileQuery } = userApi;
+export const { 
+  useGetProfileQuery, 
+  useGetPublicSellerProfileQuery,
+  useUpdateSellerProfileMutation,
+  useUpdateCustomerProfileMutation 
+} = userApi;

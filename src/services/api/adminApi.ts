@@ -1,6 +1,5 @@
-
 import { baseApi } from './baseApi';
-import { UsersQueryParams, UsersResponse } from '../types/admin.types';
+import { AdminDashboardStats, UsersQueryParams, UsersResponse } from '../types/admin.types';
 
 export const adminApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -19,10 +18,25 @@ export const adminApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Users'],
     }),
+    GetAdminOrders: builder.query<any, string>({
+      query: (timeframe = 'month') => ({
+        url: '/api/orders/admin/dashboard',
+        params: { timeframe }
+      }),
+      providesTags: ['Orders'],
+    }),
+    getDashboardStats: builder.query<any, string>({
+      query: (timeframe) => ({
+        url: '/api/auth/admin/dashboard-stats',
+        params: { timeframe }
+      }),
+    }),
   }),
 });
 
 export const {
   useVerifySellerMutation,
   useGetUsersQuery,
+  useGetAdminOrdersQuery,
+  useGetDashboardStatsQuery,
 } = adminApi;

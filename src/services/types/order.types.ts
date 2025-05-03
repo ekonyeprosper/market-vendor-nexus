@@ -122,3 +122,62 @@ export interface PaymentVerificationResponse {
   };
   verified: boolean;
 }
+
+export interface AdminOrder {
+  orderId: string;
+  customerType: 'registered' | 'guest';
+  customer: {
+    id?: string;
+    email: string;
+    fullName: string;
+  };
+  items: Array<{
+    product: {
+      id: string;
+      name: string;
+      image: string;
+    };
+    seller: {
+      id: string;
+      name: string;
+    };
+    quantity: number;
+    price: number;
+    total: number;
+  }>;
+  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  payment: {
+    status: string;
+    method: string;
+    transactionId: string | null;
+  };
+  shipping: {
+    address: {
+      street: string;
+      city: string;
+      state: string;
+      country: string;
+      zipCode: string;
+    };
+    cost: number;
+    tracking: string | null;
+  };
+  totals: {
+    subtotal: number;
+    tax: number;
+    shipping: number;
+    final: number;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminOrdersResponse {
+  orders: AdminOrder[];
+  pagination: {
+    total: number;
+    pages: number;
+    currentPage: number;
+    limit: number;
+  };
+}

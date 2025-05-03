@@ -1,16 +1,18 @@
-
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useGetProfileQuery } from "@/services/api/userApi";
+import { useGetProfileQuery, useUpdateCustomerProfileMutation } from "@/services/api/userApi";
 import { Badge } from "@/components/ui/badge";
 import { useGetCustomerOrdersQuery } from "@/services/api/ordersApi";
 import { ShoppingBag, User, Heart, Settings, Package, MapPin, CalendarIcon, Clock, ArrowRight } from "lucide-react";
 import { format } from "date-fns";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 
 const CustomerDashboard = () => {
   const [activeTab, setActiveTab] = useState("orders");
@@ -22,6 +24,10 @@ const CustomerDashboard = () => {
     page: ordersPage,
     limit: ordersLimit
   });
+
+  const { toast } = useToast();
+  const [updateProfile] = useUpdateCustomerProfileMutation();
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-NG', {
@@ -43,6 +49,30 @@ const CustomerDashboard = () => {
         return 'bg-red-100 text-red-800 hover:bg-red-100';
       default:
         return 'bg-gray-100 text-gray-800 hover:bg-gray-100';
+    }
+  };
+
+  const handleProfileUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    
+    if (imageFile) {
+      formData.append('profileImage', imageFile);
+    }
+
+    try {
+      await updateProfile(formData).unwrap();
+      toast({
+        title: "Success",
+        description: "Profile updated successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update profile",
+        variant: "destructive",
+      });
     }
   };
 
@@ -282,35 +312,47 @@ const CustomerDashboard = () => {
                   <User className="h-5 w-5 text-market-600" /> 
                   Personal Information
                 </CardTitle>
-                <CardDescription>Manage your personal details</CardDescription>
+                <CardDescription>Update your personal details</CardDescription>
                 <Separator className="mt-2" />
               </CardHeader>
               <CardContent className="p-6 bg-white rounded-b-xl">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-gray-500">Full Name</p>
-                    <p className="font-medium">{profile?.fullName}</p>
+                <form onSubmit={handleProfileUpdate} className="space-y-6">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <Label htmlFor="fullName">Full Name</Label>
+                      <Input
+                        id="fullName"
+                        name="fullName"
+                        defaultValue={profile?.fullName}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="phoneNumber">Phone Number</Label>
+                      <Input
+                        id="phoneNumber"
+                        name="phoneNumber"
+                        defaultValue={profile?.phoneNumber}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <Label htmlFor="profileImage">Profile Image</Label>
+                      <Input
+                        id="profileImage"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                        className="mt-1"
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-gray-500">Email Address</p>
-                    <p className="font-medium">{profile?.email}</p>
+                  <div className="flex justify-end">
+                    <Button type="submit" className="bg-market-600 hover:bg-market-700">
+                      Update Profile
+                    </Button>
                   </div>
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-gray-500">Phone Number</p>
-                    <p className="font-medium">{profile?.phone || 'Not provided'}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-gray-500">Account Type</p>
-                    <p className="font-medium capitalize">{profile?.role || 'Customer'}</p>
-                  </div>
-                </div>
-                
-                <Separator className="my-6" />
-                
-                <div className="flex justify-end">
-                  <Button variant="outline" className="mr-2 border-market-200">Cancel</Button>
-                  <Button className="bg-market-600 hover:bg-market-700">Edit Profile</Button>
-                </div>
+                </form>
               </CardContent>
             </Card>
           </TabsContent>

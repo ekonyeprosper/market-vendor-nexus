@@ -10,13 +10,15 @@ import {
 } from "lucide-react";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { ChartCard } from "@/components/dashboard/ChartCard";
-import { useGetProfileQuery } from "@/services/api/userApi";
+import { useGetProfileQuery, useUpdateSellerProfileMutation } from "@/services/api/userApi";
 import { useGetSellerProductsQuery, useGetSellerDashboardStatsQuery, useUpdateProductStatusMutation } from "@/services/api/productsApi";
 import { AlertTriangle, CheckCircle2, Info } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { useGetSellerOrdersQuery } from "@/services/api/ordersApi";
 import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const SellerDashboard = () => {
   const { toast } = useToast();
@@ -25,6 +27,9 @@ const SellerDashboard = () => {
   const [productsLimit] = useState(8); // 2x4 grid
   const [productsSort, setProductsSort] = useState("-createdAt");
   const [productsStatus, setProductsStatus] = useState("active");
+  const [ordersPage, setOrdersPage] = useState(1);
+  const [ordersLimit] = useState(10);
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const { data: profile, isLoading: profileLoading } = useGetProfileQuery();
   const { data: productsData, isLoading: productsLoading } = useGetSellerProductsQuery({
@@ -40,11 +45,15 @@ const SellerDashboard = () => {
     skip: activeTab !== "dashboard"
   });
 
-  const { data: ordersData, isLoading: ordersLoading } = useGetSellerOrdersQuery(undefined, {
+  const { data: ordersData, isLoading: ordersLoading } = useGetSellerOrdersQuery({
+    page: ordersPage,
+    limit: ordersLimit
+  }, {
     skip: activeTab !== "orders"
   });
 
   const [updateStatus] = useUpdateProductStatusMutation();
+  const [updateProfile] = useUpdateSellerProfileMutation();
 
   const handleStatusToggle = async (productId: string, currentStatus: string) => {
     try {
@@ -59,6 +68,30 @@ const SellerDashboard = () => {
         title: "Error",
         description: "Failed to update product status",
         variant: "destructive"
+      });
+    }
+  };
+
+  const handleProfileUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    
+    if (imageFile) {
+      formData.append('profileImage', imageFile);
+    }
+
+    try {
+      await updateProfile(formData).unwrap();
+      toast({
+        title: "Success",
+        description: "Profile updated successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update profile",
+        variant: "destructive",
       });
     }
   };
@@ -162,6 +195,11 @@ const SellerDashboard = () => {
                 value={stats ? stats.totalProducts.toString() : "-"}
                 trend={stats ? { value: stats.productGrowth, isPositive: stats.productGrowth > 0 } : undefined}
               />
+              <StatCard
+                icon={Users}
+                title="Customers"
+                value={stats ? stats.totalCustomers.toString() : "-"}
+              />
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
@@ -210,7 +248,6 @@ const SellerDashboard = () => {
                 </Link>
               </div>
             </div>
-
             {productsLoading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[...Array(8)].map((_, i) => (
@@ -263,7 +300,6 @@ const SellerDashboard = () => {
                     </Card>
                   ))}
                 </div>
-
                 {productsData?.pagination.pages > 1 && (
                   <div className="mt-6 flex justify-center gap-2">
                     <Button
@@ -295,7 +331,6 @@ const SellerDashboard = () => {
                 Export
               </Button>
             </div>
-
             <Card>
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
@@ -309,32 +344,44 @@ const SellerDashboard = () => {
                         <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 border-b">
                           <th className="px-4 py-3">Order ID</th>
                           <th className="px-4 py-3">Customer</th>
+                          <th className="px-4 py-3">Items</th>
                           <th className="px-4 py-3">Date</th>
                           <th className="px-4 py-3">Status</th>
-                          <th className="px-4 py-3">Items</th>
-                          <th className="px-4 py-3">Total</th>
+                          <th className="px-4 py-3">Payment</th>
                           <th className="px-4 py-3">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200">
                         {ordersData?.orders.map((order) => (
-                          <tr key={order.id} className="hover:bg-gray-50">
-                            <td className="px-4 py-4 font-medium">{order.id}</td>
-                            <td className="px-4 py-4">{order.customer}</td>
-                            <td className="px-4 py-4">{order.date}</td>
+                          <tr key={order.orderId} className="hover:bg-gray-50">
+                            <td className="px-4 py-4 font-medium">{order.orderId}</td>
                             <td className="px-4 py-4">
-                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                order.status === "Delivered"
-                                  ? "bg-green-100 text-green-800"
-                                  : order.status === "Shipped"
-                                  ? "bg-blue-100 text-blue-800"
-                                  : "bg-yellow-100 text-yellow-800"
-                              }`}>
-                                {order.status}
-                              </span>
+                              <div>{order.customerDetails.fullName}</div>
+                              <div className="text-sm text-gray-500">{order.customerDetails.email}</div>
                             </td>
-                            <td className="px-4 py-4">{order.items}</td>
-                            <td className="px-4 py-4">{formatCurrency(order.total)}</td>
+                            <td className="px-4 py-4">
+                              {order.items.map((item, idx) => (
+                                <div key={idx} className="flex items-center gap-2 mb-1">
+                                  <img src={item.product.image} alt={item.product.name} className="w-8 h-8 object-cover rounded" />
+                                  <span className="text-sm">{item.quantity}x {item.product.name}</span>
+                                </div>
+                              ))}
+                            </td>
+                            <td className="px-4 py-4">{new Date(order.orderDate).toLocaleDateString()}</td>
+                            <td className="px-4 py-4">
+                              <Badge variant={
+                                order.status === "delivered" ? "success" :
+                                order.status === "processing" ? "warning" :
+                                "secondary"
+                              }>
+                                {order.status}
+                              </Badge>
+                            </td>
+                            <td className="px-4 py-4">
+                              <Badge variant={order.payment.status === "paid" ? "success" : "warning"}>
+                                {order.payment.status}
+                              </Badge>
+                            </td>
                             <td className="px-4 py-4">
                               <Button variant="ghost" size="sm">
                                 Details
@@ -348,6 +395,26 @@ const SellerDashboard = () => {
                 </div>
               </CardContent>
             </Card>
+            {ordersData?.pagination.pages > 1 && (
+              <div className="mt-6 flex justify-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={ordersPage === 1}
+                  onClick={() => setOrdersPage(p => Math.max(1, p - 1))}
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={ordersPage === ordersData.pagination.pages}
+                  onClick={() => setOrdersPage(p => Math.min(ordersData.pagination.pages, p + 1))}
+                >
+                  Next
+                </Button>
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-4">
@@ -357,7 +424,59 @@ const SellerDashboard = () => {
                 <CardDescription>Manage your seller account preferences</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">Settings content will be implemented here.</p>
+                <form onSubmit={handleProfileUpdate} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label htmlFor="fullName">Full Name</Label>
+                      <Input
+                        id="fullName"
+                        name="fullName"
+                        defaultValue={profile?.fullName}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="businessName">Business Name</Label>
+                      <Input
+                        id="businessName"
+                        name="businessName"
+                        defaultValue={profile?.businessName}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="phoneNumber">Phone Number</Label>
+                      <Input
+                        id="phoneNumber"
+                        name="phoneNumber"
+                        defaultValue={profile?.phoneNumber}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="businessAddress">Business Address</Label>
+                      <Input
+                        id="businessAddress"
+                        name="businessAddress"
+                        defaultValue={profile?.businessAddress}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <Label htmlFor="profileImage">Profile Image</Label>
+                      <Input
+                        id="profileImage"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end">
+                    <Button type="submit">Update Profile</Button>
+                  </div>
+                </form>
               </CardContent>
             </Card>
           </TabsContent>

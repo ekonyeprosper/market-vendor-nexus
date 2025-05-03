@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -140,9 +140,9 @@ const Signup = () => {
             <div className="mx-auto bg-purple-100 rounded-full w-12 h-12 flex items-center justify-center mb-2">
               <Shield className="text-market-600 h-6 w-6" />
             </div>
-            <h1 className="text-2xl font-bold text-market-600">Seller Registration</h1>
+            <h1 className="text-2xl font-bold text-market-600">CampusTrade Registration</h1>
             <p className="text-gray-600 text-sm">
-              Join our marketplace as a verified seller
+              Join our marketplace as a verified campusTrade
             </p>
             <div className="flex justify-center gap-4 mt-4">
               <Button
@@ -359,6 +359,13 @@ const Signup = () => {
               >
                 {isLoading ? "Creating Account..." : `Create ${userType === 'seller' ? 'Seller' : 'Customer'} Account`}
               </Button>
+
+              <div className="text-center mt-4">
+                <span className="text-gray-600">Already have an account?</span>{" "}
+                <Link to="/login" className="text-market-600 hover:text-market-700 font-medium">
+                  Sign in
+                </Link>
+              </div>
             </form>
           </CardContent>
         </Card>

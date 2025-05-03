@@ -33,6 +33,7 @@ import SupportPage from "./pages/admin/Support";
 import VendorDetail from "./pages/VendorDetail";
 import PaymentCallback from "@/pages/PaymentCallback";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
+import AdminCategories from "./pages/admin/Categories";
 
 // Create a new QueryClient instance inside the component
 const App = () => {
@@ -78,6 +79,7 @@ const App = () => {
               <Route path="/admin/products" element={<AdminProducts />} />
               <Route path="/admin/users" element={<UserManagement />} />
               <Route path="/admin/orders" element={<OrdersPage />} />
+              <Route path="/admin/categories" element={<AdminCategories />} />
               <Route path="/admin/analytics" element={<AnalyticsPage />} />
               <Route path="/admin/files" element={<FileManagerPage />} />
               <Route path="/admin/notifications" element={<NotificationsPage />} />

@@ -1,4 +1,3 @@
-
 import { baseApi } from './baseApi';
 
 interface OrderItem {
@@ -87,6 +86,70 @@ interface OrdersResponse {
   };
 }
 
+interface CustomerDetails {
+  email: string;
+  fullName: string;
+}
+
+interface OrderProduct {
+  id: string;
+  name: string;
+  image: string;
+}
+
+interface OrderItem {
+  product: OrderProduct;
+  quantity: number;
+  price: number;
+  total: number;
+}
+
+interface ShippingInfo {
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    country: string;
+    zipCode: string;
+  };
+  tracking: string | null;
+}
+
+interface PaymentInfo {
+  status: string;
+  method: string;
+}
+
+export interface SellerOrder {
+  orderId: string;
+  customerDetails: CustomerDetails;
+  items: OrderItem[];
+  status: string;
+  payment: PaymentInfo;
+  shipping: ShippingInfo;
+  orderDate: string;
+}
+
+interface SellerOrdersResponse {
+  orders: SellerOrder[];
+  pagination: {
+    total: number;
+    pages: number;
+    currentPage: number;
+    limit: number;
+  };
+}
+
+interface AdminOrdersResponse {
+  orders: Order[];
+  pagination: {
+    total: number;
+    pages: number;
+    currentPage: number;
+    limit: number;
+  };
+}
+
 export const ordersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     createOrder: builder.mutation<{ orderId: string }, CreateOrderRequest>({
@@ -112,8 +175,14 @@ export const ordersApi = baseApi.injectEndpoints({
     verifyPayment: builder.query<VerificationResponse, string>({
       query: (reference) => `/api/orders/verify/${reference}`,
     }),
-    getSellerOrders: builder.query<OrdersResponse, void>({
-      query: () => '/api/orders/seller',
+    getSellerOrders: builder.query<SellerOrdersResponse, { page?: number; limit?: number }>({
+      query: (params) => ({
+        url: '/api/orders/seller/orders',
+        params: {
+          page: params?.page || 1,
+          limit: params?.limit || 10
+        }
+      }),
       providesTags: ['Orders'],
     }),
     getCustomerOrders: builder.query<OrdersResponse, {
@@ -129,6 +198,25 @@ export const ordersApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Orders'],
     }),
+    getAdminOrders: builder.query<AdminOrdersResponse, {
+      page?: number;
+      limit?: number;
+      status?: string;
+      sort?: string;
+      search?: string;
+    }>({
+      query: (params) => ({
+        url: '/api/orders/admin/orders',
+        params: {
+          page: params.page || 1,
+          limit: params.limit || 10,
+          status: params.status,
+          sort: params.sort || '-createdAt',
+          search: params.search
+        }
+      }),
+      providesTags: ['Orders'],
+    }),
   }),
 });
 
@@ -139,4 +227,5 @@ export const {
   useVerifyPaymentQuery,
   useGetSellerOrdersQuery,
   useGetCustomerOrdersQuery,
+  useGetAdminOrdersQuery,
 } = ordersApi;

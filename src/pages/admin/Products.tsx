@@ -18,8 +18,10 @@ const AdminProducts = () => {
   const { data, isLoading } = useGetAdminProductsQuery({
     page,
     limit,
-    sort: "-createdAt"
+    sort: "-createdAt"  
   });
+
+  console.log(data)
 
   const filteredProducts = data?.products.filter(product => 
     product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&

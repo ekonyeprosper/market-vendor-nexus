@@ -1,4 +1,3 @@
-
 export interface User {
   _id: string;
   id?: string; // Adding alias field for consistency
@@ -33,4 +32,63 @@ export interface UsersQueryParams {
   role?: string;
   isVerified?: boolean;
   adminVerified?: boolean;
+}
+
+export interface AdminDashboardStats {
+  overview: {
+    totalOrders: number;
+    totalRevenue: number;
+    avgOrderValue: number;
+    pendingOrders: number;
+  };
+  recentOrders: Array<{
+    orderId: string;
+    customerType: string;
+    amount: number;
+    status: string;
+    createdAt: string;
+  }>;
+  orderStats: {
+    pending: number;
+    confirmed: number;
+    processing: number;
+    shipped: number;
+    delivered: number;
+    cancelled: number;
+  };
+  salesChart: Array<{
+    date: string;
+    orders: number;
+    revenue: number;
+  }>;
+  topProducts: Array<{
+    productId: string;
+    name: string;
+    totalOrders: number;
+    revenue: number;
+  }>;
+  topCustomers: Array<{
+    customerId: string;
+    name: string;
+    totalOrders: number;
+    totalSpent: number;
+  }>;
+}
+
+export interface DashboardOverview {
+  totalRevenue: number;
+  totalOrders: number;
+  avgOrderValue: number;
+  pendingOrders: number;
+  totalCustomers: number;
+  totalProducts: number;
+}
+
+export interface DashboardStatsResponse {
+  overview: DashboardOverview;
+  salesChart: Array<{
+    date: string;
+    revenue: number;
+    orders: number;
+  }>;
 }

@@ -14,7 +14,7 @@ import { useGetCategoriesQuery } from "@/services/api/categoriesApi";
 import { Badge } from "@/components/ui/badge";
 import NewCategoryForm from "@/components/admin/NewCategoryForm";
 
-const Categories = () => {
+const AdminCategories = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { data, isLoading } = useGetCategoriesQuery({
     sort: 'order'
@@ -81,4 +81,4 @@ const Categories = () => {
   );
 };
 
-export default Categories;
+export default AdminCategories;

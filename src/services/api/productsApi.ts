@@ -1,4 +1,3 @@
-
 import { baseApi } from './baseApi';
 import { Product, ProductFilters, PaginatedResponse, AdminProductsResponse } from '../types/product.types';
 
@@ -20,6 +19,7 @@ interface DashboardStats {
   totalSales: number;
   totalOrders: number;
   totalProducts: number;
+  totalCustomers: number; // Added new field
   salesGrowth: number;
   productGrowth: number;
   orderGrowth: number;
