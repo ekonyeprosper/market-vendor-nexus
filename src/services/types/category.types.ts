@@ -14,6 +14,26 @@ export interface Category {
   image: string | null;
 }
 
+export interface CategoryImage {
+  url: string;
+  thumbnail: string;
+  banner: string;
+}
+
+export interface CategoryStats {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  productCount: number;
+  image: CategoryImage;
+}
+
+export interface CategoryStatsResponse {
+  categories: CategoryStats[];
+  total: number;
+}
+
 export interface CategoriesResponse {
   categories: Category[];
   pagination: {

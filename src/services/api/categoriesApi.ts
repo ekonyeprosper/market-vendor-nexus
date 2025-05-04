@@ -1,6 +1,6 @@
 
 import { baseApi } from './baseApi';
-import { Category, CategoriesResponse, CreateCategoryDto } from '../types/category.types';
+import { Category, CategoriesResponse, CreateCategoryDto, CategoryStatsResponse } from '../types/category.types';
 
 export const categoriesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -26,18 +26,26 @@ export const categoriesApi = baseApi.injectEndpoints({
           : [{ type: 'Categories' as const, id: 'LIST' }]
     }),
 
+    getCategoryStats: builder.query<CategoryStatsResponse, void>({
+      query: () => ({
+        url: '/api/categories/stats',
+      }),
+      providesTags: [{ type: 'Categories', id: 'STATS' }]
+    }),
+
     createCategory: builder.mutation<Category, CreateCategoryDto>({
       query: (data) => ({
         url: '/api/categories',
         method: 'POST',
         body: data
       }),
-      invalidatesTags: [{ type: 'Categories', id: 'LIST' }]
+      invalidatesTags: [{ type: 'Categories', id: 'LIST' }, { type: 'Categories', id: 'STATS' }]
     })
   })
 });
 
 export const {
   useGetCategoriesQuery,
+  useGetCategoryStatsQuery,
   useCreateCategoryMutation
 } = categoriesApi;
