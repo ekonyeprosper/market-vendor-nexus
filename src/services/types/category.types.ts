@@ -20,6 +20,12 @@ export interface CategoryImage {
   banner: string;
 }
 
+export interface PopularCategoryImage {
+  url: string;
+  title?: string;
+  subtitle?: string;
+}
+
 export interface CategoryStats {
   id: string;
   name: string;
@@ -29,8 +35,24 @@ export interface CategoryStats {
   image: CategoryImage;
 }
 
+export interface PopularCategory {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  productCount: number;
+  image: PopularCategoryImage;
+  banner: string;
+  thumbnail: string;
+}
+
 export interface CategoryStatsResponse {
   categories: CategoryStats[];
+  total: number;
+}
+
+export interface PopularCategoriesResponse {
+  categories: PopularCategory[];
   total: number;
 }
 

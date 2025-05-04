@@ -5,60 +5,116 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/services/hooks/useCart";
-
-const trendingProducts = [
-  {
-    id: 1,
-    name: "Wireless Noise Cancelling Headphones",
-    price: 249.99,
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=600&auto=format&fit=crop",
-    category: "Electronics",
-    rating: 4.8,
-    tag: "Trending",
-    vendor: "AudioTech"
-  },
-  {
-    id: 2,
-    name: "Smart Fitness Watch",
-    price: 179.99,
-    image: "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?q=80&w=600&auto=format&fit=crop",
-    category: "Electronics",
-    rating: 4.7,
-    tag: "Best Seller",
-    vendor: "SmartWear"
-  },
-  {
-    id: 3,
-    name: "Genuine Leather Wallet",
-    price: 59.99,
-    image: "https://images.unsplash.com/photo-1627123424574-724758594e93?q=80&w=600&auto=format&fit=crop",
-    category: "Fashion",
-    rating: 4.9,
-    tag: "New",
-    vendor: "LeatherCraft"
-  },
-  {
-    id: 4,
-    name: "Portable Bluetooth Speaker",
-    price: 89.99,
-    image: "https://images.unsplash.com/photo-1589003077984-894e133dabab?q=80&w=600&auto=format&fit=crop",
-    category: "Electronics",
-    rating: 4.6,
-    tag: "Hot",
-    vendor: "AudioTech"
-  }
-];
+import { useGetTrendingProductsQuery } from "@/services/api/productsApi";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const TrendingProducts = () => {
+  const { data, isLoading, error } = useGetTrendingProductsQuery();
   const { addToCart } = useCart();
 
   const handleAddToCart = (product: any) => {
     addToCart({
-      id: product.id.toString(),
+      id: product.id,
       name: product.name,
-      price: product.price,
+      price: product.price.current,
       image: product.image
     }, 1);
+  };
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map((item) => (
+            <Card key={item} className="bg-white rounded-xl overflow-hidden shadow">
+              <Skeleton className="h-60 w-full" />
+              <CardContent className="p-4">
+                <Skeleton className="h-6 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-1/2 mb-4" />
+                <div className="flex justify-between items-center">
+                  <Skeleton className="h-6 w-20" />
+                  <Skeleton className="h-9 w-9 rounded-full" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="text-center py-12">
+          <p className="text-red-500 mb-4">Failed to load trending products</p>
+          <Button onClick={() => window.location.reload()}>Try Again</Button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {data?.products.map((product) => (
+          <Card
+            key={product.id}
+            className="bg-white rounded-xl overflow-hidden shadow hover:shadow-lg transition-shadow group"
+          >
+            <Link to={`/products/${product.id}`}>
+              <div className="relative h-60 overflow-hidden">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                {product.badge && (
+                  <Badge variant="default" className="absolute top-3 left-3 bg-market-600">
+                    {product.badge}
+                  </Badge>
+                )}
+              </div>
+            </Link>
+            <CardContent className="p-4">
+              <div className="flex justify-between items-start mb-2">
+                <Link to={`/products?category=${product.category.id}`} className="text-xs text-market-600 hover:underline">
+                  {product.category.name}
+                </Link>
+                <div className="flex items-center bg-gray-50 rounded-full px-2 py-1">
+                  <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500 mr-1" />
+                  <span className="text-xs font-medium">{product.stats.rating.average.toFixed(1)}</span>
+                </div>
+              </div>
+              <Link to={`/products/${product.id}`}>
+                <h3 className="font-semibold text-lg mb-1 hover:text-market-600 transition-colors">
+                  {product.name}
+                </h3>
+              </Link>
+              <div className="flex items-center text-xs text-gray-500 mb-4">
+                <span>by</span>
+                <Link to={`/vendor/${product.seller.id}`} className="text-market-600 ml-1 hover:underline">
+                  {product.seller.businessName}
+                </Link>
+              </div>
+              <div className="flex justify-between items-center">
+                <div>
+                  <span className="text-lg font-bold">${product.price.current.toFixed(2)}</span>
+                  {product.price.compareAt && (
+                    <span className="text-sm text-gray-500 line-through ml-2">
+                      ${product.price.compareAt.toFixed(2)}
+                    </span>
+                  )}
+                </div>
+                <Button 
+                  size="sm" 
+                  className="rounded-full w-9 h-9 p-0 bg-market-600 hover:bg-market-700"
+                  onClick={() => handleAddToCart(product)}
+                >
+                  <ShoppingCart className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -95,59 +151,7 @@ const TrendingProducts = () => {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {trendingProducts.map((product) => (
-            <Card
-              key={product.id}
-              className="bg-white rounded-xl overflow-hidden shadow hover:shadow-lg transition-shadow group"
-            >
-              <Link to={`/products/${product.id}`}>
-                <div className="relative h-60 overflow-hidden">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <Badge variant="default" className="absolute top-3 left-3 bg-market-600">
-                    {product.tag}
-                  </Badge>
-                </div>
-              </Link>
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <Link to={`/categories/${product.category}`} className="text-xs text-market-600 hover:underline">
-                    {product.category}
-                  </Link>
-                  <div className="flex items-center bg-gray-50 rounded-full px-2 py-1">
-                    <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500 mr-1" />
-                    <span className="text-xs font-medium">{product.rating}</span>
-                  </div>
-                </div>
-                <Link to={`/products/${product.id}`}>
-                  <h3 className="font-semibold text-lg mb-1 hover:text-market-600 transition-colors">
-                    {product.name}
-                  </h3>
-                </Link>
-                <div className="flex items-center text-xs text-gray-500 mb-4">
-                  <span>by</span>
-                  <Link to={`/vendor/${product.vendor}`} className="text-market-600 ml-1 hover:underline">
-                    {product.vendor}
-                  </Link>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-bold">${product.price.toFixed(2)}</span>
-                  <Button 
-                    size="sm" 
-                    className="rounded-full w-9 h-9 p-0 bg-market-600 hover:bg-market-700"
-                    onClick={() => handleAddToCart(product)}
-                  >
-                    <ShoppingCart className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {renderContent()}
       </div>
     </section>
   );

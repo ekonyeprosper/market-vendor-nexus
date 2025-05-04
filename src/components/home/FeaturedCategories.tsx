@@ -1,9 +1,63 @@
-import { categories } from "@/data/categories";
+
 import { Link } from "react-router-dom";
+import { useGetPopularCategoriesQuery } from "@/services/api/categoriesApi";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 
 const FeaturedCategories = () => {
-  // Use first 4 categories for featured section
-  const featuredCategories = categories.slice(0, 4);
+  const { data, isLoading, error } = useGetPopularCategoriesQuery();
+  
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map((item) => (
+            <div key={item} className="relative rounded-xl overflow-hidden">
+              <Skeleton className="h-64 w-full" />
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="text-center py-12">
+          <p className="text-red-500 mb-4">Failed to load categories</p>
+          <Button onClick={() => window.location.reload()}>Try Again</Button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {data?.categories.map((category) => (
+          <Link
+            key={category.id}
+            to={`/products?category=${category.slug}`}
+            className="group block overflow-hidden rounded-xl bg-gray-100 transition-all duration-300 hover:shadow-lg"
+          >
+            <div className="relative h-64 overflow-hidden">
+              <img
+                src={category.thumbnail}
+                alt={category.name}
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                <h3 className="text-xl font-bold mb-1">
+                  {category.image.title || category.name}
+                </h3>
+                <p className="text-sm text-white/80">
+                  {category.image.subtitle || `${category.productCount} products`}
+                </p>
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+    );
+  };
   
   return (
     <section className="py-16 bg-white">
@@ -15,28 +69,7 @@ const FeaturedCategories = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredCategories.map((category) => (
-            <Link
-              key={category.id}
-              to={`/categories/${category.id}`}
-              className="group block overflow-hidden rounded-xl bg-gray-100 transition-all duration-300 hover:shadow-lg"
-            >
-              <div className="relative h-64 overflow-hidden">
-                <img
-                  src={category.image}
-                  alt={category.name}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                  <h3 className="text-xl font-bold mb-1">{category.name}</h3>
-                  <p className="text-sm text-white/80">{category.productCount} products</p>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+        {renderContent()}
 
         <div className="text-center mt-12">
           <Link to="/categories">

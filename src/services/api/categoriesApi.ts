@@ -1,6 +1,12 @@
 
 import { baseApi } from './baseApi';
-import { Category, CategoriesResponse, CreateCategoryDto, CategoryStatsResponse } from '../types/category.types';
+import { 
+  Category, 
+  CategoriesResponse, 
+  CreateCategoryDto, 
+  CategoryStatsResponse,
+  PopularCategoriesResponse
+} from '../types/category.types';
 
 export const categoriesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -33,13 +39,27 @@ export const categoriesApi = baseApi.injectEndpoints({
       providesTags: [{ type: 'Categories', id: 'STATS' }]
     }),
 
+    getPopularCategories: builder.query<PopularCategoriesResponse, {
+      limit?: number;
+    } | void>({
+      query: (params) => ({
+        url: '/api/categories/popular',
+        params
+      }),
+      providesTags: [{ type: 'Categories', id: 'POPULAR' }]
+    }),
+
     createCategory: builder.mutation<Category, CreateCategoryDto>({
       query: (data) => ({
         url: '/api/categories',
         method: 'POST',
         body: data
       }),
-      invalidatesTags: [{ type: 'Categories', id: 'LIST' }, { type: 'Categories', id: 'STATS' }]
+      invalidatesTags: [
+        { type: 'Categories', id: 'LIST' }, 
+        { type: 'Categories', id: 'STATS' },
+        { type: 'Categories', id: 'POPULAR' }
+      ]
     })
   })
 });
@@ -47,5 +67,6 @@ export const categoriesApi = baseApi.injectEndpoints({
 export const {
   useGetCategoriesQuery,
   useGetCategoryStatsQuery,
+  useGetPopularCategoriesQuery,
   useCreateCategoryMutation
 } = categoriesApi;

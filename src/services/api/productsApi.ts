@@ -1,5 +1,13 @@
+
 import { baseApi } from './baseApi';
-import { Product, ProductFilters, PaginatedResponse, AdminProductsResponse } from '../types/product.types';
+import { 
+  Product, 
+  ProductFilters, 
+  PaginatedResponse, 
+  AdminProductsResponse,
+  TrendingProductsResponse,
+  PopularProductsResponse
+} from '../types/product.types';
 
 interface SellerProductsResponse {
   seller: {
@@ -51,6 +59,24 @@ export const productsApi = baseApi.injectEndpoints({
       query: ({ id, limit = 4 }) => ({
         url: `/api/products/related/${id}`,
         params: { limit }
+      }),
+    }),
+
+    getTrendingProducts: builder.query<TrendingProductsResponse, {
+      limit?: number;
+    } | void>({
+      query: (params) => ({
+        url: '/api/products/trending',
+        params
+      }),
+    }),
+
+    getPopularProducts: builder.query<PopularProductsResponse, {
+      limit?: number;
+    } | void>({
+      query: (params) => ({
+        url: '/api/products/popular',
+        params
       }),
     }),
 
@@ -185,6 +211,8 @@ export const {
   useGetProductQuery,
   useGetPublicProductQuery,
   useGetRelatedProductsQuery,
+  useGetTrendingProductsQuery,
+  useGetPopularProductsQuery,
   useIncrementProductViewsMutation,
   useCreateProductMutation,
   useUpdateProductMutation,
