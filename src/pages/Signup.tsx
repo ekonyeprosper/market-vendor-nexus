@@ -53,8 +53,8 @@ const Signup = () => {
     }
   };
 
-  const [registerCustomer] = useRegisterCustomerMutation();
-  const [registerSeller, { isLoading }] = useRegisterSellerMutation();
+  const [registerCustomer, { isLoading: isCustomerLoading }] = useRegisterCustomerMutation();
+  const [registerSeller, { isLoading: isSellerLoading }] = useRegisterSellerMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -355,9 +355,12 @@ const Signup = () => {
               <Button 
                 type="submit" 
                 className="w-full bg-market-600 hover:bg-market-700"
-                disabled={isLoading}
+                disabled={userType === 'seller' ? isSellerLoading : isCustomerLoading}
               >
-                {isLoading ? "Creating Account..." : `Create ${userType === 'seller' ? 'Seller' : 'Customer'} Account`}
+                {userType === 'seller' 
+                  ? (isSellerLoading ? "Creating Account..." : "Create Seller Account")
+                  : (isCustomerLoading ? "Creating Account..." : "Create Customer Account")
+                }
               </Button>
 
               <div className="text-center mt-4">

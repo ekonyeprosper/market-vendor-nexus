@@ -51,6 +51,13 @@ const OTPVerification = () => {
     
     return () => clearInterval(timer);
   }, [email, navigate, toast]);
+
+  useEffect(() => {
+    // Auto-verify when OTP is complete
+    if (otp.length === 6) {
+      handleVerifyOTP();
+    }
+  }, [otp]);
   
   const handleResendOTP = async () => {
     if (countdown === 0) {
@@ -77,14 +84,7 @@ const OTPVerification = () => {
   };
   
   const handleVerifyOTP = async () => {
-    if (otp.length < 6) {
-      toast({
-        title: "Error",
-        description: "Please enter a complete verification code",
-        variant: "destructive",
-      });
-      return;
-    }
+    if (otp.length < 6) return; // Don't proceed if incomplete
     
     try {
       const result = await verifyOTP({
@@ -112,6 +112,7 @@ const OTPVerification = () => {
         }
       }, 1500);
     } catch (error) {
+      setOtp(''); // Clear OTP on error
       toast({
         title: "Error",
         description: error.data?.message || "Failed to verify OTP. Please try again.",
@@ -158,7 +159,6 @@ const OTPVerification = () => {
             
             <div className="space-y-4">
               <Button 
-                onClick={handleVerifyOTP} 
                 className="w-full bg-market-600 hover:bg-market-700"
                 disabled={isLoading}
               >
