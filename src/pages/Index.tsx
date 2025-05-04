@@ -9,7 +9,6 @@ import NewsletterSignup from "@/components/common/NewsletterSignup";
 import HowItWorks from "@/components/home/HowItWorks";
 import PopularBrands from "@/components/home/PopularBrands";
 import TrendingProducts from "@/components/home/TrendingProducts";
-import TopSellers from "@/components/home/TopSellers";
 
 const Index = () => {
   return (
@@ -20,7 +19,6 @@ const Index = () => {
       <FeaturedProducts />
       <TrendingProducts />
       <PopularBrands />
-      <TopSellers />
       <VendorCTA />
       <Testimonials />
       <NewsletterSignup />
