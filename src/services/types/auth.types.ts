@@ -1,4 +1,3 @@
-
 export interface LoginRequest {
   email: string;
   password: string;
@@ -41,6 +40,22 @@ export interface UserProfile {
     country: string;
     isDefault: boolean;
   }[];
+}
+
+export interface TopSeller {
+  id: string;
+  businessName: string;
+  rating: {
+    average: number;
+    count: number;
+  };
+  totalProducts: number;
+  logo?: string;
+  slug: string;
+}
+
+export interface TopSellersResponse {
+  sellers: TopSeller[];
 }
 
 export interface LoginResponse {

@@ -1,5 +1,6 @@
+
 import { baseApi } from './baseApi';
-import { UserProfile } from '../types/auth.types';
+import { UserProfile, TopSellersResponse } from '../types/auth.types';
 
 export interface PublicSellerProfile {
   businessName: string;
@@ -45,6 +46,13 @@ export const userApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Profile'],
     }),
+    getTopSellers: builder.query<TopSellersResponse, number | void>({
+      query: (limit) => ({
+        url: limit ? `/api/auth/sellers/top?limit=${limit}` : '/api/auth/sellers/top',
+        method: 'GET',
+      }),
+      providesTags: ['Sellers'],
+    }),
   }),
   overrideExisting: false,
 });
@@ -53,5 +61,6 @@ export const {
   useGetProfileQuery, 
   useGetPublicSellerProfileQuery,
   useUpdateSellerProfileMutation,
-  useUpdateCustomerProfileMutation 
+  useUpdateCustomerProfileMutation,
+  useGetTopSellersQuery
 } = userApi;

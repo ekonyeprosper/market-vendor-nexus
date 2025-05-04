@@ -2,14 +2,14 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { RootState } from '../store/store';
 
-export const BASE_URL = "https://market-vendor.onrender.com";
-// export const BASE_URL = "http://localhost:3000";
+// export const BASE_URL = "https://market-vendor.onrender.com";
+export const BASE_URL = "http://localhost:3000";
 
-export type TagTypes = 'Categories' | 'Products' | 'Users' | 'Orders' | 'Profile';
+export type TagTypes = 'Categories' | 'Products' | 'Users' | 'Orders' | 'Profile' | 'Sellers';
 
 export const baseApi = createApi({
   reducerPath: 'api',
-  tagTypes: ['Categories', 'Products', 'Users', 'Orders', 'Profile'],
+  tagTypes: ['Categories', 'Products', 'Users', 'Orders', 'Profile', 'Sellers'],
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
     prepareHeaders: (headers, { getState }) => {
