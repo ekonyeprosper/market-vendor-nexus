@@ -21,8 +21,9 @@ const OTPVerification = () => {
   const [resendOTP, { isLoading: isResendingOTP }] = useResendOTPMutation();
   const dispatch = useDispatch();
 
-  // Extract email from location state
+  // Extract email and user type from location state
   const email = location.state?.email || "";
+  const userType = location.state?.type || "customer";
   
   useEffect(() => {
     // Redirect to signup if no email is provided
@@ -91,25 +92,24 @@ const OTPVerification = () => {
         otp
       }).unwrap();
       
+      // Extract user data and token
+      const { token, user } = result.data;
+
       // Store the token and update auth state
-      dispatch(setCredentials({ 
-        token: result.token,
-        user: {
-          email,
-          role: 'seller',
-          id: '',  // Will be extracted from token in a real app
-          name: '' // Will be extracted from token in a real app
-        }
-      }));
+      dispatch(setCredentials({ token, user }));
 
       toast({
         title: "Success",
         description: result.message || "Email verified successfully!",
       });
       
-      // Navigate to seller dashboard after successful verification
+      // Navigate based on user role
       setTimeout(() => {
-        navigate("/seller/dashboard");
+        if (user.role === 'seller') {
+          navigate("/seller/dashboard");
+        } else {
+          navigate("/customer/dashboard");
+        }
       }, 1500);
     } catch (error) {
       toast({

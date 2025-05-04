@@ -1,4 +1,3 @@
-
 import { baseApi } from './baseApi';
 import { 
   Product, 
@@ -42,6 +41,16 @@ interface UpdateProductStatusResponse {
   name: string;
   status: 'active' | 'draft';
   updatedAt: string;
+}
+
+interface DeleteProductResponse {
+  success: boolean;
+  message: string;
+  data: {
+    id: string;
+    name: string;
+    deletedAt: string;
+  };
 }
 
 export const productsApi = baseApi.injectEndpoints({
@@ -105,14 +114,14 @@ export const productsApi = baseApi.injectEndpoints({
       invalidatesTags: (result, error, { id }) => [{ type: 'Products', id }],
     }),
 
-    deleteProduct: builder.mutation<void, string>({
+    deleteProduct: builder.mutation<DeleteProductResponse, string>({
       query: (id) => ({
         url: `/api/products/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (result, error, id) => [
-        { type: 'Products', id },
-        { type: 'Products', id: 'LIST' }
+      invalidatesTags: (result) => [
+        { type: 'Products', id: 'LIST' },
+        { type: 'Products', id: result?.data.id }
       ],
     }),
 

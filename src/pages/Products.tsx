@@ -1,5 +1,5 @@
-
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { 
@@ -37,8 +37,11 @@ import ProductsList from "@/components/products/ProductsList";
 import { Product } from "@/services/types/product.types";
 
 const Products = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categoryFromUrl = searchParams.get('category') || "";
+
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(categoryFromUrl);
   const [sortOption, setSortOption] = useState("featured");
   const [priceRange, setPriceRange] = useState([0, 500]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
@@ -84,12 +87,23 @@ const Products = () => {
     )
   );
 
+  // Update URL when category changes
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    if (category) {
+      setSearchParams({ category });
+    } else {
+      setSearchParams({});
+    }
+  };
+
   const clearAllFilters = () => {
     setSearchQuery("");
     setSelectedCategory("");
     setPriceRange([0, 500]);
     setSelectedBrands([]);
     setSelectedRating(null);
+    setSearchParams({}); // Clear URL params
   };          
 
   const activeFiltersCount = 
@@ -138,7 +152,7 @@ const Products = () => {
                   categories={categories}
                   brands={brands}
                   selectedCategory={selectedCategory}
-                  setSelectedCategory={setSelectedCategory}
+                  setSelectedCategory={handleCategoryChange}
                   priceRange={priceRange}
                   setPriceRange={setPriceRange}
                   selectedBrands={selectedBrands}
@@ -163,7 +177,7 @@ const Products = () => {
                     categories={categories}
                     brands={brands}
                     selectedCategory={selectedCategory}
-                    setSelectedCategory={setSelectedCategory}
+                    setSelectedCategory={handleCategoryChange}
                     priceRange={priceRange}
                     setPriceRange={setPriceRange}
                     selectedBrands={selectedBrands}

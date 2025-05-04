@@ -74,9 +74,42 @@ export interface VerifyOTPRequest {
   otp: string;
 }
 
+export interface SellerVerificationData {
+  id: string;
+  email: string;
+  fullName: string;
+  phoneNumber: string;
+  role: 'seller';
+  isVerified: boolean;
+  profileImage?: string;
+  businessName: string;
+  businessAddress: string;
+  adminVerified: boolean;
+  governmentId?: string;
+}
+
+export interface CustomerVerificationData {
+  id: string;
+  email: string;
+  fullName: string;
+  phoneNumber: string;
+  role: 'customer';
+  isVerified: boolean;
+  profileImage?: string;
+  shippingAddresses: any[];
+  metadata: {
+    lastLogin: string;
+    totalOrders: number;
+  };
+}
+
 export interface VerifyOTPResponse {
-  token: string;
+  success: boolean;
   message: string;
+  data: {
+    token: string;
+    user: SellerVerificationData | CustomerVerificationData;
+  };
 }
 
 export interface ResendOTPRequest {

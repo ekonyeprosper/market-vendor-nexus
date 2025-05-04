@@ -11,7 +11,7 @@ import {
 import { StatCard } from "@/components/dashboard/StatCard";
 import { ChartCard } from "@/components/dashboard/ChartCard";
 import { useGetProfileQuery, useUpdateSellerProfileMutation } from "@/services/api/userApi";
-import { useGetSellerProductsQuery, useGetSellerDashboardStatsQuery, useUpdateProductStatusMutation } from "@/services/api/productsApi";
+import { useGetSellerProductsQuery, useGetSellerDashboardStatsQuery, useUpdateProductStatusMutation, useDeleteProductMutation } from "@/services/api/productsApi";
 import { AlertTriangle, CheckCircle2, Info } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +19,16 @@ import { useGetSellerOrdersQuery } from "@/services/api/ordersApi";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const SellerDashboard = () => {
   const { toast } = useToast();
@@ -30,6 +40,7 @@ const SellerDashboard = () => {
   const [ordersPage, setOrdersPage] = useState(1);
   const [ordersLimit] = useState(10);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [productToDelete, setProductToDelete] = useState<{ id: string; name: string } | null>(null);
 
   const { data: profile, isLoading: profileLoading } = useGetProfileQuery();
   const { data: productsData, isLoading: productsLoading } = useGetSellerProductsQuery({
@@ -54,6 +65,7 @@ const SellerDashboard = () => {
 
   const [updateStatus] = useUpdateProductStatusMutation();
   const [updateProfile] = useUpdateSellerProfileMutation();
+  const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
 
   const handleStatusToggle = async (productId: string, currentStatus: string) => {
     try {
@@ -91,6 +103,26 @@ const SellerDashboard = () => {
       toast({
         title: "Error",
         description: "Failed to update profile",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteProduct = async () => {
+    if (!productToDelete) return;
+
+    try {
+      await deleteProduct(productToDelete.id).unwrap();
+      toast({
+        title: "Success",
+        description: "Product deleted successfully",
+      });
+      setProductToDelete(null);
+    } catch (error) {
+      console.log(error)
+      toast({
+        title: "Error",
+        description: "Failed to delete product",
         variant: "destructive",
       });
     }
@@ -289,8 +321,13 @@ const SellerDashboard = () => {
                           >
                             {product.status === 'active' ? 'Set Draft' : 'Activate'}
                           </Button>
-                          <Button size="sm" variant="outline" className="flex-1" asChild>
-                            <Link to={`/seller/products/${product._id}/edit`}>Edit</Link>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="flex-1 text-red-600 hover:bg-red-50"
+                            onClick={() => setProductToDelete({ id: product._id, name: product.name })}
+                          >
+                            Delete
                           </Button>
                           <Button size="sm" variant="outline" className="flex-1" asChild>
                             <Link to={`/products/${product._id}`}>View</Link>
@@ -481,6 +518,27 @@ const SellerDashboard = () => {
             </Card>
           </TabsContent>
         </Tabs>
+
+        <AlertDialog open={!!productToDelete} onOpenChange={(open) => !open && setProductToDelete(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Product</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete "{productToDelete?.name}"? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={handleDeleteProduct}
+                className="bg-red-600 hover:bg-red-700"
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </Layout>
   );
