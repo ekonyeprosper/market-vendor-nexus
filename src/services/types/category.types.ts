@@ -31,7 +31,10 @@ export interface CategoryStats {
   name: string;
   slug: string;
   description: string;
-  productCount: number;
+  stats: {
+    products: number;
+    sales: number;
+  };
   image: CategoryImage;
 }
 

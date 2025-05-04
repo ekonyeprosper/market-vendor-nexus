@@ -48,7 +48,7 @@ const Categories = () => {
               </div>
               <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white p-4">
                 <h3 className="text-xl font-semibold mb-2">{category.name}</h3>
-                <p className="text-sm">{category.productCount} Products</p>
+                <p className="text-sm">{category.stats.products} Products</p>
               </div>
             </div>
           </Link>
