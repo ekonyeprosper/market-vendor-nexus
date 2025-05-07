@@ -18,6 +18,23 @@ export interface UpdateProfileResponse {
   profile: UserProfile;
 }
 
+export interface VendorsResponse {
+  sellers: TopSellersResponse['sellers'];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    pages: number;
+  };
+}
+
+export interface VendorsParams {
+  page?: number;
+  limit?: number;
+  sort?: string;
+  search?: string;
+}
+
 export const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getProfile: builder.query<UserProfile, void>({
@@ -53,6 +70,14 @@ export const userApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Sellers'],
     }),
+    getAllVendors: builder.query<VendorsResponse, VendorsParams>({
+      query: (params = {}) => ({
+        url: '/api/auth/sellers',
+        method: 'GET',
+        params,
+      }),
+      providesTags: ['Sellers'],
+    }),
   }),
   overrideExisting: false,
 });
@@ -62,5 +87,6 @@ export const {
   useGetPublicSellerProfileQuery,
   useUpdateSellerProfileMutation,
   useUpdateCustomerProfileMutation,
-  useGetTopSellersQuery
+  useGetTopSellersQuery,
+  useGetAllVendorsQuery
 } = userApi;

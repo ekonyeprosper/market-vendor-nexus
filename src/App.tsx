@@ -36,6 +36,7 @@ import VendorDetail from "./pages/VendorDetail";
 import PaymentCallback from "@/pages/PaymentCallback";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
 import AdminCategories from "./pages/admin/Categories";
+import Vendors from "./pages/Vendors";
 
 // Create a new QueryClient instance inside the component
 const App = () => {
@@ -76,6 +77,7 @@ const App = () => {
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/order-confirmation" element={<OrderConfirmation />} />
               <Route path="/vendor/:vendorId" element={<VendorDetail />} />
+              <Route path="/vendors" element={<Vendors />} />
               <Route path="/seller/dashboard" element={<SellerDashboard />} />
               <Route path="/seller/products/new" element={<AddProduct />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
