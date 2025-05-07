@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,6 +7,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { createElement, useEffect } from "react";
 import { Provider } from 'react-redux';
 import { store } from '@/services/store/store';
+import NetworkStatus from "@/components/common/NetworkStatus";
 
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -56,6 +58,7 @@ const App = () => {
     <Provider store={store}>
       <CartProvider>
         <TooltipProvider>
+          <NetworkStatus />
           <Toaster />
           <Sonner />
           <BrowserRouter>

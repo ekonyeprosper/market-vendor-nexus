@@ -20,6 +20,23 @@ export const baseApi = createApi({
       }
       return headers;
     },
+    fetchFn: async (input, init) => {
+      // Set reasonable timeouts for poor connections
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+      try {
+        const response = await fetch(input, {
+          ...init,
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+        return response;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        throw error;
+      }
+    }
   }),
   endpoints: () => ({}),
 });
