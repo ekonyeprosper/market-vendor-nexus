@@ -18,13 +18,29 @@ export interface UpdateProfileResponse {
   profile: UserProfile;
 }
 
+export interface Seller {
+  id: string;
+  businessName: string;
+  businessAddress: string;
+  logo?: string;
+  status: string;
+  rating: {
+    average: number;
+    count: number;
+  };
+  totalProducts: number;
+  joinedDate: string;
+  slug?: string;
+}
+
 export interface VendorsResponse {
-  sellers: TopSellersResponse['sellers'];
+  success: boolean;
+  sellers: Seller[];
   pagination: {
     total: number;
-    page: number;
-    limit: number;
     pages: number;
+    currentPage: number;
+    limit: number;
   };
 }
 
