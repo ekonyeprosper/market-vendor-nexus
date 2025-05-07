@@ -51,6 +51,17 @@ export interface VendorsParams {
   search?: string;
 }
 
+export interface BankAccountInfo {
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+}
+
+export interface UpdateBankAccountResponse {
+  success: boolean;
+  message: string;
+}
+
 export const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getProfile: builder.query<UserProfile, void>({
@@ -74,6 +85,14 @@ export const userApi = baseApi.injectEndpoints({
     updateCustomerProfile: builder.mutation<UpdateProfileResponse, FormData>({
       query: (data) => ({
         url: '/api/auth/profile/customer/update',
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['Profile'],
+    }),
+    updateBankAccount: builder.mutation<UpdateBankAccountResponse, BankAccountInfo>({
+      query: (data) => ({
+        url: '/api/auth/profile/seller/bank-account',
         method: 'PUT',
         body: data,
       }),
@@ -103,6 +122,7 @@ export const {
   useGetPublicSellerProfileQuery,
   useUpdateSellerProfileMutation,
   useUpdateCustomerProfileMutation,
+  useUpdateBankAccountMutation,
   useGetTopSellersQuery,
   useGetAllVendorsQuery
 } = userApi;

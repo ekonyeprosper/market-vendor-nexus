@@ -7,10 +7,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import {
   Package, ShoppingCart, DollarSign, Users, Plus, ArrowUpRight, ArrowDownRight,
+  CreditCard, BanknoteIcon, Wallet, PiggyBank
 } from "lucide-react";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { ChartCard } from "@/components/dashboard/ChartCard";
-import { useGetProfileQuery, useUpdateSellerProfileMutation } from "@/services/api/userApi";
+import { 
+  useGetProfileQuery, 
+  useUpdateSellerProfileMutation, 
+  useUpdateBankAccountMutation
+} from "@/services/api/userApi";
 import { useGetSellerProductsQuery, useGetSellerDashboardStatsQuery, useUpdateProductStatusMutation, useDeleteProductMutation } from "@/services/api/productsApi";
 import { AlertTriangle, CheckCircle2, Info } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -19,6 +24,20 @@ import { useGetSellerOrdersQuery } from "@/services/api/ordersApi";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,6 +48,35 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+
+// Nigerian banks list
+const NIGERIAN_BANKS = [
+  "Access Bank",
+  "Fidelity Bank",
+  "First Bank of Nigeria",
+  "First City Monument Bank",
+  "Guaranty Trust Bank",
+  "United Bank for Africa",
+  "Union Bank of Nigeria",
+  "Zenith Bank",
+  "Kuda Bank",
+  "Providus Bank",
+  "Sterling Bank",
+  "Unity Bank",
+  "Wema Bank"
+];
+
+// Bank account form schema
+const bankAccountSchema = z.object({
+  bankName: z.string({required_error: "Bank name is required"}),
+  accountNumber: z.string()
+    .min(10, "Account number must be 10 digits")
+    .max(10, "Account number must be 10 digits")
+    .regex(/^\d+$/, "Account number must contain only digits"),
+  accountName: z.string().min(3, "Account name is required"),
+});
+
+type BankAccountFormValues = z.infer<typeof bankAccountSchema>;
 
 const SellerDashboard = () => {
   const { toast } = useToast();
@@ -41,6 +89,16 @@ const SellerDashboard = () => {
   const [ordersLimit] = useState(10);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [productToDelete, setProductToDelete] = useState<{ id: string; name: string } | null>(null);
+
+  // Form for bank account information
+  const bankForm = useForm<BankAccountFormValues>({
+    resolver: zodResolver(bankAccountSchema),
+    defaultValues: {
+      bankName: "",
+      accountNumber: "",
+      accountName: "",
+    }
+  });
 
   const { data: profile, isLoading: profileLoading } = useGetProfileQuery();
   const { data: productsData, isLoading: productsLoading } = useGetSellerProductsQuery({
@@ -65,6 +123,7 @@ const SellerDashboard = () => {
 
   const [updateStatus] = useUpdateProductStatusMutation();
   const [updateProfile] = useUpdateSellerProfileMutation();
+  const [updateBankAccount, { isLoading: isUpdatingBank }] = useUpdateBankAccountMutation();
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
 
   const handleStatusToggle = async (productId: string, currentStatus: string) => {
@@ -103,6 +162,22 @@ const SellerDashboard = () => {
       toast({
         title: "Error",
         description: "Failed to update profile",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleBankAccountSubmit = async (data: BankAccountFormValues) => {
+    try {
+      await updateBankAccount(data).unwrap();
+      toast({
+        title: "Success",
+        description: "Bank account information updated successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update bank account information",
         variant: "destructive",
       });
     }
@@ -454,68 +529,185 @@ const SellerDashboard = () => {
             )}
           </TabsContent>
 
-          <TabsContent value="settings" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Account Settings</CardTitle>
-                <CardDescription>Manage your seller account preferences</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleProfileUpdate} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <Label htmlFor="fullName">Full Name</Label>
-                      <Input
-                        id="fullName"
-                        name="fullName"
-                        defaultValue={profile?.fullName}
-                        className="mt-1"
-                      />
+          <TabsContent value="settings" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="md:col-span-2">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Account Settings</CardTitle>
+                    <CardDescription>Manage your seller account preferences</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleProfileUpdate} className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <Label htmlFor="fullName">Full Name</Label>
+                          <Input
+                            id="fullName"
+                            name="fullName"
+                            defaultValue={profile?.fullName}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="businessName">Business Name</Label>
+                          <Input
+                            id="businessName"
+                            name="businessName"
+                            defaultValue={profile?.businessName}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="phoneNumber">Phone Number</Label>
+                          <Input
+                            id="phoneNumber"
+                            name="phoneNumber"
+                            defaultValue={profile?.phoneNumber}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="businessAddress">Business Address</Label>
+                          <Input
+                            id="businessAddress"
+                            name="businessAddress"
+                            defaultValue={profile?.businessAddress}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div className="col-span-2">
+                          <Label htmlFor="profileImage">Profile Image</Label>
+                          <Input
+                            id="profileImage"
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                            className="mt-1"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex justify-end">
+                        <Button type="submit">Update Profile</Button>
+                      </div>
+                    </form>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="md:col-span-1 space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <BanknoteIcon className="h-5 w-5 mr-2" />
+                      Bank Account Information
+                    </CardTitle>
+                    <CardDescription>
+                      Update your payment details for receiving funds
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Form {...bankForm}>
+                      <form onSubmit={bankForm.handleSubmit(handleBankAccountSubmit)} className="space-y-4">
+                        <FormField
+                          control={bankForm.control}
+                          name="bankName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Bank Name</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select your bank" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectGroup>
+                                    <SelectLabel>Nigerian Banks</SelectLabel>
+                                    {NIGERIAN_BANKS.map((bank) => (
+                                      <SelectItem key={bank} value={bank}>{bank}</SelectItem>
+                                    ))}
+                                  </SelectGroup>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={bankForm.control}
+                          name="accountNumber"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Account Number</FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  placeholder="Enter your 10-digit account number"
+                                  maxLength={10}
+                                />
+                              </FormControl>
+                              <FormDescription>
+                                Your 10-digit Nigerian bank account number
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={bankForm.control}
+                          name="accountName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Account Name</FormLabel>
+                              <FormControl>
+                                <Input {...field} placeholder="Enter account holder name" />
+                              </FormControl>
+                              <FormDescription>
+                                Name as it appears on your bank account
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <div className="pt-4">
+                          <Button type="submit" className="w-full" disabled={isUpdatingBank}>
+                            {isUpdatingBank ? "Updating..." : "Save Bank Details"}
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Wallet className="h-5 w-5 mr-2" />
+                      Payment Information
+                    </CardTitle>
+                    <CardDescription>
+                      Your payment settings and preferences
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between py-2 border-b">
+                      <span className="text-sm font-medium">Payout Schedule</span>
+                      <Badge variant="outline">Weekly</Badge>
                     </div>
-                    <div>
-                      <Label htmlFor="businessName">Business Name</Label>
-                      <Input
-                        id="businessName"
-                        name="businessName"
-                        defaultValue={profile?.businessName}
-                        className="mt-1"
-                      />
+                    <div className="flex items-center justify-between py-2 border-b">
+                      <span className="text-sm font-medium">Default Currency</span>
+                      <span className="text-sm">NGN (₦)</span>
                     </div>
-                    <div>
-                      <Label htmlFor="phoneNumber">Phone Number</Label>
-                      <Input
-                        id="phoneNumber"
-                        name="phoneNumber"
-                        defaultValue={profile?.phoneNumber}
-                        className="mt-1"
-                      />
+                    <div className="flex items-center justify-between py-2">
+                      <span className="text-sm font-medium">Payment Fee</span>
+                      <span className="text-sm">1.5% per transaction</span>
                     </div>
-                    <div>
-                      <Label htmlFor="businessAddress">Business Address</Label>
-                      <Input
-                        id="businessAddress"
-                        name="businessAddress"
-                        defaultValue={profile?.businessAddress}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div className="col-span-2">
-                      <Label htmlFor="profileImage">Profile Image</Label>
-                      <Input
-                        id="profileImage"
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => setImageFile(e.target.files?.[0] || null)}
-                        className="mt-1"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex justify-end">
-                    <Button type="submit">Update Profile</Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
 
