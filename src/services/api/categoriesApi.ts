@@ -41,8 +41,8 @@ export const categoriesApi = baseApi.injectEndpoints({
 
     getPopularCategories: builder.query<PopularCategoriesResponse, {
       limit?: number;
-    } | void>({
-      query: (params) => ({
+    }>({
+      query: (params = {}) => ({
         url: '/api/categories/popular',
         params
       }),

@@ -1,3 +1,4 @@
+
 import { baseApi } from './baseApi';
 
 interface OrderItem {
@@ -69,11 +70,26 @@ export interface Order {
   date?: string;
   orderDate?: string;
   status: 'Processing' | 'Shipped' | 'Delivered' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  items: { productId: string, quantity: number }[];
+  items: { productId: string; quantity: number }[];
   total?: number;
   totals?: {
     final: number;
   };
+  payment?: {
+    status: string;
+    method: string;
+  };
+  shipping?: {
+    address: {
+      street: string;
+      city: string;
+      state: string;
+      country: string;
+      zipCode: string;
+    };
+    tracking: string | null;
+  };
+  createdAt?: string;
 }
 
 interface OrdersResponse {
@@ -141,7 +157,33 @@ interface SellerOrdersResponse {
 }
 
 interface AdminOrdersResponse {
-  orders: Order[];
+  orders: {
+    orderId: string;
+    customer: {
+      id?: string;
+      email: string;
+      fullName: string;
+    };
+    items: Array<{
+      product: {
+        id: string;
+        name: string;
+        image: string;
+      };
+      quantity: number;
+      price: number;
+      total: number;
+    }>;
+    status: string;
+    payment: {
+      status: string;
+      method: string;
+    };
+    totals: {
+      final: number;
+    };
+    createdAt: string;
+  }[];
   pagination: {
     total: number;
     pages: number;

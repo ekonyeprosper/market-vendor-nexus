@@ -22,7 +22,7 @@ const ProductDetail = () => {
   // Use authenticated endpoint if user is logged in
   const { data: product, isLoading, error } =  useGetPublicProductQuery(id);
 
-  const { data: relatedProducts } = useGetRelatedProductsQuery({ 
+  const { data: relatedProductsData } = useGetRelatedProductsQuery({ 
     id: id,
     limit: 4
   });
@@ -260,7 +260,7 @@ const ProductDetail = () => {
         <div>
           <h2 className="text-2xl font-bold mb-6">Related Products</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedProducts?.map((relatedProduct) => (
+            {relatedProductsData?.products.map((relatedProduct) => (
               <Card key={relatedProduct._id} className="overflow-hidden hover:shadow-md transition-shadow">
                 <Link to={`/products/${relatedProduct._id}`}>
                   <div className="aspect-square overflow-hidden">

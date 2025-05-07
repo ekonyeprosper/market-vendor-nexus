@@ -1,3 +1,4 @@
+
 export interface OrderProduct {
   id: string;
   name: string;
@@ -24,6 +25,7 @@ export interface ShippingAddress {
   state: string;
   country: string;
   zipCode: string;
+  phoneNumber?: string;
 }
 
 export interface OrderTotals {
@@ -36,7 +38,7 @@ export interface OrderTotals {
 export interface Order {
   orderId: string;
   orderDate: string;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered';
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   items: OrderItem[];
   payment: {
     status: string;
@@ -69,13 +71,16 @@ export interface DeliveryInfo {
   state: string;
   country: string;
   zipCode?: string;
-  deliveryMethod: 'standard' | 'express';
+  deliveryMethod?: 'standard' | 'express';
   specialInstructions?: string;
 }
 
 export interface CreateOrderRequest {
-  items: OrderItem[];
-  deliveryInfo: DeliveryInfo;
+  items: {
+    productId: string;
+    quantity: number;
+  }[];
+  shippingAddress?: ShippingAddress;
 }
 
 export interface PaymentResponse {

@@ -1,3 +1,4 @@
+
 import { baseApi } from './baseApi';
 import { 
   Product, 
@@ -73,8 +74,8 @@ export const productsApi = baseApi.injectEndpoints({
 
     getTrendingProducts: builder.query<TrendingProductsResponse, {
       limit?: number;
-    } | void>({
-      query: (params) => ({
+    }>({
+      query: (params = {}) => ({
         url: '/api/products/trending',
         params
       }),
@@ -82,8 +83,8 @@ export const productsApi = baseApi.injectEndpoints({
 
     getPopularProducts: builder.query<PopularProductsResponse, {
       limit?: number;
-    } | void>({
-      query: (params) => ({
+    }>({
+      query: (params = {}) => ({
         url: '/api/products/popular',
         params
       }),

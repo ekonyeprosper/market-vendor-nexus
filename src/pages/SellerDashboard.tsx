@@ -129,7 +129,7 @@ const SellerDashboard = () => {
   };
 
   const renderVerificationAlert = () => {
-    if (!profile?.adminVerified) {
+    if (!profile?.isVerified) {
       return (
         <Alert variant="default" className="mb-6 border-yellow-500 text-yellow-800">
           <AlertTriangle className="h-4 w-4" />
@@ -173,7 +173,7 @@ const SellerDashboard = () => {
               <p className="text-muted-foreground">
                 Welcome back, {profile?.businessName || 'Seller'}!
               </p>
-              {profile?.adminVerified ? (
+              {profile?.isVerified ? (
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                   <CheckCircle2 className="w-3 h-3 mr-1" /> Verified Seller
                 </span>
@@ -189,8 +189,8 @@ const SellerDashboard = () => {
             <Link to="/seller/products/new">
               <Button 
                 className="flex items-center shadow-sm"
-                disabled={!profile?.adminVerified}
-                title={!profile?.adminVerified ? "Account verification required" : ""}
+                disabled={!profile?.isVerified}
+                title={!profile?.isVerified ? "Account verification required" : ""}
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add New Product
@@ -407,15 +407,15 @@ const SellerDashboard = () => {
                             <td className="px-4 py-4">{new Date(order.orderDate).toLocaleDateString()}</td>
                             <td className="px-4 py-4">
                               <Badge variant={
-                                order.status === "delivered" ? "success" :
-                                order.status === "processing" ? "warning" :
-                                "secondary"
+                                order.status === "delivered" ? "default" :
+                                order.status === "processing" ? "secondary" :
+                                "outline"
                               }>
                                 {order.status}
                               </Badge>
                             </td>
                             <td className="px-4 py-4">
-                              <Badge variant={order.payment.status === "paid" ? "success" : "warning"}>
+                              <Badge variant={order.payment.status === "paid" ? "default" : "secondary"}>
                                 {order.payment.status}
                               </Badge>
                             </td>

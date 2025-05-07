@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -49,7 +50,12 @@ const NewCategoryForm = ({ onSuccess }: NewCategoryFormProps) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await createCategory(values).unwrap();
+      await createCategory({
+        name: values.name,
+        description: values.description,
+        order: values.order,
+        ...(values.parent ? { parent: values.parent } : {})
+      }).unwrap();
       form.reset();
       onSuccess();
     } catch (error) {

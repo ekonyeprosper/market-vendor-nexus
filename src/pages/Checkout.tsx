@@ -69,16 +69,14 @@ const Checkout = () => {
           productId: item.id,
           quantity: item.quantity
         })),
-        deliveryInfo: {
+        shippingAddress: {
           fullName: data.fullName,
           phoneNumber: data.phoneNumber,
           street: data.street,
           city: data.city,
           state: data.state,
           country: data.country,
-          zipCode: data.zipCode,
-          deliveryMethod: data.deliveryMethod,
-          specialInstructions: data.specialInstructions
+          zipCode: data.zipCode || ""
         }
       };
 
@@ -88,10 +86,10 @@ const Checkout = () => {
       const paymentResult = await initiatePayment(orderResult._id).unwrap();
       
       // Store reference for verification
-      localStorage.setItem('paymentReference', paymentResult.reference);
+      localStorage.setItem('paymentReference', paymentResult.payment.reference);
       
       // Redirect to payment URL
-      window.location.href = paymentResult.paymentUrl;
+      window.location.href = paymentResult.payment.paymentUrl;
       
     } catch (error) {
       toast({
