@@ -1,4 +1,3 @@
-
 import { baseApi } from './baseApi';
 
 interface OrderItem {
@@ -192,6 +191,20 @@ interface AdminOrdersResponse {
   };
 }
 
+export interface OrderStatusUpdateRequest {
+  orderId: string;
+  status: 'delivered' | 'rejected' | 'disputed';
+  reason?: string;
+}
+
+export interface OrderStatusResponse {
+  message: string;
+  order: {
+    _id: string;
+    status: string;
+  };
+}
+
 export const ordersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     createOrder: builder.mutation<{ orderId: string }, CreateOrderRequest>({
@@ -259,6 +272,14 @@ export const ordersApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Orders'],
     }),
+    updateCustomerOrderStatus: builder.mutation<OrderStatusResponse, OrderStatusUpdateRequest>({
+      query: (data) => ({
+        url: `/api/orders/customer/status`,
+        method: 'PUT',
+        body: data
+      }),
+      invalidatesTags: ['Orders'],
+    }),
   }),
 });
 
@@ -270,4 +291,5 @@ export const {
   useGetSellerOrdersQuery,
   useGetCustomerOrdersQuery,
   useGetAdminOrdersQuery,
+  useUpdateCustomerOrderStatusMutation,
 } = ordersApi;
