@@ -1,9 +1,8 @@
-
 import { useParams, Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Star, ShoppingCart, Whatsapp } from "lucide-react";
+import { Star, ShoppingCart, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetPublicSellerProfileQuery } from "@/services/api/userApi";
@@ -161,7 +160,7 @@ const VendorDetail = () => {
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="outline" className="flex gap-2 items-center">
-                      <Whatsapp className="h-4 w-4" /> Contact on WhatsApp
+                      <MessageSquare className="h-4 w-4" /> Contact on WhatsApp
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
@@ -175,7 +174,7 @@ const VendorDetail = () => {
                           By clicking the button below, you will be redirected to WhatsApp to contact this vendor. For your security, we recommend completing all transactions through CampusTrade.
                         </p>
                         <Button onClick={handleContactWhatsApp} className="w-full flex gap-2 justify-center">
-                          <Whatsapp className="h-4 w-4" /> Continue to WhatsApp
+                          <MessageSquare className="h-4 w-4" /> Continue to WhatsApp
                         </Button>
                       </DialogDescription>
                     </DialogHeader>

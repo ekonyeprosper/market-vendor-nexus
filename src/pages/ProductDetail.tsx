@@ -280,10 +280,10 @@ const ProductDetail = () => {
                 </Card>
               ))}
             </div>
-          ) : relatedProductsData && relatedProductsData.products.length > 0 ? (
+          ) : relatedProductsData && relatedProductsData?.products?.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {relatedProductsData.products.map((relatedProduct) => (
-                <Card key={relatedProduct._id} className="overflow-hidden hover:shadow-md transition-shadow">
+              {relatedProductsData?.products?.map((relatedProduct) => (
+                <Card key={relatedProduct?._id} className="overflow-hidden hover:shadow-md transition-shadow">
                   <Link to={`/products/${relatedProduct._id}`}>
                     <div className="aspect-square overflow-hidden">
                       <img 
