@@ -1,12 +1,22 @@
+
 import { useParams, Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Star, ShoppingCart } from "lucide-react";
+import { Star, ShoppingCart, Whatsapp } from "lucide-react";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetPublicSellerProfileQuery } from "@/services/api/userApi";
 import { useGetPublicSellerProductsQuery } from "@/services/api/productsApi";
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { toast } from "@/hooks/use-toast";
 
 const VendorDetail = () => {
   const { vendorId } = useParams();
@@ -50,8 +60,37 @@ const VendorDetail = () => {
         productsCount: vendor.totalProducts,
         location: vendor.businessAddress,
         memberSince: formatDate(vendor.joinedDate),
+        phoneNumber: vendor.phoneNumber || "+2348012345678" // Default number if not provided
       }
     : null;
+
+  // Function to format phone number for WhatsApp
+  const formatWhatsAppNumber = (phoneNumber: string) => {
+    // Remove any non-digit characters
+    const digits = phoneNumber.replace(/\D/g, '');
+    
+    // Ensure it starts with country code
+    if (digits.startsWith('0')) {
+      return '+234' + digits.substring(1); // Convert 0 prefix to +234 (Nigeria)
+    } else if (!digits.startsWith('+')) {
+      return '+' + digits;
+    }
+    
+    return digits;
+  };
+
+  const handleContactWhatsApp = () => {
+    if (vendorData) {
+      const whatsappNumber = formatWhatsAppNumber(vendorData.phoneNumber);
+      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=Hello, I'm interested in your products on CampusTrade.`;
+      window.open(whatsappUrl, '_blank');
+      
+      toast({
+        title: "Contacting Vendor",
+        description: "Remember: Only complete transactions on CampusTrade platform for protection.",
+      });
+    }
+  };
 
   if (isVendorLoading || isProductsLoading) {
     return (
@@ -119,7 +158,29 @@ const VendorDetail = () => {
               </p>
 
               <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-                <Button variant="outline">Contact Vendor</Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" className="flex gap-2 items-center">
+                      <Whatsapp className="h-4 w-4" /> Contact on WhatsApp
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Contact {vendorData.name} on WhatsApp</DialogTitle>
+                      <DialogDescription className="pt-4">
+                        <div className="mb-6 text-amber-600 border border-amber-200 bg-amber-50 p-3 rounded-md">
+                          <strong>Warning:</strong> Any transactions made outside the CampusTrade platform are not covered by our buyer protection policy. CampusTrade is not responsible for any issues arising from external transactions or communications.
+                        </div>
+                        <p className="mb-4">
+                          By clicking the button below, you will be redirected to WhatsApp to contact this vendor. For your security, we recommend completing all transactions through CampusTrade.
+                        </p>
+                        <Button onClick={handleContactWhatsApp} className="w-full flex gap-2 justify-center">
+                          <Whatsapp className="h-4 w-4" /> Continue to WhatsApp
+                        </Button>
+                      </DialogDescription>
+                    </DialogHeader>
+                  </DialogContent>
+                </Dialog>
                 <Button variant="outline">Follow Store</Button>
               </div>
             </div>
