@@ -1,22 +1,59 @@
+export type UserRole = 'admin' | 'seller' | 'customer';
+
+export type AdminPermission = 
+  | 'manage_users'
+  | 'manage_products'
+  | 'manage_orders'
+  | 'manage_categories'
+  | 'manage_settings'
+  | 'view_analytics'
+  | 'manage_files';
+
 export interface LoginRequest {
   email: string;
   password: string;
 }
 
 export interface User {
-  _id?: string; // Backend might use _id
-  id?: string;  // Frontend might reference as id
+  _id: string;
+  id?: string; // Frontend might reference as id
   email: string;
   fullName: string;
-  phoneNumber: string;
-  role: 'admin' | 'seller' | 'customer';
+  phoneNumber?: string;
+  role: UserRole;
+  permissions?: AdminPermission[];
   isVerified: boolean;
   businessName?: string;
   businessAddress?: string;
   adminVerified?: boolean;
-  permissions?: string[];
-  createdAt?: string;
-  updatedAt?: string;
+  governmentId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminUser extends User {
+  role: 'admin';
+  permissions: AdminPermission[];
+  isActive: boolean;
+}
+
+export interface SellerUser extends User {
+  role: 'seller';
+  businessName: string;
+  businessAddress: string;
+  governmentId?: string;
+  adminVerified: boolean;
+}
+
+export interface CustomerUser extends User {
+  role: 'customer';
+}
+
+export type UserWithRole = AdminUser | SellerUser | CustomerUser;
+
+export interface AuthResponse {
+  token: string;
+  user: UserWithRole;
 }
 
 export interface UserProfile {

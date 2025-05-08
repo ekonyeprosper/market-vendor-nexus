@@ -1,13 +1,13 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { CartProvider } from "@/contexts/CartContext";
 import { createElement, useEffect } from "react";
 import { Provider } from 'react-redux';
 import { store } from '@/services/store/store';
 import NetworkStatus from "@/components/common/NetworkStatus";
+import { RoleGuard } from "@/components/auth/RoleGuard";
 
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -64,6 +64,7 @@ const App = () => {
           <Sonner />
           <BrowserRouter>
             <Routes>
+              {/* Public Routes */}
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
@@ -73,24 +74,60 @@ const App = () => {
               <Route path="/categories" element={<Categories />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/order-confirmation" element={<OrderConfirmation />} />
               <Route path="/vendor/:vendorId" element={<VendorDetail />} />
               <Route path="/vendors" element={<Vendors />} />
-              <Route path="/seller/dashboard" element={<SellerDashboard />} />
-              <Route path="/seller/products/new" element={<AddProduct />} />
-              <Route path="/admin/dashboard" element={<AdminDashboard />} />
-              <Route path="/admin/products" element={<AdminProducts />} />
-              <Route path="/admin/users" element={<UserManagement />} />
-              <Route path="/admin/orders" element={<OrdersPage />} />
-              <Route path="/admin/categories" element={<AdminCategories />} />
-              <Route path="/admin/analytics" element={<AnalyticsPage />} />
-              <Route path="/admin/files" element={<FileManagerPage />} />
-              <Route path="/admin/notifications" element={<NotificationsPage />} />
-              <Route path="/admin/support" element={<SupportPage />} />
+              <Route path="/cart" element={<Cart />} />
+
+              {/* Protected Customer Routes */}
+              <Route path="/checkout" element={
+                <RoleGuard roles={['customer']}>
+                  <Checkout />
+                </RoleGuard>
+              } />
+              <Route path="/order-confirmation" element={
+                <RoleGuard roles={['customer']}>
+                  <OrderConfirmation />
+                </RoleGuard>
+              } />
+              <Route path="/customer/dashboard" element={
+                <RoleGuard roles={['customer']}>
+                  <CustomerDashboard />
+                </RoleGuard>
+              } />
+
+              {/* Protected Seller Routes */}
+              <Route path="/seller/*" element={
+                <RoleGuard roles={['seller']}>
+                  <Routes>
+                    <Route path="dashboard" element={<SellerDashboard />} />
+                    <Route path="products/new" element={<AddProduct />} />
+                    <Route path="*" element={<Navigate to="dashboard" />} />
+                  </Routes>
+                </RoleGuard>
+              } />
+
+              {/* Protected Admin Routes */}
+              <Route path="/admin/*" element={
+                <RoleGuard roles={['admin']}>
+                  <Routes>
+                    <Route path="dashboard" element={<AdminDashboard />} />
+                    <Route path="products" element={<AdminProducts />} />
+                    <Route path="users" element={<UserManagement />} />
+                    <Route path="orders" element={<OrdersPage />} />
+                    <Route path="categories" element={<AdminCategories />} />
+                    <Route path="analytics" element={<AnalyticsPage />} />
+                    <Route path="files" element={<FileManagerPage />} />
+                    <Route path="notifications" element={<NotificationsPage />} />
+                    <Route path="support" element={<SupportPage />} />
+                    <Route path="*" element={<Navigate to="dashboard" />} />
+                  </Routes>
+                </RoleGuard>
+              } />
+
+              {/* Payment Verification Route */}
               <Route path="/payment/verify/:reference" element={<PaymentCallback />} />
-              <Route path="/customer/dashboard" element={<CustomerDashboard />} />
+              
+              {/* 404 Route */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
