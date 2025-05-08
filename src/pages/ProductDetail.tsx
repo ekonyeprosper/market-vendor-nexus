@@ -1,6 +1,7 @@
+
 import { useParams, Link } from "react-router-dom";
 import { useAuth } from "@/services/hooks/useAuth";
-import { useGetProductQuery, useGetPublicProductQuery, useGetRelatedProductsQuery, useIncrementProductViewsMutation } from "@/services/api/productsApi";
+import { useGetPublicProductQuery, useGetRelatedProductsQuery, useIncrementProductViewsMutation } from "@/services/api/productsApi";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Star, Heart, Share2, ArrowLeft } from "lucide-react";
 import Layout from "@/components/layout/Layout";
@@ -22,9 +23,11 @@ const ProductDetail = () => {
   // Use authenticated endpoint if user is logged in
   const { data: product, isLoading, error } =  useGetPublicProductQuery(id);
 
-  const { data: relatedProductsData } = useGetRelatedProductsQuery({ 
+  const { data: relatedProductsData, isLoading: relatedProductsLoading } = useGetRelatedProductsQuery({ 
     id: id,
     limit: 4
+  }, {
+    skip: !id // Skip this query if id is not available
   });
 
   // Increment view count on component mount
@@ -256,43 +259,65 @@ const ProductDetail = () => {
           </div>
         </div>
 
-        {/* Related Products section */}
+        {/* Related Products section with proper conditional rendering */}
         <div>
           <h2 className="text-2xl font-bold mb-6">Related Products</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedProductsData?.products.map((relatedProduct) => (
-              <Card key={relatedProduct._id} className="overflow-hidden hover:shadow-md transition-shadow">
-                <Link to={`/products/${relatedProduct._id}`}>
-                  <div className="aspect-square overflow-hidden">
-                    <img 
-                      src={relatedProduct.images[0].url} 
-                      alt={relatedProduct.name}
-                      className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
-                    />
+          {relatedProductsLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[...Array(4)].map((_, index) => (
+                <Card key={index} className="overflow-hidden">
+                  <div className="aspect-square bg-gray-100">
+                    <Skeleton className="h-full w-full" />
                   </div>
-                </Link>
-                <CardContent className="p-4">
-                  <Link to={`/products/${relatedProduct._id}`} className="hover:text-market-600">
-                    <h3 className="font-semibold mb-1 line-clamp-2">{relatedProduct.name}</h3>
-                  </Link>
-                  <div className="flex items-center text-sm mb-2">
-                    <span>{relatedProduct.sellerId.businessName}</span>
-                    <span className="mx-2 text-gray-300">•</span>
-                    <div className="flex items-center">
-                      <Star className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />
-                      <span>{relatedProduct.metadata.rating.average}</span>
+                  <CardContent className="p-4">
+                    <Skeleton className="h-4 w-full mb-2" />
+                    <Skeleton className="h-4 w-2/3 mb-4" />
+                    <div className="flex justify-between items-center">
+                      <Skeleton className="h-6 w-1/4" />
+                      <Skeleton className="h-8 w-8 rounded-full" />
                     </div>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="font-bold">{renderPrice(relatedProduct.price.current)}</span>
-                    <Button size="sm" variant="outline" className="rounded-full w-8 h-8 p-0">
-                      <ShoppingCart className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : relatedProductsData && relatedProductsData.products.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {relatedProductsData.products.map((relatedProduct) => (
+                <Card key={relatedProduct._id} className="overflow-hidden hover:shadow-md transition-shadow">
+                  <Link to={`/products/${relatedProduct._id}`}>
+                    <div className="aspect-square overflow-hidden">
+                      <img 
+                        src={relatedProduct.images[0].url} 
+                        alt={relatedProduct.name}
+                        className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                      />
+                    </div>
+                  </Link>
+                  <CardContent className="p-4">
+                    <Link to={`/products/${relatedProduct._id}`} className="hover:text-market-600">
+                      <h3 className="font-semibold mb-1 line-clamp-2">{relatedProduct.name}</h3>
+                    </Link>
+                    <div className="flex items-center text-sm mb-2">
+                      <span>{relatedProduct.sellerId.businessName}</span>
+                      <span className="mx-2 text-gray-300">•</span>
+                      <div className="flex items-center">
+                        <Star className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />
+                        <span>{relatedProduct.metadata.rating.average}</span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="font-bold">{renderPrice(relatedProduct.price.current)}</span>
+                      <Button size="sm" variant="outline" className="rounded-full w-8 h-8 p-0">
+                        <ShoppingCart className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500 italic">No related products found</p>
+          )}
         </div>
       </div>
     </Layout>
