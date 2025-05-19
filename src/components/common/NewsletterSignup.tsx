@@ -52,7 +52,7 @@ const NewsletterSignup = () => {
             <Button type="submit">Subscribe</Button>
           </form>
           <p className="text-gray-500 text-xs mt-4">
-            By subscribing, you agree to our Privacy Policy and consent to receive updates from CampusTrade.
+            By subscribing, you agree to our Privacy Policy and consent to receive updates from Sellio.
           </p>
         </div>
       </div>

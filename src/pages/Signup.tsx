@@ -143,7 +143,7 @@ const Signup = () => {
             <div className="mx-auto bg-market-100 rounded-full w-16 h-16 flex items-center justify-center mb-2 shadow-md">
               <Shield className="text-market-600 h-7 w-7" />
             </div>
-            <h1 className="text-2xl font-bold text-market-700">CampusTrade Registration</h1>
+            <h1 className="text-2xl font-bold text-market-700">Sellio Registration</h1>
             <p className="text-gray-600 text-sm">
               Join our growing marketplace community
             </p>

@@ -17,7 +17,7 @@ const VendorCTA = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
-            Start Selling on CampusTrade Today
+            Start Selling on Sellio Today
           </h2>
           <p className="text-white/90 text-lg mb-8">
             Join thousands of successful vendors and reach customers worldwide. Our platform provides all the tools you need to grow your business online.

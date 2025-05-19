@@ -290,7 +290,7 @@ const OrderDetailsDialog = ({ order, open, onOpenChange }: OrderDetailsDialogPro
                       File a Dispute
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => {
-                      window.open(`mailto:support@campustrade.com?subject=Order ${order.orderId} Inquiry`, '_blank');
+                      window.open(`mailto:support@Sellio.com?subject=Order ${order.orderId} Inquiry`, '_blank');
                     }}>
                       Contact Support
                     </DropdownMenuItem>

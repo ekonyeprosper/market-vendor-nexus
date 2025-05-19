@@ -42,7 +42,7 @@ const Layout = ({ children }: LayoutProps) => {
                   </div>
                   <div className="hidden md:block">
                     <p className="text-sm font-medium">Admin User</p>
-                    <p className="text-xs text-gray-500">admin@campustrade.com </p>
+                    <p className="text-xs text-gray-500">admin@Sellio.com </p>
                   </div>
                 </div>
               </div>

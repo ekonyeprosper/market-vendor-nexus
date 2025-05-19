@@ -51,7 +51,7 @@ const SupportPage = () => {
                 <div>
                   <h4 className="font-medium">Email Support</h4>
                   <p className="text-sm text-gray-600">
-                    support@campustrade.com
+                    support@Sellio.com
                   </p>
                 </div>
               </div>

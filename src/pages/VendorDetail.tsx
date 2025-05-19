@@ -81,12 +81,12 @@ const VendorDetail = () => {
   const handleContactWhatsApp = () => {
     if (vendorData) {
       const whatsappNumber = formatWhatsAppNumber(vendorData.phoneNumber);
-      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=Hello, I'm interested in your products on CampusTrade.`;
+      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=Hello, I'm interested in your products on Sellio.`;
       window.open(whatsappUrl, '_blank');
       
       toast({
         title: "Contacting Vendor",
-        description: "Remember: Only complete transactions on CampusTrade platform for protection.",
+        description: "Remember: Only complete transactions on Sellio platform for protection.",
       });
     }
   };
@@ -168,10 +168,10 @@ const VendorDetail = () => {
                       <DialogTitle>Contact {vendorData.name} on WhatsApp</DialogTitle>
                       <DialogDescription className="pt-4">
                         <div className="mb-6 text-amber-600 border border-amber-200 bg-amber-50 p-3 rounded-md">
-                          <strong>Warning:</strong> Any transactions made outside the CampusTrade platform are not covered by our buyer protection policy. CampusTrade is not responsible for any issues arising from external transactions or communications.
+                          <strong>Warning:</strong> Any transactions made outside the Sellio platform are not covered by our buyer protection policy. Sellio is not responsible for any issues arising from external transactions or communications.
                         </div>
                         <p className="mb-4">
-                          By clicking the button below, you will be redirected to WhatsApp to contact this vendor. For your security, we recommend completing all transactions through CampusTrade.
+                          By clicking the button below, you will be redirected to WhatsApp to contact this vendor. For your security, we recommend completing all transactions through Sellio.
                         </p>
                         <Button onClick={handleContactWhatsApp} className="w-full flex gap-2 justify-center">
                           <MessageSquare className="h-4 w-4" /> Continue to WhatsApp

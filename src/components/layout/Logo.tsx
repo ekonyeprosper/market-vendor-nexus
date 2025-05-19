@@ -4,11 +4,11 @@ export const Logo = () => {
   return (
     <Link to="/" className="flex items-center gap-2">
       <img 
-        src="/CAMPUSTRADELOGO.JPG" 
-        alt="CampusTrade Logo" 
+        src="/Sellio.JPG" 
+        alt="Sellio Logo" 
         className="h-10 w-auto rounded-lg"
       />
-      <span className="text-xl font-semibold">CampusTrade</span>
+      <span className="text-xl font-semibold">Sellio</span>
     </Link>
   );
 };

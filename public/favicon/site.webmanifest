@@ -1,14 +1,14 @@
 {
-  "name": "CampusTrade",
-  "short_name": "CampusTrade",
+  "name": "Sellio",
+  "short_name": "Sellio",
   "icons": [
     {
-      "src": "/images/CAMPUSTRADELOGO.JPG",
+      "src": "/images/Sellio.JPG",
       "sizes": "192x192",
       "type": "image/jpeg"
     },
     {
-      "src": "/images/CAMPUSTRADELOGO.JPG",
+      "src": "/images/Sellio.JPG",
       "sizes": "512x512",
       "type": "image/jpeg"
     }

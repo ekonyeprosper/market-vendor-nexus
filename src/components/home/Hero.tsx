@@ -17,7 +17,7 @@ const Hero = () => {
               Shop Locally, <span className="text-market-600 inline-block">Connect Globally</span>
             </h1>
             <p className="text-lg text-gray-600 mb-8 max-w-lg">
-              CampusTrade brings together vendors and shoppers in a seamless online marketplace. 
+              Sellio brings together vendors and shoppers in a seamless online marketplace. 
               Discover unique products from local sellers or start selling your own items today.
             </p>
             
