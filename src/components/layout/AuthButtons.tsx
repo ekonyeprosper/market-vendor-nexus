@@ -1,10 +1,9 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 export const AuthButtons = ({ mobile = false, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) => {
   return (
-    <>
+    <div className={`flex ${mobile ? "flex-col" : ""} gap-3`}>
       <Link to="/login" className={mobile ? "flex-1" : ""}>
         <Button
           variant="outline"
@@ -24,6 +23,6 @@ export const AuthButtons = ({ mobile = false, onNavigate }: { mobile?: boolean; 
           Sign up
         </Button>
       </Link>
-    </>
+    </div>
   );
 };

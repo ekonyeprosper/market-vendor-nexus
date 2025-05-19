@@ -103,9 +103,9 @@ const UserManagement = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Button className="ml-4">
+            {/* <Button className="ml-4">
               <User className="mr-2 h-4 w-4" /> Add User
-            </Button>
+            </Button> */}
           </div>
         </div>
         <div className="flex items-center gap-4 mb-6">

@@ -40,11 +40,11 @@ const AdminProducts = () => {
             <h1 className="text-3xl font-bold tracking-tight">Product Management</h1>
             <p className="text-muted-foreground mt-1">Manage and monitor your product catalog</p>
           </div>
-          <Link to="/admin/products/new">
+          {/* <Link to="/admin/products/new">
             <Button className="shadow-sm">
               <Plus className="mr-2 h-4 w-4" /> Add New Product
             </Button>
-          </Link>
+          </Link> */}
         </div>
 
         <Card className="mb-8">

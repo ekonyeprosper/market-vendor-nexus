@@ -33,7 +33,7 @@ const AnalyticsPage = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>Site Traffic</CardTitle>
           </CardHeader>
@@ -48,7 +48,7 @@ const AnalyticsPage = () => {
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     </Layout>
   );

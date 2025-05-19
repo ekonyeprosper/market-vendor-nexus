@@ -62,31 +62,31 @@ const menuItems = [
       },
     ],
   },
-  {
-    group: "System",
-    items: [
-      {
-        title: "File Manager",
-        icon: FileText,
-        path: "/admin/files",
-      },
-      {
-        title: "Notifications",
-        icon: Bell,
-        path: "/admin/notifications",
-      },
-      {
-        title: "Help & Support",
-        icon: HelpCircle,
-        path: "/admin/support",
-      },
-      {
-        title: "Settings",
-        icon: Settings,
-        path: "/admin/settings",
-      },
-    ],
-  },
+  // {
+  //   group: "System",
+  //   items: [
+  //     {
+  //       title: "File Manager",
+  //       icon: FileText,
+  //       path: "/admin/files",
+  //     },
+  //     {
+  //       title: "Notifications",
+  //       icon: Bell,
+  //       path: "/admin/notifications",
+  //     },
+  //     {
+  //       title: "Help & Support",
+  //       icon: HelpCircle,
+  //       path: "/admin/support",
+  //     },
+  //     {
+  //       title: "Settings",
+  //       icon: Settings,
+  //       path: "/admin/settings",
+  //     },
+  //   ],
+  // },
 ];
 
 export function AdminSidebar() {
