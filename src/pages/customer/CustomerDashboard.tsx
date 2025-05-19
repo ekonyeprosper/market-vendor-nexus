@@ -1,10 +1,10 @@
-
 import { useState } from "react";
+import { useSelector } from 'react-redux';
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useGetProfileQuery, useUpdateCustomerProfileMutation } from "@/services/api/userApi";
+import { useGetProfileQuery, useUpdateCustomerProfileMutation, selectShouldFetchProfile } from "@/services/api/userApi";
 import { Badge } from "@/components/ui/badge";
 import { useGetCustomerOrdersQuery } from "@/services/api/ordersApi";
 import { ShoppingBag, User, Heart, Settings, Package, MapPin, CalendarIcon, Clock, ArrowRight } from "lucide-react";
@@ -24,7 +24,9 @@ const CustomerDashboard = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orderDialogOpen, setOrderDialogOpen] = useState(false);
 
-  const { data: profile, isLoading: profileLoading } = useGetProfileQuery();
+  const { data: profile, isLoading: profileLoading } = useGetProfileQuery(undefined, {
+    skip: !useSelector(selectShouldFetchProfile)
+  });
   const { data: ordersData, isLoading: ordersLoading } = useGetCustomerOrdersQuery({
     page: ordersPage,
     limit: ordersLimit

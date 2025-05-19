@@ -48,6 +48,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useSelector } from 'react-redux';
+import { selectShouldFetchProfile } from '@/services/api/userApi';
 
 // Nigerian banks list
 const NIGERIAN_BANKS = [
@@ -100,7 +102,9 @@ const SellerDashboard = () => {
     }
   });
 
-  const { data: profile, isLoading: profileLoading } = useGetProfileQuery();
+  const { data: profile, isLoading: profileLoading } = useGetProfileQuery(undefined, {
+    skip: !useSelector(selectShouldFetchProfile)
+  });
   const { data: productsData, isLoading: productsLoading } = useGetSellerProductsQuery({
     page: productsPage,
     limit: productsLimit,

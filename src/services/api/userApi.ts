@@ -1,6 +1,6 @@
-
 import { baseApi } from './baseApi';
 import { UserProfile, TopSellersResponse } from '../types/auth.types';
+import { RootState } from '../store/store';
 
 export interface PublicSellerProfile {
   businessName: string;
@@ -69,6 +69,15 @@ export const userApi = baseApi.injectEndpoints({
         url: '/api/auth/profile',
         method: 'GET',
       }),
+      // Skip query if not authenticated
+      keepUnusedDataFor: 0, // Don't cache profile data
+      async onQueryStarted(_, { dispatch, getState, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+        } catch (err) {
+          // Handle error silently
+        }
+      },
       providesTags: ['Profile'],
     }),
     getPublicSellerProfile: builder.query<PublicSellerProfile, string>({
@@ -126,3 +135,7 @@ export const {
   useGetTopSellersQuery,
   useGetAllVendorsQuery
 } = userApi;
+
+// Add selector to check auth state
+export const selectShouldFetchProfile = (state: RootState) => 
+  state.auth.isAuthenticated && state.auth.token;
