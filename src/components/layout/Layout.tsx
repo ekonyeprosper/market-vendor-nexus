@@ -6,6 +6,7 @@ import { AdminSidebar } from "../admin/AdminSidebar";
 import { AdminFooter } from "../admin/AdminFooter";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Bell, Folder, User } from "lucide-react";
+import { useGetProfileQuery } from "@/services/api/userApi";
 
 interface LayoutProps {
   children: ReactNode;
@@ -14,6 +15,8 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin");
+  const {data, isLoading} =  useGetProfileQuery() 
+  
 
   if (isAdminRoute) {
     return (
@@ -39,7 +42,7 @@ const Layout = ({ children }: LayoutProps) => {
                   </div>
                   <div className="hidden md:block">
                     <p className="text-sm font-medium">Admin User</p>
-                    <p className="text-xs text-gray-500">admin@campustrade.com</p>
+                    <p className="text-xs text-gray-500">admin@campustrade.com </p>
                   </div>
                 </div>
               </div>

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Layout from "@/components/layout/Layout";
@@ -26,16 +25,18 @@ import { Package } from "lucide-react";
 const OrdersPage = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState("all");
   const [sort, setSort] = useState("-createdAt");
 
   const { data, isLoading } = useGetAdminOrdersQuery({
     page,
     limit: 10,
-    status,
-    sort,
-    search,
+    // status: status === 'all' ? undefined : status,
+    // sort,
+    // search,
   });
+
+  console.log(data)
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -79,7 +80,7 @@ const OrdersPage = () => {
                     <SelectValue placeholder="Filter status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Status</SelectItem>
+                    <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="processing">Processing</SelectItem>
                     <SelectItem value="shipped">Shipped</SelectItem>

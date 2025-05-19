@@ -9,11 +9,13 @@ import Layout from "@/components/layout/Layout";
 import { useLoginMutation } from "@/services/api/authApi";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "@/services/store/slices/authSlice";
+import { Eye, EyeOff } from "lucide-react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -94,14 +96,27 @@ const Login = () => {
                     Forgot password?
                   </Link>
                 </div>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="mt-1"
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="mt-1"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-[60%] transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
               </div>
               <div className="flex items-center">
                 <Checkbox
@@ -119,8 +134,6 @@ const Login = () => {
               {isLoading ? "Signing in..." : "Sign in"}
             </Button>
           </form>
-
-      
 
           <div className="text-center text-sm">
             <span className="text-gray-600">Don't have an account?</span>{" "}
