@@ -1,4 +1,3 @@
-
 import { ShoppingCart, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -7,9 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/services/hooks/useCart";
 import { useGetTrendingProductsQuery } from "@/services/api/productsApi";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatCurrency } from "@/utils/currency";
 
 const TrendingProducts = () => {
-  const { data, isLoading, error } = useGetTrendingProductsQuery();
+  const { data, isLoading, error } = useGetTrendingProductsQuery({});
   const { addToCart } = useCart();
 
   const handleAddToCart = (product: any) => {
@@ -53,7 +53,9 @@ const TrendingProducts = () => {
 
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {data?.products.map((product) => (
+        {data?.products.map((product) =>{
+console.log(JSON.stringify(product, null, 2))
+          return  (
           <Card
             key={product.id}
             className="bg-white rounded-xl overflow-hidden shadow hover:shadow-lg transition-shadow group"
@@ -95,10 +97,10 @@ const TrendingProducts = () => {
               </div>
               <div className="flex justify-between items-center">
                 <div>
-                  <span className="text-lg font-bold">${product.price.current.toFixed(2)}</span>
+                  <span className="text-lg font-bold">{formatCurrency(product.price.current)}</span>
                   {product.price.compareAt && (
                     <span className="text-sm text-gray-500 line-through ml-2">
-                      ${product.price.compareAt.toFixed(2)}
+                      {formatCurrency(product.price.compareAt)}
                     </span>
                   )}
                 </div>
@@ -112,7 +114,10 @@ const TrendingProducts = () => {
               </div>
             </CardContent>
           </Card>
-        ))}
+        )
+        }
+       
+        )}
       </div>
     );
   };

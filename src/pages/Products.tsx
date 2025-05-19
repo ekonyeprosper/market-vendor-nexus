@@ -35,6 +35,7 @@ import { useCart } from "@/services/hooks/useCart";
 import FiltersSection from "@/components/products/FiltersSection";
 import ProductsList from "@/components/products/ProductsList";
 import { Product } from "@/services/types/product.types";
+import { formatCurrency } from "@/utils/currency";
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -298,7 +299,7 @@ const Products = () => {
                     
                     {(priceRange[0] > 0 || priceRange[1] < 500) && (
                       <Badge variant="secondary" className="flex items-center gap-1">
-                        ${priceRange[0]} - ${priceRange[1]}
+                        {formatCurrency(priceRange[0])} - {formatCurrency(priceRange[1])}
                         <button onClick={() => setPriceRange([0, 500])}>
                           <X className="h-3 w-3 ml-1" />
                         </button>
