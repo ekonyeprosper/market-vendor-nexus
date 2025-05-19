@@ -1,9 +1,41 @@
-
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useEffect, useRef } from "react";
 
 const About = () => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const scrollContainer = scrollRef.current;
+    if (!scrollContainer) return;
+
+    const scrollContent = scrollContainer.firstElementChild as HTMLElement;
+    if (!scrollContent) return;
+
+    // Clone the content for seamless scrolling
+    const clone = scrollContent.cloneNode(true) as HTMLElement;
+    scrollContainer.appendChild(clone);
+
+    // Calculate scroll step
+    const step = 1; // Adjust speed by changing this value
+    let position = 0;
+
+    const scroll = () => {
+      position += step;
+      scrollContainer.scrollLeft = position;
+
+      if (position >= scrollContent.offsetWidth) {
+        position = 0;
+        scrollContainer.scrollLeft = 0;
+      }
+    };
+
+    const animationId = setInterval(scroll, 30);
+
+    return () => clearInterval(animationId);
+  }, []);
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-12">
@@ -19,7 +51,7 @@ const About = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center mb-24">
           <div>
             <img
-              src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=800&auto=format&fit=crop"
+              src="/images/fullteam.png"
               alt="Our Mission"
               className="rounded-lg shadow-xl object-cover h-[400px] w-full"
             />
@@ -110,41 +142,87 @@ const About = () => {
             <span className="text-market-600 font-semibold text-sm uppercase tracking-wider">Our Leadership</span>
             <h2 className="text-4xl font-bold mt-2">Meet Our Team</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              {
-                name: "Sarah Johnson",
-                role: "CEO & Founder",
-                image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop"
-              },
-              {
-                name: "Michael Davis",
-                role: "CTO",
-                image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=300&auto=format&fit=crop"
-              },
-              {
-                name: "Emily Chen",
-                role: "Head of Marketing",
-                image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=300&auto=format&fit=crop"
-              },
-              {
-                name: "David Wilson",
-                role: "Operations Director",
-                image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=300&auto=format&fit=crop"
-              }
-            ].map((member, index) => (
-              <div key={index} className="text-center">
-                <div className="relative mx-auto w-48 h-48 mb-4 rounded-full overflow-hidden">
-                  <img 
-                    src={member.image} 
-                    alt={member.name} 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <h3 className="text-xl font-bold">{member.name}</h3>
-                <p className="text-gray-600">{member.role}</p>
+          <div className="relative overflow-hidden">
+            <div 
+              ref={scrollRef}
+              className="overflow-x-hidden whitespace-nowrap"
+            >
+              <div className="inline-flex gap-8 px-4">
+                {[
+                  {
+                    name: "Egungwu Ikenna Emmanuel",
+                    role: "CEO & Founder",
+                    image: "/images/ceo.png"
+                  },
+                  {
+                    name: "Michael Davis",
+                    role: "CTO",
+                    image: "/images/cto.png"
+                  },
+                  {
+                    name: "Chris Nduka Blessing",
+                    role: "Head of Marketing",
+                    image: "/images/hom.png"
+                  },
+                  {
+                    name: "Favy",
+                    role: "Public Relation Officer",
+                    image: "/images/rpo.png"
+                  },
+                  {
+                    name: "Sarah Johnson",
+                    role: "Product Manager",
+                    image: "/images/pm.png"
+                  },
+                  {
+                    name: "David Chen",
+                    role: "Lead Developer",
+                    image: "/images/dev.png"
+                  },
+                  {
+                    name: "Lisa Anderson",
+                    role: "UX Director",
+                    image: "/images/ux.png"
+                  },
+                  {
+                    name: "James Wilson",
+                    role: "Sales Director",
+                    image: "/images/sales.png"
+                  },
+                  {
+                    name: "Emily Brown",
+                    role: "Customer Success",
+                    image: "/images/cs.png"
+                  },
+                  {
+                    name: "Alex Martinez",
+                    role: "Operations Manager",
+                    image: "/images/ops.png"
+                  },
+                  {
+                    name: "Rachel Kim",
+                    role: "Finance Director",
+                    image: "/images/finance.png"
+                  }
+                ].map((member, index) => (
+                  <div 
+                    key={index} 
+                    className="inline-block w-48 text-center"
+                    style={{ animation: 'none' }} // Prevent default hover animations
+                  >
+                    <div className="relative mx-auto w-48 h-48 mb-4 rounded-full overflow-hidden">
+                      <img 
+                        src={member.image} 
+                        alt={member.name} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <h3 className="text-xl font-bold whitespace-normal">{member.name}</h3>
+                    <p className="text-gray-600 whitespace-normal">{member.role}</p>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </div>

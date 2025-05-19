@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 
 const FeaturedCategories = () => {
-  const { data, isLoading, error } = useGetPopularCategoriesQuery();
+  const { data, isLoading, error } = useGetPopularCategoriesQuery({ limit: 8 });
   
   const renderContent = () => {
     if (isLoading) {
