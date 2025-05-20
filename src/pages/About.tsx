@@ -170,24 +170,24 @@ const About = () => {
                     image: "/images/rpo.png"
                   },
                   {
-                    name: "Sarah Johnson",
-                    role: "Product Manager",
-                    image: "/images/pm.png"
+                    name: "Okoye chidozie Augustine ",
+                    role: "Advert team manager",
+                    image: "/images/atm.png"
                   },
                   {
-                    name: "David Chen",
-                    role: "Lead Developer",
-                    image: "/images/dev.png"
+                    name: "Egungwu Chisom Nancy",
+                    role: "Head of Publication",
+                    image: "/images/hop.png"
                   },
                   {
-                    name: "Lisa Anderson",
-                    role: "UX Director",
-                    image: "/images/ux.png"
+                    name: "Azide Mmesoma",
+                    role: "Secretary",
+                    image: "/images/sec.png"
                   },
                   {
-                    name: "James Wilson",
-                    role: "Sales Director",
-                    image: "/images/sales.png"
+                    name: "Estella",
+                    role: "Head of Graphic Design",
+                    image: "/images/hogd.png"
                   },
                   {
                     name: "Emily Brown",
@@ -200,9 +200,9 @@ const About = () => {
                     image: "/images/ops.png"
                   },
                   {
-                    name: "Rachel Kim",
-                    role: "Finance Director",
-                    image: "/images/finance.png"
+                    name: "Nwabumma mmesoma favour",
+                    role: "Treasurer",
+                    image: "/images/tre.png"
                   }
                 ].map((member, index) => (
                   <div 
