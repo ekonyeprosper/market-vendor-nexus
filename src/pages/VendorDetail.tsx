@@ -180,7 +180,7 @@ const VendorDetail = () => {
                     </DialogHeader>
                   </DialogContent>
                 </Dialog>
-                <Button variant="outline">Follow Store</Button>
+                {/* <Button variant="outline">Follow Store</Button> */}
               </div>
             </div>
           </div>
