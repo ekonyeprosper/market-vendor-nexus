@@ -1,4 +1,4 @@
-import { useState } from "react";
+import  { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { useCart } from "@/services/hooks/useCart";
@@ -29,7 +29,7 @@ const formSchema = z.object({
   street: z.string().min(5, "Street address must be at least 5 characters"),
   city: z.string().min(2, "City must be at least 2 characters"),
   state: z.string().min(2, "State must be at least 2 characters"),
-  country: z.string().min(2, "Country must be at least 2 characters"),
+  country: z.literal("Nigeria"), // Force Nigeria as the only option
   zipCode: z.string().optional(),
   deliveryMethod: z.enum(['standard', 'express']),
   specialInstructions: z.string().optional(),
@@ -40,9 +40,10 @@ type CheckoutFormValues = z.infer<typeof formSchema>;
 const Checkout = () => {
   const { items, total, clearCart } = useCart();
   const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [createOrder] = useCreateCustomerOrderMutation();
-  const [initiatePayment] = useInitiateCustomerPaymentMutation();
+  const [createOrder, { isLoading: isCreatingOrder }] = useCreateCustomerOrderMutation();
+  const [initiatePayment, { isLoading: isInitiatingPayment }] = useInitiateCustomerPaymentMutation();
+
+  const isSubmitting = isCreatingOrder || isInitiatingPayment;
 
   const form = useForm<CheckoutFormValues>({
     resolver: zodResolver(formSchema),
@@ -52,7 +53,7 @@ const Checkout = () => {
       street: "",
       city: "",
       state: "",
-      country: "",
+      country: "Nigeria", // Set default country
       zipCode: "",
       deliveryMethod: "standard",
       specialInstructions: "",
@@ -60,26 +61,36 @@ const Checkout = () => {
   });
 
   const onSubmit = async (data: CheckoutFormValues) => {
-    setIsSubmitting(true);
-    
+    if (items.length === 0) {
+      toast({
+        title: "Cart is empty",
+        description: "Please add items to your cart before checkout",
+        variant: "destructive"
+      });
+      navigate('/products');
+      return;
+    }
+
     try {
-      // Create order
+      // Create order with modified structure
       const orderData = {
         items: items.map(item => ({
           productId: item.id,
           quantity: item.quantity
         })),
-        shippingAddress: {
+        shippingDetails: { // Changed from shippingAddress to match backend
           fullName: data.fullName,
           phoneNumber: data.phoneNumber,
-          street: data.street,
-          city: data.city,
-          state: data.state,
-          country: data.country,
-          zipCode: data.zipCode || ""
+          address: {  // Nested address object
+            street: data.street,
+            city: data.city,
+            state: data.state,
+            country: data.country,
+            zipCode: data.zipCode || ""
+          }
         }
       };
-
+console.log(orderData)
       const orderResult = await createOrder(orderData).unwrap();
       
       // Initiate payment
@@ -98,9 +109,32 @@ const Checkout = () => {
         variant: "destructive"
       });
     } finally {
-      setIsSubmitting(false);
+      // setIsSubmitting(false);
     }
   };
+
+  // Redirect if cart is empty
+  useEffect(() => {
+    if (items.length === 0) {
+      toast({
+        title: "Cart is empty",
+        description: "Please add items to your cart before checkout",
+        variant: "destructive"
+      });
+      navigate('/products');
+    }
+  }, [items, navigate]);
+
+  // Show loading state while checking cart
+  if (items.length === 0) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">Redirecting to products...</div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -212,9 +246,13 @@ const Checkout = () => {
                       <FormItem>
                         <FormLabel>Country</FormLabel>
                         <FormControl>
-                          <Input placeholder="Country" {...field} />
+                          <Input 
+                            value="Nigeria" 
+                            disabled 
+                            className="bg-gray-50"
+                          />
                         </FormControl>
-                        <FormMessage />
+                        <FormDescription>Currently only available in Nigeria</FormDescription>
                       </FormItem>
                     )}
                   />
@@ -259,7 +297,9 @@ const Checkout = () => {
                     className="w-full md:w-auto"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "Processing..." : "Proceed to Payment"}
+                    {isCreatingOrder ? "Creating Order..." : 
+                     isInitiatingPayment ? "Initiating Payment..." : 
+                     "Proceed to Payment"}
                   </Button>
                 </form>
               </Form>

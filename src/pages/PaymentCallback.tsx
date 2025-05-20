@@ -1,45 +1,58 @@
-
-import { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useVerifyPaymentQuery } from '@/services/api/ordersApi';
-import { toast } from '@/hooks/use-toast';
+import { useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useVerifyPaymentQuery } from "@/services/api/ordersApi";
+import { useToast } from "@/hooks/use-toast";
 import Layout from "@/components/layout/Layout";
+import { Loader2 } from "lucide-react";
 
-export const PaymentCallback = () => {
-  const { reference } = useParams<{ reference: string }>();
+const PaymentCallback = () => {
+  const [searchParams] = useSearchParams();
+  const reference = searchParams.get('reference');
   const navigate = useNavigate();
+  const { toast } = useToast();
   
-  const { data, isLoading, error } = useVerifyPaymentQuery(reference || '', { 
-    skip: !reference 
+  const { data, isError, error } = useVerifyPaymentQuery(reference || '', {
+    skip: !reference,
   });
 
   useEffect(() => {
-    if (data?.order) {
-      const orderAmount = data.order.totals?.final || data.order.total || 0;
-      localStorage.setItem('orderAmount', orderAmount.toString());
-      localStorage.setItem('orderReference', data.payment.reference);
-      navigate('/order-confirmation');
-    } else if (error) {
+    if (data?.success) {
+      // Store order details for confirmation page
+      localStorage.setItem('orderReference', data?.transaction?.reference || '');
+      localStorage.setItem('orderAmount', data.order?.totals?.final?.toString() || '0');
+      
+      toast({
+        title: "Payment Successful",
+        description: "Your order has been confirmed",
+        variant: "default",
+      });
+
+      // Clear cart and redirect to order confirmation
+      localStorage.removeItem('cart');
+      navigate(`/order-confirmation`);
+    }
+
+    if (isError) {
       toast({
         title: "Payment Verification Failed",
-        description: "There was an issue verifying your payment. Please contact support if your account was debited.",
+        description: error?.data?.message || "There was an error verifying your payment",
         variant: "destructive",
       });
-      navigate('/checkout');
+      navigate('/cart');
     }
-  }, [data, error, navigate]);
+  }, [data, isError, error]);
 
-  if (isLoading || !reference) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-16">
-          <div className="text-center">Verifying payment...</div>
+  return (
+    <Layout>
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-market-600 mx-auto mb-4" />
+          <h2 className="text-2xl font-semibold mb-2">Verifying Payment</h2>
+          <p className="text-gray-600">Please wait while we confirm your payment...</p>
         </div>
-      </Layout>
-    );
-  }
-
-  return null;
+      </div>
+    </Layout>
+  );
 };
 
 export default PaymentCallback;

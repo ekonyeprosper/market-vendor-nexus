@@ -1,4 +1,3 @@
-
 export interface OrderProduct {
   id: string;
   name: string;
@@ -119,13 +118,33 @@ export interface PaymentResponse {
 }
 
 export interface PaymentVerificationResponse {
-  order: {
+  success: boolean;
+  order?: {
     _id: string;
     status: string;
-    total: number;
-    reference: string;
+    payment: {
+      status: string;
+      transactionId: string;
+      method: string;
+    };
+    totals: {
+      subtotal: number;
+      tax: number;
+      shipping: number;
+      final: number;
+    };
   };
-  verified: boolean;
+  transaction?: {
+    reference: string;
+    status: string;
+    amount: number;
+    currency: string;
+  };
+  message?: string;
+  details?: {
+    paystackError?: string;
+    serverError?: string;
+  };
 }
 
 export interface AdminOrder {

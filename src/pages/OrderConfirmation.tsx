@@ -37,19 +37,19 @@ const OrderConfirmation = () => {
                 <span>Order Number</span>
                 <span className="font-mono">{orderRef}</span>
               </div>
-              <div className="flex justify-between">
+              {/* <div className="flex justify-between">
                 <span>Total Amount</span>
                 <span>{formatCurrency(orderAmount)}</span>
-              </div>
+              </div> */}
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/products">
               <Button variant="outline">Continue Shopping</Button>
             </Link>
-            <Link to="/orders">
+            {/* <Link to="/orders">
               <Button>View Order Status</Button>
-            </Link>
+            </Link> */}
           </div>
         </div>
       </div>

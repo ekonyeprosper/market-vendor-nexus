@@ -227,8 +227,8 @@ export const ordersApi = baseApi.injectEndpoints({
         method: 'POST',
       }),
     }),
-    verifyPayment: builder.query<VerificationResponse, string>({
-      query: (reference) => `/api/orders/verify/${reference}`,
+    verifyPayment: builder.query<any, string>({
+      query: (reference) => `/api/orders/verify-payment/${reference}`,
     }),
     getSellerOrders: builder.query<SellerOrdersResponse, { page?: number; limit?: number }>({
       query: (params) => ({
