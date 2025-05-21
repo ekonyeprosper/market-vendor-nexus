@@ -185,7 +185,7 @@ const About = () => {
                     image: "/images/sec.png"
                   },
                   {
-                    name: "Estella",
+                    name: "Arinze Stella",
                     role: "Head of Graphic Design",
                     image: "/images/hogd.png"
                   },
