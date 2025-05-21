@@ -90,7 +90,6 @@ const Checkout = () => {
           }
         }
       };
-console.log(orderData)
       const orderResult = await createOrder(orderData).unwrap();
       
       // Initiate payment

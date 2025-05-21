@@ -21,7 +21,13 @@ const AdminProducts = () => {
     sort: "-createdAt"  
   });
 
-  console.log(data)
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-NG', {
+      style: 'currency',
+      currency: 'NGN',
+      minimumFractionDigits: 0
+    }).format(amount);
+  };
 
   const filteredProducts = data?.products.filter(product => 
     product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
@@ -40,11 +46,7 @@ const AdminProducts = () => {
             <h1 className="text-3xl font-bold tracking-tight">Product Management</h1>
             <p className="text-muted-foreground mt-1">Manage and monitor your product catalog</p>
           </div>
-          {/* <Link to="/admin/products/new">
-            <Button className="shadow-sm">
-              <Plus className="mr-2 h-4 w-4" /> Add New Product
-            </Button>
-          </Link> */}
+          
         </div>
 
         <Card className="mb-8">
@@ -116,7 +118,7 @@ const AdminProducts = () => {
                         </TableCell>
                         <TableCell className="font-medium">{product.name}</TableCell>
                         <TableCell>{product.category.name}</TableCell>
-                        <TableCell>${product.price.current.toFixed(2)}</TableCell>
+                        <TableCell>{formatCurrency(product.price.current)}</TableCell>
                         <TableCell>{product.seller.businessName}</TableCell>
                         <TableCell>
                           <Badge 
