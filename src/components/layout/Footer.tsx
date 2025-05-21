@@ -107,26 +107,18 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold text-lg mb-4">Vendor</h3>
             <ul className="space-y-2">
-              <li>
-                <Link to="/seller/login" className="text-gray-600 hover:text-market-600">
-                  Seller Login
-                </Link>
-              </li>
-              <li>
-                <Link to="/seller/register" className="text-gray-600 hover:text-market-600">
-                  Become a Seller
-                </Link>
-              </li>
-              <li>
-                <Link to="/seller/dashboard" className="text-gray-600 hover:text-market-600">
-                  Vendor Dashboard
-                </Link>
-              </li>
-              <li>
-                <Link to="/seller/guide" className="text-gray-600 hover:text-market-600">
-                  Seller Guide
-                </Link>
-              </li>
+              {[
+                { path: "/seller/login", label: "Seller Login" },
+                { path: "/seller/register", label: "Become a Seller" },
+                // { path: "/seller/dashboard", label: "Vendor Dashboard" },
+                { path: "/seller/guide", label: "Seller Guide" }
+              ].map(({ path, label }) => (
+                <li key={path}>
+                  <Link to={path} className="text-gray-600 hover:text-market-600">
+                    {label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
