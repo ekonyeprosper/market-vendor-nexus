@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { 
   AreaChart, 
@@ -11,13 +10,13 @@ import {
 } from "recharts";
 
 const data = [
-  { name: "Jan 1", sales: 4000 },
-  { name: "Jan 5", sales: 3000 },
-  { name: "Jan 10", sales: 5000 },
-  { name: "Jan 15", sales: 2780 },
-  { name: "Jan 20", sales: 1890 },
-  { name: "Jan 25", sales: 2390 },
-  { name: "Jan 30", sales: 3490 }
+  // { name: "Jan 1", sales: 4000 },
+  // { name: "Jan 5", sales: 3000 },
+  // { name: "Jan 10", sales: 5000 },
+  // { name: "Jan 15", sales: 2780 },
+  // { name: "Jan 20", sales: 1890 },
+  // { name: "Jan 25", sales: 2390 },
+  // { name: "Jan 30", sales: 3490 }
 ];
 
 export const SalesChart = () => {
@@ -52,10 +51,10 @@ export const SalesChart = () => {
             tickLine={false}
             tickMargin={10}
             tick={{ fontSize: 12, fill: '#888' }}
-            tickFormatter={(value) => `$${value}`}
+            tickFormatter={(value) => `₦${value.toLocaleString()}`}
           />
           <Tooltip 
-            formatter={(value) => [`$${value}`, 'Sales']}
+            formatter={(value) => [`₦${value.toLocaleString()}`, 'Sales']}
             contentStyle={{ 
               borderRadius: '8px',
               border: '1px solid #eee',
