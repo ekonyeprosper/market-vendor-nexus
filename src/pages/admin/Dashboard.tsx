@@ -5,7 +5,7 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { SalesChart } from "@/components/dashboard/SalesChart";
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useGetDashboardStatsQuery } from "@/services/api/adminApi";
+import { useGetAdminDashboardStatsQuery } from "@/services/api/ordersApi";
 import { 
   Select,
   SelectContent,
@@ -16,8 +16,8 @@ import {
 import { StatCard } from "@/components/dashboard/StatCard";
 
 const AdminDashboard = () => {
-  const [timeframe, setTimeframe] = useState('month');
-  const { data: stats, isLoading } = useGetDashboardStatsQuery(timeframe);
+  const [timeframe, setTimeframe] = useState<any>('month');
+  const { data: dashboardStats, isLoading } = useGetAdminDashboardStatsQuery({ timeframe });
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-NG', {
@@ -65,22 +65,22 @@ const AdminDashboard = () => {
           <StatCard
             icon={BarChart3}
             title="Total Revenue"
-            value={formatCurrency(stats?.overview.totalRevenue || 0)}
+            value={formatCurrency(dashboardStats?.overview.totalRevenue || 0)}
           />
           <StatCard
             icon={Package}
             title="Total Orders"
-            value={stats?.overview.totalOrders.toString() || '0'}
+            value={dashboardStats?.overview.totalOrders.toString() || '0'}
           />
           <StatCard
             icon={Users}
-            title="Total Customers"
-            value={stats?.overview.totalCustomers.toString() || '0'}
+            title="Average Order Value"
+            value={formatCurrency(dashboardStats?.overview.avgOrderValue || 0)}
           />
           <StatCard
             icon={Clock}
             title="Pending Orders"
-            value={stats?.overview.pendingOrders.toString() || '0'}
+            value={dashboardStats?.overview.pendingOrders.toString() || '0'}
           />
         </div>
 
@@ -99,7 +99,7 @@ const AdminDashboard = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <SalesChart data={stats?.salesChart} />
+              <SalesChart data={dashboardStats?.salesChart} />
             </CardContent>
           </Card>
 
@@ -108,7 +108,7 @@ const AdminDashboard = () => {
               <CardTitle className="text-lg font-medium">Recent Activity</CardTitle>
             </CardHeader>
             <CardContent>
-              <ActivityFeed />
+              <ActivityFeed activities={dashboardStats?.recentOrders} />
             </CardContent>
           </Card>
         </div>

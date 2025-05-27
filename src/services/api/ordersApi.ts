@@ -191,6 +191,18 @@ interface AdminOrdersResponse {
   };
 }
 
+interface AdminDashboardResponse {
+  totalOrders: number;
+  totalRevenue: number;
+  recentOrders: Order[];
+  ordersByStatus: {
+    processing: number;
+    shipped: number;
+    delivered: number;
+    cancelled: number;
+  };
+}
+
 export interface OrderStatusUpdateRequest {
   orderId: string;
   status: 'delivered' | 'rejected' | 'disputed';
@@ -272,6 +284,15 @@ export const ordersApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Orders'],
     }),
+    getAdminDashboardStats: builder.query<any, { timeframe?: 'day' | 'week' | 'month' | 'year' }>({
+      query: (params) => ({
+        url: '/api/orders/admin/dashboard',
+        params: {
+          timeframe: params?.timeframe || 'month'
+        }
+      }),
+      providesTags: ['Orders'],
+    }),
     updateCustomerOrderStatus: builder.mutation<OrderStatusResponse, OrderStatusUpdateRequest>({
       query: (data) => ({
         url: `/api/orders/customer/status`,
@@ -291,5 +312,6 @@ export const {
   useGetSellerOrdersQuery,
   useGetCustomerOrdersQuery,
   useGetAdminOrdersQuery,
+  useGetAdminDashboardStatsQuery,
   useUpdateCustomerOrderStatusMutation,
 } = ordersApi;
