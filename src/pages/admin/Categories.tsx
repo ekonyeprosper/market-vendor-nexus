@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Trash2, Plus, MoreVertical, Edit } from "lucide-react";
+import { Trash2, Plus, MoreVertical, Edit, ImageIcon } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -86,6 +86,19 @@ const AdminCategories = () => {
             data?.categories.map(category => (
               <Card key={category.id} className="group hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
+                  {category.image ? (
+                    <div className="w-full h-48 mb-4 rounded-lg overflow-hidden">
+                      <img 
+                        src={category.image} 
+                        alt={category.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-full h-48 mb-4 rounded-lg bg-slate-100 flex items-center justify-center">
+                      <ImageIcon className="h-12 w-12 text-slate-400" />
+                    </div>
+                  )}
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
@@ -97,11 +110,6 @@ const AdminCategories = () => {
                       <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
                         {category.description}
                       </p>
-                      {category.parent && (
-                        <p className="text-sm">
-                          Parent: <span className="font-medium">{category.parent.name}</span>
-                        </p>
-                      )}
                       <Badge variant="outline" className="mt-2">Order: {category.order}</Badge>
                     </div>
                     <DropdownMenu>
