@@ -1,4 +1,3 @@
-
 import { baseApi } from './baseApi';
 import { 
   Category, 
@@ -60,6 +59,18 @@ export const categoriesApi = baseApi.injectEndpoints({
         { type: 'Categories', id: 'STATS' },
         { type: 'Categories', id: 'POPULAR' }
       ]
+    }),
+    
+    deleteCategory: builder.mutation<{ message: string }, string>({
+      query: (id) => ({
+        url: `/api/categories/${id}`,
+        method: 'DELETE'
+      }),
+      invalidatesTags: [
+        { type: 'Categories', id: 'LIST' },
+        { type: 'Categories', id: 'STATS' },
+        { type: 'Categories', id: 'POPULAR' }
+      ]
     })
   })
 });
@@ -68,5 +79,6 @@ export const {
   useGetCategoriesQuery,
   useGetCategoryStatsQuery,
   useGetPopularCategoriesQuery,
-  useCreateCategoryMutation
+  useCreateCategoryMutation,
+  useDeleteCategoryMutation
 } = categoriesApi;
