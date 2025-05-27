@@ -1,9 +1,12 @@
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import CountUp from 'react-countup';
 
 const About = () => {
+  const [isStatsVisible, setIsStatsVisible] = useState(false);
+  const statsRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -34,6 +37,23 @@ const About = () => {
     const animationId = setInterval(scroll, 30);
 
     return () => clearInterval(animationId);
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsStatsVisible(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (statsRef.current) {
+      observer.observe(statsRef.current);
+    }
+
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -119,18 +139,43 @@ const About = () => {
         </div>
 
         {/* Stats Section */}
-        <div className="bg-gradient-to-r from-market-600 to-purple-600 py-16 px-6 rounded-2xl mb-24">
+        <div ref={statsRef} className="bg-gradient-to-r from-market-600 to-purple-600 py-16 px-6 rounded-2xl mb-24">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="text-5xl font-bold text-white mb-2">1000+</div>
+              <div className="text-5xl font-bold text-white mb-2">
+                {isStatsVisible && (
+                  <CountUp
+                    end={1000}
+                    duration={2.5}
+                    separator=","
+                    suffix="+"
+                  />
+                )}
+              </div>
               <div className="text-lg text-white/80">Active Sellers</div>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold text-white mb-2">50k+</div>
+              <div className="text-5xl font-bold text-white mb-2">
+                {isStatsVisible && (
+                  <CountUp
+                    end={50}
+                    duration={2.5}
+                    suffix="k+"
+                  />
+                )}
+              </div>
               <div className="text-lg text-white/80">Products Listed</div>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold text-white mb-2">100k+</div>
+              <div className="text-5xl font-bold text-white mb-2">
+                {isStatsVisible && (
+                  <CountUp
+                    end={100}
+                    duration={2.5}
+                    suffix="k+"
+                  />
+                )}
+              </div>
               <div className="text-lg text-white/80">Happy Customers</div>
             </div>
           </div>
