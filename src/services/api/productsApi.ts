@@ -1,4 +1,3 @@
-
 import { baseApi } from './baseApi';
 import { 
   Product, 
@@ -197,10 +196,18 @@ export const productsApi = baseApi.injectEndpoints({
           ...params
         }
       }),
+      extraOptions: {
+        refetchOnMountOrArgChange: false,
+        refetchOnReconnect: false
+      }
     }),
 
     getSellerDashboardStats: builder.query<DashboardStats, void>({
-      query: () => '/api/products/seller/dashboard'
+      query: () => '/api/products/seller/dashboard',
+      extraOptions: {
+        refetchOnMountOrArgChange: false,
+        refetchOnReconnect: false
+      }
     }),
 
     updateProductStatus: builder.mutation<UpdateProductStatusResponse, {
@@ -213,6 +220,10 @@ export const productsApi = baseApi.injectEndpoints({
         body: { status }
       }),
       invalidatesTags: ['Products'],
+      extraOptions: {
+        refetchOnMountOrArgChange: false,
+        refetchOnReconnect: false
+      }
     }),
   }),
 });

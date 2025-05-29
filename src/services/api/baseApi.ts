@@ -37,14 +37,6 @@ export const baseApi = createApi({
   reducerPath: 'api',
   tagTypes: ['Categories', 'Products', 'Users', 'Orders', 'Profile', 'Sellers'],
 
-  // Add default cache configuration
-  // keepUnusedDataFor: 300, // Keep unused data in cache for 5 minutes
-
-  // Add refetch configuration
-  // refetchOnMountOrArgChange: 30, // Refetch after 30 seconds
-  // refetchOnFocus: false, // Don't refetch when window regains focus
-  refetchOnReconnect: true, // Refetch on reconnection
-
   baseQuery: baseQueryWithReauth,
   endpoints: () => ({}),
 });

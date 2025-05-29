@@ -1,4 +1,3 @@
-
 import { baseApi } from './baseApi';
 import { 
   LoginRequest, 
@@ -18,6 +17,10 @@ export const authApi = baseApi.injectEndpoints({
         method: 'POST',
         body: credentials,
       }),
+      extraOptions: {
+        refetchOnMountOrArgChange: false,
+        refetchOnReconnect: false
+      }
     }),
     registerSeller: builder.mutation<RegistrationResponse, FormData>({
       query: (formData) => ({
@@ -26,6 +29,10 @@ export const authApi = baseApi.injectEndpoints({
         body: formData,
         formData: true,
       }),
+      extraOptions: {
+        refetchOnMountOrArgChange: false,
+        refetchOnReconnect: false
+      }
     }),
     verifyOTP: builder.mutation<VerifyOTPResponse, VerifyOTPRequest>({
       query: (data) => ({
