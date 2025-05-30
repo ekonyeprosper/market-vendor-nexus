@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Star, Store, ArrowRight, ShoppingBag, AlertCircle } from "lucide-react";
+import { Star, Store, ArrowRight, ShoppingBag, AlertCircle, Wifi, WifiOff } from "lucide-react";
 import { useGetTopSellersQuery } from "@/services/api/userApi";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -13,10 +13,25 @@ const TopSellers = () => {
 
   const getErrorMessage = (error: FetchBaseQueryError | SerializedError | undefined) => {
     if (!error) return 'An unknown error occurred';
+    
+    // Handle network errors
+    if ('status' in error && error.status === 'FETCH_ERROR') {
+      return 'Unable to connect to the server. Please check your internet connection.';
+    }
+
+    // Handle other API errors
     if ('status' in error) {
       return `Error ${error.status}: ${error.data?.message || 'Something went wrong'}`;
     }
+
     return error.message || 'Something went wrong';
+  };
+
+  const getErrorIcon = (error: FetchBaseQueryError | SerializedError | undefined) => {
+    if ('status' in error && error.status === 'FETCH_ERROR') {
+      return <WifiOff className="h-4 w-4" />;
+    }
+    return <AlertCircle className="h-4 w-4" />;
   };
 
   if (error) {
@@ -24,18 +39,30 @@ const TopSellers = () => {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <Alert variant="destructive" className="max-w-2xl mx-auto">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
+            {getErrorIcon(error)}
+            <AlertTitle>Connection Error</AlertTitle>
             <AlertDescription className="flex flex-col gap-2">
               <p>{getErrorMessage(error)}</p>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => refetch()}
-                className="w-fit"
-              >
-                Try Again
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => refetch()}
+                  className="w-fit"
+                >
+                  Try Again
+                </Button>
+                {('status' in error && error.status === 'FETCH_ERROR') && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => window.location.reload()}
+                    className="w-fit"
+                  >
+                    Reload Page
+                  </Button>
+                )}
+              </div>
             </AlertDescription>
           </Alert>
         </div>
