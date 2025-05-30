@@ -121,8 +121,9 @@ export const userApi = createApi({
       invalidatesTags: ['Profile'],
     }),
     getTopSellers: builder.query<TopSellersResponse, number | void>({
-      query: (limit) => ({
-        url: limit ? `/api/auth/sellers/top?limit=${limit}` : '/api/auth/sellers/top',
+      query: (limit = 4) => ({
+        url: `/api/auth/sellers/top`,
+        params: { limit },
         method: 'GET',
       }),
       providesTags: ['Sellers'],

@@ -1,23 +1,34 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Star, Store, ArrowRight, ShoppingBag } from "lucide-react";
+import { Star, Store, ArrowRight, ShoppingBag, AlertCircle } from "lucide-react";
 import { useGetTopSellersQuery } from "@/services/api/userApi";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const TopSellers = () => {
-  const { data, isLoading, error } = useGetTopSellersQuery();
+  const { data, isLoading, error, refetch } = useGetTopSellersQuery();
+  console.log(data, refetch, error)
 
   if (error) {
     return (
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <div className="text-center">
-            <p className="text-red-500">
-              Unable to load top sellers. Please try again later.
-            </p>
-          </div>
+          <Alert variant="destructive" className="max-w-2xl mx-auto">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription className="flex flex-col gap-2">
+              <p>We encountered an error while loading the top sellers.</p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => refetch()}
+                className="w-fit"
+              >
+                Try Again
+              </Button>
+            </AlertDescription>
+          </Alert>
         </div>
       </section>
     );
@@ -73,9 +84,9 @@ const TopSellers = () => {
                     <div className="flex items-center space-x-4 mb-4">
                       <div className="h-16 w-16 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
                         {seller.logo ? (
-                          <img 
-                            src={seller.logo} 
-                            alt={seller.businessName} 
+                          <img
+                            src={seller.logo}
+                            alt={seller.businessName}
                             className="h-full w-full object-cover"
                           />
                         ) : (
@@ -83,12 +94,16 @@ const TopSellers = () => {
                         )}
                       </div>
                       <div>
-                        <h3 className="font-semibold text-lg line-clamp-1">{seller.businessName}</h3>
+                        <h3 className="font-semibold text-lg line-clamp-1">
+                          {seller.businessName}
+                        </h3>
                         <div className="flex items-center text-sm text-gray-500">
                           <div className="flex items-center mr-3">
                             <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500 mr-1" />
                             <span>{seller.rating.average.toFixed(1)}</span>
-                            <span className="text-gray-400 ml-1">({seller.rating.count})</span>
+                            <span className="text-gray-400 ml-1">
+                              ({seller.rating.count})
+                            </span>
                           </div>
                           <div className="flex items-center">
                             <ShoppingBag className="h-3.5 w-3.5 mr-1" />
@@ -97,7 +112,10 @@ const TopSellers = () => {
                         </div>
                       </div>
                     </div>
-                    <Button variant="outline" className="w-full mt-2 text-market-600 border-market-200 hover:bg-market-50">
+                    <Button
+                      variant="outline"
+                      className="w-full mt-2 text-market-600 border-market-200 hover:bg-market-50"
+                    >
                       View Store
                     </Button>
                   </CardContent>
