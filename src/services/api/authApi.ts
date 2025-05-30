@@ -1,17 +1,22 @@
-import { baseApi } from './baseApi';
-import { 
-  LoginRequest, 
-  LoginResponse, 
-  ResendOTPRequest,
-  ResendOTPResponse, 
-  RegistrationResponse, 
-  VerifyOTPRequest, 
-  VerifyOTPResponse 
-} from '../types/auth.types';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { RootState } from '../store/store';
+import { logout } from '../store/slices/authSlice';
+import { BASE_URL } from './baseApi';
 
-export const authApi = baseApi.injectEndpoints({
+export const authApi = createApi({
+  reducerPath: 'authApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: BASE_URL,
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as RootState).auth.token;
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+      return headers;
+    },
+  }),
   endpoints: (builder) => ({
-    login: builder.mutation<LoginResponse, LoginRequest>({
+    login: builder.mutation<any, any>({
       query: (credentials) => ({
         url: '/api/auth/login',
         method: 'POST',
@@ -22,7 +27,7 @@ export const authApi = baseApi.injectEndpoints({
         refetchOnReconnect: false
       }
     }),
-    registerSeller: builder.mutation<RegistrationResponse, FormData>({
+    registerSeller: builder.mutation<any, FormData>({
       query: (formData) => ({
         url: '/api/auth/register/seller',
         method: 'POST',
@@ -34,14 +39,14 @@ export const authApi = baseApi.injectEndpoints({
         refetchOnReconnect: false
       }
     }),
-    verifyOTP: builder.mutation<VerifyOTPResponse, VerifyOTPRequest>({
+    verifyOTP: builder.mutation<any, any>({
       query: (data) => ({
         url: '/api/auth/verify-otp',
         method: 'POST',
         body: data,
       }),
     }),
-    resendOTP: builder.mutation<ResendOTPResponse, ResendOTPRequest>({
+    resendOTP: builder.mutation< any, any>({
       query: (data) => ({
         url: '/api/auth/resend-otp',
         method: 'POST',
@@ -59,7 +64,6 @@ export const authApi = baseApi.injectEndpoints({
       }),
     }),
   }),
-  overrideExisting: false,
 });
 
 export const { 

@@ -1,77 +1,38 @@
-import { baseApi } from './baseApi';
-import { 
-  Product, 
-  ProductFilters, 
-  PaginatedResponse, 
-  AdminProductsResponse,
-  TrendingProductsResponse,
-  PopularProductsResponse
-} from '../types/product.types';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { RootState } from '../store/store';
+import { BASE_URL } from './baseApi';
 
-interface SellerProductsResponse {
-  seller: {
-    businessName: string;
-    businessAddress: string;
-  };
-  products: Product[];
-  pagination: {
-    total: number;
-    pages: number;
-    currentPage: number;
-    limit: number;
-  };
-}
-
-interface DashboardStats {
-  totalSales: number;
-  totalOrders: number;
-  totalProducts: number;
-  totalCustomers: number; // Added new field
-  salesGrowth: number;
-  productGrowth: number;
-  orderGrowth: number;
-  salesOverview: Array<{
-    month: string;
-    amount: number;
-  }>;
-}
-
-interface UpdateProductStatusResponse {
-  id: string;
-  name: string;
-  status: 'active' | 'draft';
-  updatedAt: string;
-}
-
-interface DeleteProductResponse {
-  success: boolean;
-  message: string;
-  data: {
-    id: string;
-    name: string;
-    deletedAt: string;
-  };
-}
-
-export const productsApi = baseApi.injectEndpoints({
+export const productsApi = createApi({
+  reducerPath: 'productsApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: BASE_URL,
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as RootState).auth.token;
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+      return headers;
+    },
+  }),
+  tagTypes: ['Products'],
   endpoints: (builder) => ({
-    getProduct: builder.query<Product, string>({
+    getProduct: builder.query<any, string>({
       query: (id) => `/api/products/${id}`,
       providesTags: (result, error, id) => [{ type: 'Products', id }],
     }),
 
-    getPublicProduct: builder.query<Product, string>({
+    getPublicProduct: builder.query<any, string>({
       query: (id) => `/api/products/public/${id}`,
     }),
 
-    getRelatedProducts: builder.query<{ products: Product[] }, { id: string; limit?: number }>({
+    getRelatedProducts: builder.query<any, { id: string; limit?: number }>({
       query: ({ id, limit = 4 }) => ({
         url: `/api/products/related/${id}`,
         params: { limit }
       }),
     }),
 
-    getTrendingProducts: builder.query<TrendingProductsResponse, {
+    getTrendingProducts: builder.query<any, {
       limit?: number;
     }>({
       query: (params = {}) => ({
@@ -80,7 +41,7 @@ export const productsApi = baseApi.injectEndpoints({
       }),
     }),
 
-    getPopularProducts: builder.query<PopularProductsResponse, {
+    getPopularProducts: builder.query<any, {
       limit?: number;
     }>({
       query: (params = {}) => ({
@@ -96,7 +57,7 @@ export const productsApi = baseApi.injectEndpoints({
       }),
     }),
 
-    createProduct: builder.mutation<Product, FormData>({
+    createProduct: builder.mutation<any, FormData>({
       query: (data) => ({
         url: '/api/products',
         method: 'POST',
@@ -105,7 +66,7 @@ export const productsApi = baseApi.injectEndpoints({
       invalidatesTags: [{ type: 'Products', id: 'LIST' }],
     }),
 
-    updateProduct: builder.mutation<Product, { id: string; data: FormData }>({
+    updateProduct: builder.mutation<any, { id: string; data: FormData }>({
       query: ({ id, data }) => ({
         url: `/api/products/${id}`,
         method: 'PUT',
@@ -114,7 +75,7 @@ export const productsApi = baseApi.injectEndpoints({
       invalidatesTags: (result, error, { id }) => [{ type: 'Products', id }],
     }),
 
-    deleteProduct: builder.mutation<DeleteProductResponse, string>({
+    deleteProduct: builder.mutation<any, string>({
       query: (id) => ({
         url: `/api/products/${id}`,
         method: 'DELETE',
@@ -125,15 +86,7 @@ export const productsApi = baseApi.injectEndpoints({
       ],
     }),
 
-    getSellerProducts: builder.query<{
-      products: Product[];
-      pagination: {
-        total: number;
-        pages: number;
-        currentPage: number;
-        limit: number;
-      };
-    }, {
+    getSellerProducts: builder.query<any, {
       page?: number;
       limit?: number;
       status?: string;
@@ -151,7 +104,7 @@ export const productsApi = baseApi.injectEndpoints({
       providesTags: [{ type: 'Products', id: 'LIST' }],
     }),
 
-    getPublicProducts: builder.query<PaginatedResponse, ProductFilters>({
+    getPublicProducts: builder.query<any, any>({
       query: (params) => ({
         url: '/api/products/public',
         params: {
@@ -166,7 +119,7 @@ export const productsApi = baseApi.injectEndpoints({
       }),
     }),
 
-    getAdminProducts: builder.query<AdminProductsResponse, {
+    getAdminProducts: builder.query<any, {
       page?: number;
       limit?: number;
       sort?: string;
@@ -182,7 +135,7 @@ export const productsApi = baseApi.injectEndpoints({
       providesTags: ['Products'],
     }),
 
-    getPublicSellerProducts: builder.query<SellerProductsResponse, { 
+    getPublicSellerProducts: builder.query<any, { 
       sellerId: string;
       page?: number;
       limit?: number;
@@ -202,7 +155,7 @@ export const productsApi = baseApi.injectEndpoints({
       }
     }),
 
-    getSellerDashboardStats: builder.query<DashboardStats, void>({
+    getSellerDashboardStats: builder.query<any, void>({
       query: () => '/api/products/seller/dashboard',
       extraOptions: {
         refetchOnMountOrArgChange: false,
@@ -210,7 +163,7 @@ export const productsApi = baseApi.injectEndpoints({
       }
     }),
 
-    updateProductStatus: builder.mutation<UpdateProductStatusResponse, {
+    updateProductStatus: builder.mutation<any, {
       productId: string;
       status: 'active' | 'draft';
     }>({

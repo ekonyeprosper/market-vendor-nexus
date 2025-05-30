@@ -1,4 +1,5 @@
-import { baseApi } from './baseApi';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { RootState } from '../store/store';
 import { 
   Category, 
   CategoriesResponse, 
@@ -6,8 +7,21 @@ import {
   CategoryStatsResponse,
   PopularCategoriesResponse
 } from '../types/category.types';
+import { BASE_URL } from './baseApi';
 
-export const categoriesApi = baseApi.injectEndpoints({
+export const categoriesApi = createApi({
+  reducerPath: 'categoriesApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: BASE_URL,
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as RootState).auth.token;
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+      return headers;
+    },
+  }),
+  tagTypes: ['Categories'],
   endpoints: (builder) => ({
     getCategories: builder.query<CategoriesResponse, {
       isActive?: boolean;

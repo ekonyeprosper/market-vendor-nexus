@@ -1,6 +1,7 @@
-import { baseApi } from './baseApi';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { UserProfile, TopSellersResponse } from '../types/auth.types';
 import { RootState } from '../store/store';
+import { BASE_URL } from './baseApi';
 
 export interface PublicSellerProfile {
   businessName: string;
@@ -62,7 +63,19 @@ export interface UpdateBankAccountResponse {
   message: string;
 }
 
-export const userApi = baseApi.injectEndpoints({
+export const userApi = createApi({
+  reducerPath: 'userApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: BASE_URL,
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as RootState).auth.token;
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+      return headers;
+    },
+  }),
+  tagTypes: ['Profile', 'Sellers'],
   endpoints: (builder) => ({
     getProfile: builder.query<UserProfile, void>({
       query: () => ({
@@ -123,7 +136,6 @@ export const userApi = baseApi.injectEndpoints({
       providesTags: ['Sellers'],
     }),
   }),
-  overrideExisting: false,
 });
 
 export const { 

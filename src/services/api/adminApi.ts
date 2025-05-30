@@ -1,9 +1,24 @@
-import { baseApi } from './baseApi';
-import { AdminDashboardStats, UsersQueryParams, UsersResponse } from '../types/admin.types';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { RootState } from '../store/store';
+import { logout } from '../store/slices/authSlice';
+import { BASE_URL } from './baseApi';
 
-export const adminApi = baseApi.injectEndpoints({
+
+export const adminApi = createApi({
+  reducerPath: 'adminApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: BASE_URL,
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as RootState).auth.token;
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+      return headers;
+    },
+  }),
+  tagTypes: ['Users', 'Orders'],
   endpoints: (builder) => ({
-    getUsers: builder.query<UsersResponse, UsersQueryParams>({
+    getUsers: builder.query<any, any>({
       query: (params) => ({
         url: '/api/auth/admin/users',
         method: 'GET',
