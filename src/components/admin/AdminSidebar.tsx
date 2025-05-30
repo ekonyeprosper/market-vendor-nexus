@@ -1,5 +1,5 @@
-
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/services/hooks/useAuth";
 import {
   LayoutDashboard,
   Users,
@@ -91,11 +91,18 @@ const menuItems = [
 
 export function AdminSidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <Sidebar>
       <SidebarHeader className="border-b p-4">
-        <Link to="/admin/dashboard" className="flex items-center gap-2 px-2">
+        <Link to="/" className="flex items-center gap-2 px-2">
           <div className="bg-primary text-primary-foreground p-2 rounded-lg">
             <Package className="h-6 w-6" />
           </div>
@@ -130,11 +137,12 @@ export function AdminSidebar() {
       <SidebarFooter className="border-t p-4">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Logout">
-              <Link to="/login">
-                <LogOut className="h-4 w-4" />
-                <span>Logout</span>
-              </Link>
+            <SidebarMenuButton 
+              tooltip="Logout"
+              onClick={handleLogout}
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Logout</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
