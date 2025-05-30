@@ -5,10 +5,19 @@ import { Star, Store, ArrowRight, ShoppingBag, AlertCircle } from "lucide-react"
 import { useGetTopSellersQuery } from "@/services/api/userApi";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { SerializedError } from '@reduxjs/toolkit';
 
 const TopSellers = () => {
-  const { data, isLoading, error, refetch } = useGetTopSellersQuery();
-  console.log(data, refetch, error)
+  const { data, isLoading, error, refetch } = useGetTopSellersQuery(undefined);
+
+  const getErrorMessage = (error: FetchBaseQueryError | SerializedError | undefined) => {
+    if (!error) return 'An unknown error occurred';
+    if ('status' in error) {
+      return `Error ${error.status}: ${error.data?.message || 'Something went wrong'}`;
+    }
+    return error.message || 'Something went wrong';
+  };
 
   if (error) {
     return (
@@ -18,7 +27,7 @@ const TopSellers = () => {
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Error</AlertTitle>
             <AlertDescription className="flex flex-col gap-2">
-              <p>We encountered an error while loading the top sellers.</p>
+              <p>{getErrorMessage(error)}</p>
               <Button
                 variant="outline"
                 size="sm"
