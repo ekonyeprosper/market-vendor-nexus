@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -24,6 +23,8 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useVerifySellerMutation, useGetUsersQuery } from "@/services/api/adminApi";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { UserDetailsDialog } from "@/components/admin/UserDetailsDialog";
+import { User as UserType } from "@/services/types/auth.types";
 
 const UserManagement = () => {
   const { toast } = useToast();
@@ -31,6 +32,8 @@ const UserManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("");
   const [verificationFilter, setVerificationFilter] = useState<string>("");
+  const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
+  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   
   const [verifySeller, { isLoading: isVerifying }] = useVerifySellerMutation();
   const { data: usersData, isLoading } = useGetUsersQuery({ 
@@ -60,6 +63,11 @@ const UserManagement = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleViewDetails = (user: UserType) => {
+    setSelectedUser(user);
+    setIsDetailsDialogOpen(true);
   };
 
   const getStatusColor = (status: string) => {
@@ -103,9 +111,6 @@ const UserManagement = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            {/* <Button className="ml-4">
-              <User className="mr-2 h-4 w-4" /> Add User
-            </Button> */}
           </div>
         </div>
         <div className="flex items-center gap-4 mb-6">
@@ -197,7 +202,9 @@ const UserManagement = () => {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem>View details</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleViewDetails(user)}>
+                              View details
+                            </DropdownMenuItem>
                             <DropdownMenuItem>Edit user</DropdownMenuItem>
                             {user.role === "seller" && !user.adminVerified && (
                               <DropdownMenuItem 
@@ -219,6 +226,12 @@ const UserManagement = () => {
             )}
           </CardContent>
         </Card>
+
+        <UserDetailsDialog
+          user={selectedUser}
+          isOpen={isDetailsDialogOpen}
+          onClose={() => setIsDetailsDialogOpen(false)}
+        />
       </div>
     </Layout>
   );
