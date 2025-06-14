@@ -5,12 +5,10 @@ import { ShoppingCart, Star, Zap } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/services/hooks/useCart";
-import { useGetPopularProductsQuery } from "@/services/api/productsApi";
-import { Skeleton } from "@/components/ui/skeleton";
+import { allDemoProducts } from "@/data/demoProducts";
 import { formatCurrency } from "@/utils/currency";
 
 const BestDeals = () => {
-  const { data, isLoading, error } = useGetPopularProductsQuery({ limit: 12 });
   const { addToCart } = useCart();
 
   const handleAddToCart = (product: any) => {
@@ -22,33 +20,10 @@ const BestDeals = () => {
     }, 1);
   };
 
-  if (isLoading) {
-    return (
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <Skeleton className="h-8 w-48 mx-auto mb-4" />
-            <Skeleton className="h-4 w-96 mx-auto" />
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((item) => (
-              <Card key={item} className="bg-white rounded-lg overflow-hidden">
-                <Skeleton className="h-40 w-full" />
-                <CardContent className="p-3">
-                  <Skeleton className="h-4 w-3/4 mb-2" />
-                  <Skeleton className="h-4 w-1/2" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (error || !data?.products?.length) {
-    return null;
-  }
+  // Get products with discounts
+  const dealProducts = allDemoProducts
+    .filter(product => product.price.discount && product.price.discount > 15)
+    .slice(0, 12);
 
   return (
     <section className="py-16 bg-gray-50">
@@ -80,7 +55,7 @@ const BestDeals = () => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          {data.products.slice(0, 12).map((product) => (
+          {dealProducts.map((product) => (
             <Card
               key={product.id}
               className="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition-all duration-300 group"
@@ -93,7 +68,7 @@ const BestDeals = () => {
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <Badge variant="destructive" className="absolute top-2 left-2 bg-orange-600 text-xs">
-                    25% OFF
+                    {product.price.discount}% OFF
                   </Badge>
                 </div>
               </Link>

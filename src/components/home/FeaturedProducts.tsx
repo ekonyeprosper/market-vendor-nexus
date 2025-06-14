@@ -1,17 +1,16 @@
 
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Star, ArrowRight, Loader2 } from "lucide-react";
+import { ShoppingCart, Star, ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/services/hooks/useCart";
-import { useGetPopularProductsQuery } from "@/services/api/productsApi";
-import { PopularProduct } from "@/services/types/product.types";
+import { demoProducts } from "@/data/demoProducts";
+import { formatCurrency } from "@/utils/currency";
 
 const FeaturedProducts = () => {
   const { addToCart } = useCart();
-  const { data, isLoading } = useGetPopularProductsQuery({ limit: 8 });
 
-  const handleAddToCart = (product: PopularProduct) => {
+  const handleAddToCart = (product: any) => {
     addToCart({
       id: product.id,
       name: product.name,
@@ -19,20 +18,6 @@ const FeaturedProducts = () => {
       image: product.image
     }, 1);
   };
-
-  if (isLoading) {
-    return (
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4 flex justify-center items-center">
-          <Loader2 className="h-8 w-8 animate-spin text-market-600" />
-        </div>
-      </section>
-    );
-  }
-
-  if (!data?.products.length) {
-    return null;
-  }
 
   return (
     <section className="py-20 bg-white">
@@ -56,7 +41,7 @@ const FeaturedProducts = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {data.products.slice(0, 8).map((product) => (
+          {demoProducts.slice(0, 8).map((product) => (
             <Card
               key={product.id}
               className="bg-white rounded-xl overflow-hidden shadow-sm transition-all duration-300 hover:shadow-lg group"
@@ -98,10 +83,10 @@ const FeaturedProducts = () => {
                 </div>
                 <div className="flex justify-between items-center">
                   <div>
-                    <span className="text-lg font-bold">${product.price.current.toFixed(2)}</span>
-                    {product.price.discount && product.price.compareAt && (
+                    <span className="text-lg font-bold">{formatCurrency(product.price.current)}</span>
+                    {product.price.compareAt && (
                       <span className="text-sm text-gray-500 line-through ml-2">
-                        ${product.price.compareAt.toFixed(2)}
+                        {formatCurrency(product.price.compareAt)}
                       </span>
                     )}
                   </div>

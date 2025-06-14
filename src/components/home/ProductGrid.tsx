@@ -4,12 +4,10 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, Star, Eye } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/services/hooks/useCart";
-import { useGetPopularProductsQuery } from "@/services/api/productsApi";
-import { Skeleton } from "@/components/ui/skeleton";
+import { allDemoProducts } from "@/data/demoProducts";
 import { formatCurrency } from "@/utils/currency";
 
 const ProductGrid = () => {
-  const { data, isLoading, error } = useGetPopularProductsQuery({ limit: 24 });
   const { addToCart } = useCart();
 
   const handleAddToCart = (product: any) => {
@@ -20,35 +18,6 @@ const ProductGrid = () => {
       image: product.image
     }, 1);
   };
-
-  if (isLoading) {
-    return (
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <Skeleton className="h-8 w-48 mx-auto mb-4" />
-            <Skeleton className="h-4 w-96 mx-auto" />
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {[...Array(24)].map((_, index) => (
-              <Card key={index} className="bg-white rounded-lg overflow-hidden">
-                <Skeleton className="h-40 w-full" />
-                <CardContent className="p-3">
-                  <Skeleton className="h-4 w-3/4 mb-2" />
-                  <Skeleton className="h-4 w-1/2 mb-2" />
-                  <Skeleton className="h-8 w-full" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (error || !data?.products?.length) {
-    return null;
-  }
 
   return (
     <section className="py-16 bg-white">
@@ -61,7 +30,7 @@ const ProductGrid = () => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {data.products.map((product) => (
+          {allDemoProducts.slice(0, 24).map((product) => (
             <Card
               key={product.id}
               className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group"

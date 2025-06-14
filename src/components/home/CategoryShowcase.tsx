@@ -4,14 +4,10 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, Star, ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/services/hooks/useCart";
-import { useGetPopularProductsQuery } from "@/services/api/productsApi";
-import { Skeleton } from "@/components/ui/skeleton";
+import { allDemoProducts } from "@/data/demoProducts";
 import { formatCurrency } from "@/utils/currency";
 
 const CategoryShowcase = () => {
-  const { data: electronicsData, isLoading: electronicsLoading } = useGetPopularProductsQuery({ limit: 5 });
-  const { data: fashionData, isLoading: fashionLoading } = useGetPopularProductsQuery({ limit: 5 });
-  const { data: homeData, isLoading: homeLoading } = useGetPopularProductsQuery({ limit: 5 });
   const { addToCart } = useCart();
 
   const handleAddToCart = (product: any) => {
@@ -23,24 +19,12 @@ const CategoryShowcase = () => {
     }, 1);
   };
 
-  const renderProductGrid = (products: any[], title: string, bgColor: string, isLoading: boolean) => {
-    if (isLoading) {
-      return (
-        <div className={`${bgColor} rounded-lg p-6`}>
-          <Skeleton className="h-6 w-32 mb-4" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            {[1, 2, 3, 4, 5].map((item) => (
-              <div key={item}>
-                <Skeleton className="h-32 w-full rounded mb-2" />
-                <Skeleton className="h-4 w-3/4 mb-1" />
-                <Skeleton className="h-4 w-1/2" />
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
+  // Group products by category
+  const phoneProducts = allDemoProducts.filter(p => p.category.name === "Phones & Accessories").slice(0, 5);
+  const laptopProducts = allDemoProducts.filter(p => p.category.name === "Laptops & Computers").slice(0, 5);
+  const fashionProducts = allDemoProducts.filter(p => p.category.name === "Fashion & Clothing").slice(0, 5);
 
+  const renderProductGrid = (products: any[], title: string, bgColor: string) => {
     if (!products?.length) return null;
 
     return (
@@ -52,7 +36,7 @@ const CategoryShowcase = () => {
           </Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          {products.slice(0, 5).map((product) => (
+          {products.map((product) => (
             <Card key={product.id} className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
               <Link to={`/products/${product.id}`}>
                 <div className="h-32 overflow-hidden">
@@ -104,9 +88,9 @@ const CategoryShowcase = () => {
         </div>
 
         <div className="space-y-8">
-          {renderProductGrid(electronicsData?.products || [], "Electronics & Tech", "bg-blue-50", electronicsLoading)}
-          {renderProductGrid(fashionData?.products || [], "Fashion & Style", "bg-pink-50", fashionLoading)}
-          {renderProductGrid(homeData?.products || [], "Home & Living", "bg-green-50", homeLoading)}
+          {renderProductGrid(phoneProducts, "Phones & Tech", "bg-blue-50")}
+          {renderProductGrid(laptopProducts, "Laptops & Computers", "bg-purple-50")}
+          {renderProductGrid(fashionProducts, "Fashion & Style", "bg-pink-50")}
         </div>
       </div>
     </section>

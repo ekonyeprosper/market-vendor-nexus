@@ -5,12 +5,10 @@ import { ShoppingCart, Star, Clock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/services/hooks/useCart";
-import { useGetPopularProductsQuery } from "@/services/api/productsApi";
-import { Skeleton } from "@/components/ui/skeleton";
+import { allDemoProducts } from "@/data/demoProducts";
 import { formatCurrency } from "@/utils/currency";
 
 const NewArrivals = () => {
-  const { data, isLoading, error } = useGetPopularProductsQuery({ limit: 6 });
   const { addToCart } = useCart();
 
   const handleAddToCart = (product: any) => {
@@ -22,37 +20,8 @@ const NewArrivals = () => {
     }, 1);
   };
 
-  if (isLoading) {
-    return (
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <Skeleton className="h-8 w-48 mx-auto mb-4" />
-            <Skeleton className="h-4 w-96 mx-auto" />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((item) => (
-              <Card key={item} className="bg-white rounded-xl overflow-hidden shadow">
-                <Skeleton className="h-60 w-full" />
-                <CardContent className="p-4">
-                  <Skeleton className="h-6 w-3/4 mb-2" />
-                  <Skeleton className="h-4 w-1/2 mb-4" />
-                  <div className="flex justify-between items-center">
-                    <Skeleton className="h-6 w-20" />
-                    <Skeleton className="h-9 w-9 rounded-full" />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (error) {
-    return null;
-  }
+  // Get newest products (last 6)
+  const newProducts = allDemoProducts.slice(-6);
 
   return (
     <section className="py-16 bg-gray-50">
@@ -89,7 +58,7 @@ const NewArrivals = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {data?.products.slice(0, 6).map((product) => (
+          {newProducts.map((product) => (
             <Card
               key={product.id}
               className="bg-white rounded-xl overflow-hidden shadow hover:shadow-lg transition-all duration-300 group"
