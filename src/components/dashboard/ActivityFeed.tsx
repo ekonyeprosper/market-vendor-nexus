@@ -50,10 +50,38 @@ const defaultActivities: Activity[] = [
   }
 ];
 
-export const ActivityFeed = ({ activities = defaultActivities }: ActivityFeedProps) => {
+// Helper function to convert API order data to Activity format
+const convertOrderToActivity = (order: any, index: number): Activity => {
+  return {
+    id: index + 1,
+    icon: ShoppingCart,
+    title: `Order ${order.orderId || order._id || 'received'}`,
+    time: order.createdAt ? new Date(order.createdAt).toLocaleString() : 'Recently',
+    iconBg: "bg-amber-100",
+    iconColor: "text-amber-600"
+  };
+};
+
+export const ActivityFeed = ({ activities }: ActivityFeedProps) => {
+  // If activities are provided but don't have the expected structure, convert them
+  let processedActivities = activities;
+  
+  if (activities && activities.length > 0) {
+    // Check if the first activity has the expected icon property
+    const firstActivity = activities[0];
+    if (!firstActivity.icon || typeof firstActivity.icon !== 'function') {
+      // Convert API order data to Activity format
+      processedActivities = activities.map((activity, index) => 
+        convertOrderToActivity(activity, index)
+      );
+    }
+  }
+
+  const finalActivities = processedActivities || defaultActivities;
+
   return (
     <div className="space-y-3 sm:space-y-4">
-      {activities.map((activity) => {
+      {finalActivities.map((activity) => {
         const IconComponent = activity.icon;
         return (
           <div key={activity.id} className="flex items-center gap-3 sm:gap-4 py-2">
