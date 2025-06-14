@@ -1,7 +1,10 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Star, Store, ArrowRight, ShoppingBag, AlertCircle, Wifi, WifiOff } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Star, Store, ArrowRight, ShoppingBag, AlertCircle, Wifi, WifiOff, MapPin, Clock, Award, TrendingUp } from "lucide-react";
 import { useGetTopSellersQuery } from "@/services/api/userApi";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -36,7 +39,7 @@ const TopSellers = () => {
 
   if (error) {
     return (
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <div className="container mx-auto px-4">
           <Alert variant="destructive" className="max-w-2xl mx-auto">
             {getErrorIcon(error)}
@@ -71,89 +74,135 @@ const TopSellers = () => {
   }
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-12">
-          <div>
-            <div className="inline-flex items-center px-3 py-1 rounded-full bg-market-100 text-market-800 text-sm font-medium mb-4">
-              <Store className="h-4 w-4 mr-1 text-market-600" /> Best Sellers
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-market-100 to-blue-100 text-market-800 text-sm font-medium mb-6 shadow-sm">
+              <Award className="h-4 w-4 mr-2 text-market-600" /> 
+              <span className="font-semibold">Best Sellers</span>
             </div>
-            <h2 className="text-3xl font-bold mb-2">Top Rated Vendors</h2>
-            <p className="text-gray-600 max-w-lg">
-              Shop with confidence from our most trusted and highly-rated sellers
+            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+              Top Rated Vendors
+            </h2>
+            <p className="text-slate-600 text-lg leading-relaxed">
+              Shop with confidence from our most trusted and highly-rated sellers who consistently deliver exceptional products and outstanding customer service.
             </p>
           </div>
-          <Link to="/vendors" className="mt-4 md:mt-0">
-            <Button variant="outline" className="group">
-              View All Vendors
-              <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
+          <Link to="/vendors" className="mt-6 md:mt-0">
+            <Button variant="outline" className="group border-market-200 hover:bg-market-50 hover:border-market-300 transition-all duration-300">
+              <span className="font-medium">View All Vendors</span>
+              <ArrowRight className="h-4 w-4 ml-2 transition-transform group-hover:translate-x-1" />
             </Button>
           </Link>
         </div>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {[1, 2, 3, 4, 5, 6].map((item) => (
-              <Card key={item} className="bg-white overflow-hidden">
-                <CardContent className="p-6">
-                  <div className="flex items-center space-x-4 mb-4">
-                    <Skeleton className="h-16 w-16 rounded-full" />
-                    <div className="space-y-2">
-                      <Skeleton className="h-5 w-32" />
+              <Card key={item} className="bg-white overflow-hidden shadow-sm">
+                <CardContent className="p-8">
+                  <div className="flex flex-col items-center space-y-4 mb-6">
+                    <Skeleton className="h-20 w-20 rounded-full" />
+                    <div className="space-y-2 text-center">
+                      <Skeleton className="h-6 w-40" />
+                      <Skeleton className="h-4 w-32" />
                       <Skeleton className="h-4 w-24" />
                     </div>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-10 w-full" />
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {data?.sellers.map((seller) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {data?.sellers.map((seller, index) => (
               <Link to={`/vendor/${seller.id}`} key={seller.id}>
-                <Card className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden h-full">
-                  <CardContent className="p-6">
-                    <div className="flex items-center space-x-4 mb-4">
-                      <div className="h-16 w-16 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
-                        {seller.logo ? (
-                          <img
+                <Card className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden h-full border-0 hover:border-market-200 group">
+                  <CardContent className="p-8">
+                    <div className="flex flex-col items-center mb-6">
+                      <div className="relative mb-4">
+                        <Avatar className="h-20 w-20 shadow-lg ring-4 ring-white">
+                          <AvatarImage
                             src={seller.logo}
                             alt={seller.businessName}
-                            className="h-full w-full object-cover"
+                            className="object-cover"
                           />
-                        ) : (
-                          <Store className="h-8 w-8 text-gray-400" />
+                          <AvatarFallback className="bg-gradient-to-br from-market-100 to-blue-100 text-market-700 text-xl font-bold">
+                            <Store className="h-8 w-8" />
+                          </AvatarFallback>
+                        </Avatar>
+                        {index < 3 && (
+                          <Badge className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-xs px-2 py-1 shadow-md">
+                            #{index + 1}
+                          </Badge>
                         )}
                       </div>
-                      <div>
-                        <h3 className="font-semibold text-lg line-clamp-1">
+                      
+                      <div className="text-center space-y-2">
+                        <h3 className="font-bold text-xl text-slate-900 group-hover:text-market-600 transition-colors line-clamp-1">
                           {seller.businessName}
                         </h3>
-                        <div className="flex items-center text-sm text-gray-500">
-                          <div className="flex items-center mr-3">
-                            <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500 mr-1" />
-                            <span>{seller.rating.average.toFixed(1)}</span>
-                            <span className="text-gray-400 ml-1">
-                              ({seller.rating.count})
-                            </span>
+                        
+                        <div className="flex items-center justify-center space-x-1 mb-2">
+                          <div className="flex">
+                            {[...Array(5)].map((_, i) => (
+                              <Star 
+                                key={i} 
+                                className={`h-4 w-4 ${
+                                  i < Math.floor(seller.rating.average) 
+                                    ? 'text-yellow-400 fill-yellow-400' 
+                                    : 'text-gray-200'
+                                }`} 
+                              />
+                            ))}
                           </div>
-                          <div className="flex items-center">
-                            <ShoppingBag className="h-3.5 w-3.5 mr-1" />
-                            <span>{seller.totalProducts} products</span>
+                          <span className="font-semibold text-slate-700">
+                            {seller.rating.average.toFixed(1)}
+                          </span>
+                          <span className="text-slate-500 text-sm">
+                            ({seller.rating.count})
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-center space-x-4 text-sm text-slate-600">
+                          <div className="flex items-center space-x-1">
+                            <ShoppingBag className="h-4 w-4 text-market-500" />
+                            <span className="font-medium">{seller.totalProducts}</span>
+                            <span>products</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Clock className="h-4 w-4 text-green-500" />
+                            <span className="text-green-600 font-medium">Active</span>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <Button
-                      variant="outline"
-                      className="w-full mt-2 text-market-600 border-market-200 hover:bg-market-50"
-                    >
-                      View Store
-                    </Button>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between text-xs text-slate-500 bg-slate-50 rounded-lg p-3">
+                        <div className="flex items-center space-x-1">
+                          <TrendingUp className="h-3 w-3 text-green-500" />
+                          <span>Top Seller</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <MapPin className="h-3 w-3" />
+                          <span>Verified</span>
+                        </div>
+                      </div>
+                      
+                      <Button 
+                        variant="outline" 
+                        className="w-full bg-gradient-to-r from-market-50 to-blue-50 border-market-200 text-market-700 hover:from-market-100 hover:to-blue-100 hover:border-market-300 transition-all duration-300 font-medium group-hover:shadow-md"
+                      >
+                        <Store className="h-4 w-4 mr-2" />
+                        Visit Store
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               </Link>
