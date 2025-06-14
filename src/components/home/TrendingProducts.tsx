@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/services/hooks/useCart";
 import { allDemoProducts } from "@/data/demoProducts";
 import { formatCurrency } from "@/utils/currency";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const TrendingProducts = () => {
   const { addToCart } = useCart();
@@ -23,7 +24,7 @@ const TrendingProducts = () => {
   // Get trending products (products with high views)
   const trendingProducts = allDemoProducts
     .filter(product => product.stats.views > 5000)
-    .slice(0, 8);
+    .slice(0, 10);
 
   return (
     <section className="py-20 bg-white">
@@ -59,68 +60,71 @@ const TrendingProducts = () => {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {trendingProducts.map((product) => (
-            <Card
-              key={product.id}
-              className="bg-white rounded-xl overflow-hidden shadow hover:shadow-lg transition-shadow group"
-            >
-              <Link to={`/products/${product.id}`}>
-                <div className="relative h-60 overflow-hidden">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  {product.badge && (
-                    <Badge variant="default" className="absolute top-3 left-3 bg-market-600">
-                      {product.badge}
-                    </Badge>
-                  )}
-                </div>
-              </Link>
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <Link to={`/products?category=${product.category?.id}`} className="text-xs text-market-600 hover:underline">
-                    {product.category?.name || 'General'}
-                  </Link>
-                  <div className="flex items-center bg-gray-50 rounded-full px-2 py-1">
-                    <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500 mr-1" />
-                    <span className="text-xs font-medium">{product.rating?.average?.toFixed(1) || '0.0'}</span>
-                  </div>
-                </div>
+        <ScrollArea className="w-full whitespace-nowrap rounded-md">
+          <div className="flex w-max space-x-6 p-1">
+            {trendingProducts.map((product) => (
+              <Card
+                key={product.id}
+                className="bg-white rounded-xl overflow-hidden shadow hover:shadow-lg transition-shadow group w-72 flex-none"
+              >
                 <Link to={`/products/${product.id}`}>
-                  <h3 className="font-semibold text-lg mb-1 hover:text-market-600 transition-colors">
-                    {product.name}
-                  </h3>
-                </Link>
-                <div className="flex items-center text-xs text-gray-500 mb-4">
-                  <span>by</span>
-                  <Link to={`/vendor/${product.seller?.id}`} className="text-market-600 ml-1 hover:underline">
-                    {product.seller?.businessName || 'Unknown Seller'}
-                  </Link>
-                </div>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <span className="text-lg font-bold">{formatCurrency(product.price.current)}</span>
-                    {product.price.compareAt && (
-                      <span className="text-sm text-gray-500 line-through ml-2">
-                        {formatCurrency(product.price.compareAt)}
-                      </span>
+                  <div className="relative h-60 overflow-hidden">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    {product.badge && (
+                      <Badge variant="default" className="absolute top-3 left-3 bg-market-600">
+                        {product.badge}
+                      </Badge>
                     )}
                   </div>
-                  <Button 
-                    size="sm" 
-                    className="rounded-full w-9 h-9 p-0 bg-market-600 hover:bg-market-700"
-                    onClick={() => handleAddToCart(product)}
-                  >
-                    <ShoppingCart className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                </Link>
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <Link to={`/products?category=${product.category?.id}`} className="text-xs text-market-600 hover:underline">
+                      {product.category?.name || 'General'}
+                    </Link>
+                    <div className="flex items-center bg-gray-50 rounded-full px-2 py-1">
+                      <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500 mr-1" />
+                      <span className="text-xs font-medium">{product.rating?.average?.toFixed(1) || '0.0'}</span>
+                    </div>
+                  </div>
+                  <Link to={`/products/${product.id}`}>
+                    <h3 className="font-semibold text-lg mb-1 hover:text-market-600 transition-colors line-clamp-2">
+                      {product.name}
+                    </h3>
+                  </Link>
+                  <div className="flex items-center text-xs text-gray-500 mb-4">
+                    <span>by</span>
+                    <Link to={`/vendor/${product.seller?.id}`} className="text-market-600 ml-1 hover:underline">
+                      {product.seller?.businessName || 'Unknown Seller'}
+                    </Link>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <span className="text-lg font-bold">{formatCurrency(product.price.current)}</span>
+                      {product.price.compareAt && (
+                        <span className="text-sm text-gray-500 line-through ml-2">
+                          {formatCurrency(product.price.compareAt)}
+                        </span>
+                      )}
+                    </div>
+                    <Button 
+                      size="sm" 
+                      className="rounded-full w-9 h-9 p-0 bg-market-600 hover:bg-market-700"
+                      onClick={() => handleAddToCart(product)}
+                    >
+                      <ShoppingCart className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       </div>
     </section>
   );

@@ -1,11 +1,12 @@
 
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Star, ArrowRight } from "lucide-react";
+import { ShoppingCart, Star, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/services/hooks/useCart";
 import { allDemoProducts } from "@/data/demoProducts";
 import { formatCurrency } from "@/utils/currency";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const CategoryShowcase = () => {
   const { addToCart } = useCart();
@@ -20,9 +21,9 @@ const CategoryShowcase = () => {
   };
 
   // Group products by category
-  const phoneProducts = allDemoProducts.filter(p => p.category.name === "Phones & Accessories").slice(0, 5);
-  const laptopProducts = allDemoProducts.filter(p => p.category.name === "Laptops & Computers").slice(0, 5);
-  const fashionProducts = allDemoProducts.filter(p => p.category.name === "Fashion & Clothing").slice(0, 5);
+  const phoneProducts = allDemoProducts.filter(p => p.category.name === "Phones & Accessories").slice(0, 8);
+  const laptopProducts = allDemoProducts.filter(p => p.category.name === "Laptops & Computers").slice(0, 8);
+  const fashionProducts = allDemoProducts.filter(p => p.category.name === "Fashion & Clothing").slice(0, 8);
 
   const renderProductGrid = (products: any[], title: string, bgColor: string) => {
     if (!products?.length) return null;
@@ -35,44 +36,48 @@ const CategoryShowcase = () => {
             See All <ArrowRight className="h-4 w-4 ml-1" />
           </Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          {products.map((product) => (
-            <Card key={product.id} className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
-              <Link to={`/products/${product.id}`}>
-                <div className="h-32 overflow-hidden">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                </div>
-              </Link>
-              <CardContent className="p-3">
+        
+        <ScrollArea className="w-full whitespace-nowrap rounded-md">
+          <div className="flex w-max space-x-4 p-1">
+            {products.map((product) => (
+              <Card key={product.id} className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow group w-48 flex-none">
                 <Link to={`/products/${product.id}`}>
-                  <h4 className="font-medium text-sm mb-1 line-clamp-2 hover:text-market-600 transition-colors">
-                    {product.name}
-                  </h4>
-                </Link>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-sm font-bold">{formatCurrency(product.price.current)}</span>
-                    <div className="flex items-center mt-1">
-                      <Star className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />
-                      <span className="text-xs text-gray-600">{product.rating?.average || 0}</span>
-                    </div>
+                  <div className="h-32 overflow-hidden">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
                   </div>
-                  <Button 
-                    size="sm" 
-                    className="rounded-full w-7 h-7 p-0 bg-market-600 hover:bg-market-700"
-                    onClick={() => handleAddToCart(product)}
-                  >
-                    <ShoppingCart className="h-3 w-3" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                </Link>
+                <CardContent className="p-3">
+                  <Link to={`/products/${product.id}`}>
+                    <h4 className="font-medium text-sm mb-1 line-clamp-2 hover:text-market-600 transition-colors">
+                      {product.name}
+                    </h4>
+                  </Link>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-sm font-bold">{formatCurrency(product.price.current)}</span>
+                      <div className="flex items-center mt-1">
+                        <Star className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />
+                        <span className="text-xs text-gray-600">{product.rating?.average || 0}</span>
+                      </div>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      className="rounded-full w-7 h-7 p-0 bg-market-600 hover:bg-market-700"
+                      onClick={() => handleAddToCart(product)}
+                    >
+                      <ShoppingCart className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       </div>
     );
   };
