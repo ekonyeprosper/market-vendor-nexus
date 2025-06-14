@@ -1,5 +1,35 @@
 
-export const demoProducts = [
+export interface DemoProduct {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  price: {
+    current: number;
+    compareAt?: number;
+    discount?: number;
+  };
+  category: {
+    id: string;
+    name: string;
+  };
+  seller: {
+    id: string;
+    businessName: string;
+  };
+  rating: {
+    average: number;
+    count: number;
+  };
+  image: string;
+  badge?: string;
+  stats: {
+    sales: number;
+    views: number;
+  };
+}
+
+export const demoProducts: DemoProduct[] = [
   {
     id: "1",
     name: "iPhone 14 Pro Max",
@@ -147,26 +177,37 @@ export const demoProducts = [
   }
 ];
 
-// Generate more products by duplicating and modifying the base products
-export const generateMoreProducts = () => {
+// Generate more products safely
+export const generateMoreProducts = (): DemoProduct[] => {
   const baseProducts = [...demoProducts];
-  const additionalProducts = [];
+  const additionalProducts: DemoProduct[] = [];
   
   for (let i = 0; i < 50; i++) {
     const baseProduct = baseProducts[i % baseProducts.length];
-    const newProduct = {
-      ...baseProduct,
+    const newProduct: DemoProduct = {
       id: `${parseInt(baseProduct.id) + 100 + i}`,
       name: `${baseProduct.name} ${i + 1}`,
       slug: `${baseProduct.slug}-${i + 1}`,
+      description: baseProduct.description,
       price: {
-        ...baseProduct.price,
-        current: baseProduct.price.current + Math.floor(Math.random() * 100) - 50
+        current: baseProduct.price.current + Math.floor(Math.random() * 100) - 50,
+        compareAt: baseProduct.price.compareAt,
+        discount: baseProduct.price.discount
+      },
+      category: {
+        id: baseProduct.category.id,
+        name: baseProduct.category.name
+      },
+      seller: {
+        id: baseProduct.seller.id,
+        businessName: baseProduct.seller.businessName
       },
       rating: {
         average: Math.round((Math.random() * 2 + 3) * 10) / 10,
         count: Math.floor(Math.random() * 500) + 50
       },
+      image: baseProduct.image,
+      badge: baseProduct.badge,
       stats: {
         sales: Math.floor(Math.random() * 2000) + 100,
         views: Math.floor(Math.random() * 10000) + 500
