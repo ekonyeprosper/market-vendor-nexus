@@ -32,6 +32,15 @@ export const UserDetailsDialog = ({ user, isOpen, onClose }: UserDetailsDialogPr
     }
   };
 
+  const isValidImageUrl = (url: string) => {
+    try {
+      new URL(url);
+      return url.match(/\.(jpeg|jpg|gif|png|svg|webp|bmp)$/i) || url.includes('cloudinary.com') || url.includes('res.cloudinary.com');
+    } catch {
+      return false;
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -178,11 +187,36 @@ export const UserDetailsDialog = ({ user, isOpen, onClose }: UserDetailsDialogPr
                 )}
 
                 {user.governmentId && (
-                  <div className="flex items-center gap-3">
-                    <FileText className="h-4 w-4 text-gray-500" />
-                    <div>
-                      <p className="text-sm text-gray-500">Government ID</p>
-                      <p className="font-medium">{user.governmentId}</p>
+                  <div className="md:col-span-2">
+                    <div className="flex items-start gap-3">
+                      <FileText className="h-4 w-4 text-gray-500 mt-1" />
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-500 mb-2">Government ID</p>
+                        {isValidImageUrl(user.governmentId) ? (
+                          <div className="space-y-2">
+                            <img 
+                              src={user.governmentId} 
+                              alt="Government ID"
+                              className="max-w-full h-auto max-h-64 rounded-lg border shadow-sm"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                const fallback = target.nextElementSibling as HTMLElement;
+                                if (fallback) fallback.style.display = 'block';
+                              }}
+                            />
+                            <div className="hidden">
+                              <p className="font-mono text-sm bg-gray-100 p-2 rounded break-all">
+                                {user.governmentId}
+                              </p>
+                            </div>
+                          </div>
+                        ) : (
+                          <p className="font-mono text-sm bg-gray-100 p-2 rounded break-all">
+                            {user.governmentId}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}
