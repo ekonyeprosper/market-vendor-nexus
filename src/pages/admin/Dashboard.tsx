@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Package, Users, BarChart3, CalendarIcon, Clock } from "lucide-react";
 import Layout from "@/components/layout/Layout";
@@ -30,7 +31,7 @@ const AdminDashboard = () => {
   if (isLoading) {
     return (
       <Layout>
-        <div className="space-y-6 p-6">
+        <div className="space-y-6 p-4 sm:p-6">
           <div>Loading dashboard stats...</div>
         </div>
       </Layout>
@@ -39,8 +40,8 @@ const AdminDashboard = () => {
 
   return (
     <Layout>
-      <div className="space-y-6 p-6">
-        <div className="flex justify-between items-center">
+      <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <DashboardHeader 
             title="Dashboard Overview"
             subtitle="Welcome back! Here's what's happening today"
@@ -49,7 +50,7 @@ const AdminDashboard = () => {
             actionLink="/admin/products"
           />
           <Select value={timeframe} onValueChange={setTimeframe}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue placeholder="Select timeframe" />
             </SelectTrigger>
             <SelectContent>
@@ -61,7 +62,7 @@ const AdminDashboard = () => {
           </Select>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <StatCard
             icon={BarChart3}
             title="Total Revenue"
@@ -84,10 +85,10 @@ const AdminDashboard = () => {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="md:col-span-2 shadow-sm">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+          <Card className="lg:col-span-2 shadow-sm">
             <CardHeader className="pb-2">
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                 <CardTitle className="text-lg font-medium">Sales Overview</CardTitle>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground">
@@ -98,8 +99,10 @@ const AdminDashboard = () => {
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <SalesChart data={dashboardStats?.salesChart} />
+            <CardContent className="p-3 sm:p-6">
+              <div className="h-[250px] sm:h-[300px]">
+                <SalesChart data={dashboardStats?.salesChart} />
+              </div>
             </CardContent>
           </Card>
 
@@ -107,7 +110,7 @@ const AdminDashboard = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-medium">Recent Activity</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-3 sm:p-6">
               <ActivityFeed activities={dashboardStats?.recentOrders} />
             </CardContent>
           </Card>
