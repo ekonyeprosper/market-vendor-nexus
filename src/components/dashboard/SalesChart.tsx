@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { 
   AreaChart, 
@@ -9,17 +10,26 @@ import {
   ResponsiveContainer 
 } from "recharts";
 
-const data = [
-  // { name: "Jan 1", sales: 4000 },
-  // { name: "Jan 5", sales: 3000 },
-  // { name: "Jan 10", sales: 5000 },
-  // { name: "Jan 15", sales: 2780 },
-  // { name: "Jan 20", sales: 1890 },
-  // { name: "Jan 25", sales: 2390 },
-  // { name: "Jan 30", sales: 3490 }
+interface SalesData {
+  name: string;
+  sales: number;
+}
+
+interface SalesChartProps {
+  data?: SalesData[];
+}
+
+const defaultData: SalesData[] = [
+  { name: "Jan 1", sales: 4000 },
+  { name: "Jan 5", sales: 3000 },
+  { name: "Jan 10", sales: 5000 },
+  { name: "Jan 15", sales: 2780 },
+  { name: "Jan 20", sales: 1890 },
+  { name: "Jan 25", sales: 2390 },
+  { name: "Jan 30", sales: 3490 }
 ];
 
-export const SalesChart = () => {
+export const SalesChart = ({ data = defaultData }: SalesChartProps) => {
   return (
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -51,10 +61,10 @@ export const SalesChart = () => {
             tickLine={false}
             tickMargin={10}
             tick={{ fontSize: 12, fill: '#888' }}
-            tickFormatter={(value) => `₦${value.toLocaleString()}`}
+            tickFormatter={(value: number) => `₦${value.toLocaleString()}`}
           />
           <Tooltip 
-            formatter={(value) => [`₦${value.toLocaleString()}`, 'Sales']}
+            formatter={(value: number) => [`₦${value.toLocaleString()}`, 'Sales']}
             contentStyle={{ 
               borderRadius: '8px',
               border: '1px solid #eee',

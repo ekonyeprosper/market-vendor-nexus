@@ -16,8 +16,10 @@ import {
 } from "@/components/ui/select";
 import { StatCard } from "@/components/dashboard/StatCard";
 
+type TimeframeType = 'today' | 'week' | 'month' | 'year';
+
 const AdminDashboard = () => {
-  const [timeframe, setTimeframe] = useState<any>('month');
+  const [timeframe, setTimeframe] = useState<TimeframeType>('month');
   const { data: dashboardStats, isLoading } = useGetAdminDashboardStatsQuery({ timeframe });
 
   const formatCurrency = (amount: number) => {
@@ -26,6 +28,10 @@ const AdminDashboard = () => {
       currency: 'NGN',
       minimumFractionDigits: 0,
     }).format(amount);
+  };
+
+  const handleTimeframeChange = (value: string) => {
+    setTimeframe(value as TimeframeType);
   };
 
   if (isLoading) {
@@ -49,7 +55,7 @@ const AdminDashboard = () => {
             actionLabel="Manage Products"
             actionLink="/admin/products"
           />
-          <Select value={timeframe} onValueChange={setTimeframe}>
+          <Select value={timeframe} onValueChange={handleTimeframeChange}>
             <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue placeholder="Select timeframe" />
             </SelectTrigger>
@@ -66,22 +72,22 @@ const AdminDashboard = () => {
           <StatCard
             icon={BarChart3}
             title="Total Revenue"
-            value={formatCurrency(dashboardStats?.overview.totalRevenue || 0)}
+            value={formatCurrency(dashboardStats?.overview?.totalRevenue || 0)}
           />
           <StatCard
             icon={Package}
             title="Total Orders"
-            value={dashboardStats?.overview.totalOrders.toString() || '0'}
+            value={dashboardStats?.overview?.totalOrders?.toString() || '0'}
           />
           <StatCard
             icon={Users}
             title="Average Order Value"
-            value={formatCurrency(dashboardStats?.overview.avgOrderValue || 0)}
+            value={formatCurrency(dashboardStats?.overview?.avgOrderValue || 0)}
           />
           <StatCard
             icon={Clock}
             title="Pending Orders"
-            value={dashboardStats?.overview.pendingOrders.toString() || '0'}
+            value={dashboardStats?.overview?.pendingOrders?.toString() || '0'}
           />
         </div>
 

@@ -1,9 +1,10 @@
 
-import { Users, Package, AlertCircle, ShoppingCart, CalendarIcon, Clock } from "lucide-react";
+import { Users, Package, AlertCircle, ShoppingCart, Clock } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 
 interface Activity {
   id: number;
-  icon: any;
+  icon: LucideIcon;
   title: string;
   time: string;
   iconBg: string;
@@ -14,7 +15,7 @@ interface ActivityFeedProps {
   activities?: Activity[];
 }
 
-const defaultActivities = [
+const defaultActivities: Activity[] = [
   {
     id: 1,
     icon: Users,
@@ -52,20 +53,23 @@ const defaultActivities = [
 export const ActivityFeed = ({ activities = defaultActivities }: ActivityFeedProps) => {
   return (
     <div className="space-y-3 sm:space-y-4">
-      {activities.map(activity => (
-        <div key={activity.id} className="flex items-center gap-3 sm:gap-4 py-2">
-          <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-full ${activity.iconBg} flex items-center justify-center ${activity.iconColor} flex-shrink-0`}>
-            <activity.icon className="h-4 w-4 sm:h-5 sm:w-5" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">{activity.title}</p>
-            <div className="flex items-center text-xs text-gray-500 mt-1">
-              <Clock className="mr-1 h-3 w-3 flex-shrink-0" />
-              <span className="truncate">{activity.time}</span>
+      {activities.map((activity) => {
+        const IconComponent = activity.icon;
+        return (
+          <div key={activity.id} className="flex items-center gap-3 sm:gap-4 py-2">
+            <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-full ${activity.iconBg} flex items-center justify-center ${activity.iconColor} flex-shrink-0`}>
+              <IconComponent className="h-4 w-4 sm:h-5 sm:w-5" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">{activity.title}</p>
+              <div className="flex items-center text-xs text-gray-500 mt-1">
+                <Clock className="mr-1 h-3 w-3 flex-shrink-0" />
+                <span className="truncate">{activity.time}</span>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
       <div className="pt-2 mt-2 border-t">
         <a href="#" className="text-xs text-primary flex items-center hover:underline">
           View all activity
