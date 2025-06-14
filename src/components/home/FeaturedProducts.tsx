@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Star, ArrowRight, Loader2 } from "lucide-react";
@@ -8,8 +9,7 @@ import { PopularProduct } from "@/services/types/product.types";
 
 const FeaturedProducts = () => {
   const { addToCart } = useCart();
-  const { data, isLoading } = useGetPopularProductsQuery({ limit: 4 });
-
+  const { data, isLoading } = useGetPopularProductsQuery({ limit: 8 });
 
   const handleAddToCart = (product: PopularProduct) => {
     addToCart({
@@ -56,7 +56,7 @@ const FeaturedProducts = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {data.products.map((product) => (
+          {data.products.slice(0, 8).map((product) => (
             <Card
               key={product.id}
               className="bg-white rounded-xl overflow-hidden shadow-sm transition-all duration-300 hover:shadow-lg group"

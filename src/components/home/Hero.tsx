@@ -1,10 +1,21 @@
 
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, Gift, TrendingUp, Check, Users } from "lucide-react";
-import { motion } from "framer-motion";
+import { Input } from "@/components/ui/input";
+import { ShoppingBag, Gift, TrendingUp, Check, Users, Search } from "lucide-react";
 
 const Hero = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
   return (
     <section className="bg-gradient-to-r from-market-50 to-market-100 py-24">
       <div className="container mx-auto px-4">
@@ -20,6 +31,27 @@ const Hero = () => {
               Sellio brings together vendors and shoppers in a seamless online marketplace. 
               Discover unique products from local sellers or start selling your own items today.
             </p>
+
+            {/* Enhanced Search Bar */}
+            <form onSubmit={handleSearch} className="relative max-w-md mb-8">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <Input
+                  type="text"
+                  placeholder="Search for products, brands, categories..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 pr-20 py-3 text-base rounded-full border-2 border-market-200 focus:border-market-500"
+                />
+                <Button 
+                  type="submit"
+                  size="sm" 
+                  className="absolute right-1 top-1/2 transform -translate-y-1/2 rounded-full px-6"
+                >
+                  Search
+                </Button>
+              </div>
+            </form>
             
             <div className="space-y-6 mb-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
