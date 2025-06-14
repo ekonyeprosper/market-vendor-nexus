@@ -12,6 +12,9 @@ import VendorCTA from "@/components/home/VendorCTA";
 import Testimonials from "@/components/home/Testimonials";
 import NewsletterSignup from "@/components/common/NewsletterSignup";
 import HowItWorks from "@/components/home/HowItWorks";
+import BestDeals from "@/components/home/BestDeals";
+import CategoryShowcase from "@/components/home/CategoryShowcase";
+import ProductGrid from "@/components/home/ProductGrid";
 
 const Index = () => {
   return (
@@ -19,12 +22,15 @@ const Index = () => {
       <Hero />
       <LiveActivity />
       <DailyDeals />
-      <HowItWorks />
       <FeaturedCategories />
       <FeaturedProducts />
+      <BestDeals />
       <NewArrivals />
       <TrendingProducts />
+      <CategoryShowcase />
+      <ProductGrid />
       <TopSellers />
+      <HowItWorks />
       <VendorCTA />
       <Testimonials />
       <NewsletterSignup />

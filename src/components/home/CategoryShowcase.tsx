@@ -1,0 +1,116 @@
+
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { ShoppingCart, Star, ArrowRight } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { useCart } from "@/services/hooks/useCart";
+import { useGetPopularProductsQuery } from "@/services/api/productsApi";
+import { Skeleton } from "@/components/ui/skeleton";
+import { formatCurrency } from "@/utils/currency";
+
+const CategoryShowcase = () => {
+  const { data: electronicsData, isLoading: electronicsLoading } = useGetPopularProductsQuery({ limit: 5 });
+  const { data: fashionData, isLoading: fashionLoading } = useGetPopularProductsQuery({ limit: 5 });
+  const { data: homeData, isLoading: homeLoading } = useGetPopularProductsQuery({ limit: 5 });
+  const { addToCart } = useCart();
+
+  const handleAddToCart = (product: any) => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price.current,
+      image: product.image
+    }, 1);
+  };
+
+  const renderProductGrid = (products: any[], title: string, bgColor: string, isLoading: boolean) => {
+    if (isLoading) {
+      return (
+        <div className={`${bgColor} rounded-lg p-6`}>
+          <Skeleton className="h-6 w-32 mb-4" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {[1, 2, 3, 4, 5].map((item) => (
+              <div key={item}>
+                <Skeleton className="h-32 w-full rounded mb-2" />
+                <Skeleton className="h-4 w-3/4 mb-1" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (!products?.length) return null;
+
+    return (
+      <div className={`${bgColor} rounded-lg p-6`}>
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-bold">{title}</h3>
+          <Link to="/products" className="text-market-600 hover:text-market-700 text-sm font-medium flex items-center">
+            See All <ArrowRight className="h-4 w-4 ml-1" />
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          {products.slice(0, 5).map((product) => (
+            <Card key={product.id} className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+              <Link to={`/products/${product.id}`}>
+                <div className="h-32 overflow-hidden">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                </div>
+              </Link>
+              <CardContent className="p-3">
+                <Link to={`/products/${product.id}`}>
+                  <h4 className="font-medium text-sm mb-1 line-clamp-2 hover:text-market-600 transition-colors">
+                    {product.name}
+                  </h4>
+                </Link>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-sm font-bold">{formatCurrency(product.price.current)}</span>
+                    <div className="flex items-center mt-1">
+                      <Star className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />
+                      <span className="text-xs text-gray-600">{product.rating?.average || 0}</span>
+                    </div>
+                  </div>
+                  <Button 
+                    size="sm" 
+                    className="rounded-full w-7 h-7 p-0 bg-market-600 hover:bg-market-700"
+                    onClick={() => handleAddToCart(product)}
+                  >
+                    <ShoppingCart className="h-3 w-3" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <section className="py-16 bg-white">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold mb-4">Shop by Category</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Discover amazing products across our most popular categories
+          </p>
+        </div>
+
+        <div className="space-y-8">
+          {renderProductGrid(electronicsData?.products || [], "Electronics & Tech", "bg-blue-50", electronicsLoading)}
+          {renderProductGrid(fashionData?.products || [], "Fashion & Style", "bg-pink-50", fashionLoading)}
+          {renderProductGrid(homeData?.products || [], "Home & Living", "bg-green-50", homeLoading)}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default CategoryShowcase;

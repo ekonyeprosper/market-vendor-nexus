@@ -1,3 +1,4 @@
+
 import { ShoppingCart, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -51,10 +52,17 @@ const TrendingProducts = () => {
       );
     }
 
+    if (!data?.products?.length) {
+      return (
+        <div className="text-center py-12">
+          <p className="text-gray-500">No trending products available</p>
+        </div>
+      );
+    }
+
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {data?.products.map((product) =>{
-          return  (
+        {data.products.map((product) => (
           <Card
             key={product.id}
             className="bg-white rounded-xl overflow-hidden shadow hover:shadow-lg transition-shadow group"
@@ -75,12 +83,12 @@ const TrendingProducts = () => {
             </Link>
             <CardContent className="p-4">
               <div className="flex justify-between items-start mb-2">
-                <Link to={`/products?category=${product.category.id}`} className="text-xs text-market-600 hover:underline">
-                  {product.category.name}
+                <Link to={`/products?category=${product.category?.id}`} className="text-xs text-market-600 hover:underline">
+                  {product.category?.name || 'General'}
                 </Link>
                 <div className="flex items-center bg-gray-50 rounded-full px-2 py-1">
                   <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500 mr-1" />
-                  <span className="text-xs font-medium">{product.stats.rating.average.toFixed(1)}</span>
+                  <span className="text-xs font-medium">{product.stats?.rating?.average?.toFixed(1) || '0.0'}</span>
                 </div>
               </div>
               <Link to={`/products/${product.id}`}>
@@ -90,8 +98,8 @@ const TrendingProducts = () => {
               </Link>
               <div className="flex items-center text-xs text-gray-500 mb-4">
                 <span>by</span>
-                <Link to={`/vendor/${product.seller.id}`} className="text-market-600 ml-1 hover:underline">
-                  {product.seller.businessName}
+                <Link to={`/vendor/${product.seller?.id}`} className="text-market-600 ml-1 hover:underline">
+                  {product.seller?.businessName || 'Unknown Seller'}
                 </Link>
               </div>
               <div className="flex justify-between items-center">
@@ -113,10 +121,7 @@ const TrendingProducts = () => {
               </div>
             </CardContent>
           </Card>
-        )
-        }
-       
-        )}
+        ))}
       </div>
     );
   };
