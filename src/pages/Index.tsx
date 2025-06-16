@@ -23,12 +23,12 @@ const Index = () => {
       <LiveActivity />
       <DailyDeals />
       <FeaturedCategories />
-      <FeaturedProducts />
-      <BestDeals />
-      <NewArrivals />
-      <TrendingProducts />
-      <CategoryShowcase />
-      <ProductGrid />
+      {/* <FeaturedProducts /> */}
+      {/* <BestDeals /> */}
+      {/* <NewArrivals /> */}
+      {/* <TrendingProducts /> */}
+      {/* <CategoryShowcase /> */}
+      {/* <ProductGrid /> */}
       <TopSellers />
       <HowItWorks />
       <VendorCTA />
