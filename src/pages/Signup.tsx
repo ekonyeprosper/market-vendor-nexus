@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -76,6 +75,17 @@ const Signup = () => {
       toast({
         title: "Error",
         description: "Please complete all seller information",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Phone number validation for Nigeria
+    const phoneRegex = /^0\d{10}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      toast({
+        title: "Error",
+        description: "Phone number must be 11 digits and start with 0 (e.g., 090xxxxxxxx)",
         variant: "destructive",
       });
       return;
@@ -234,7 +244,7 @@ const Signup = () => {
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      placeholder="+1 (555) 123-4567"
+                      placeholder="07011951761"
                       className="border-gray-200 focus:border-market-300 focus:ring focus:ring-market-200 focus:ring-opacity-50"
                     />
                   </div>
