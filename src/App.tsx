@@ -13,6 +13,9 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
+import ForgotOTPVerification from "./pages/ForgotOTPVerification";
+import ResetPassword from "./pages/ResetPassword";
 import OTPVerification from "./pages/OTPVerification";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
@@ -68,6 +71,9 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/forgot-otp-verification" element={<ForgotOTPVerification />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/otp-verification" element={<OTPVerification />} />
               <Route path="/products" element={<Products />} />
               <Route path="/products/:id" element={<ProductDetail />} />

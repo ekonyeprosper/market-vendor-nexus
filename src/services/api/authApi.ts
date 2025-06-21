@@ -63,6 +63,34 @@ export const authApi = createApi({
         body: data,
       }),
     }),
+    forgotPassword: builder.mutation({
+      query: (credentials) => ({
+        url: 'auth/forgot-password',
+        method: 'POST',
+        body: credentials,
+      }),
+    }),
+    verifyForgotOTP: builder.mutation({
+      query: (data) => ({
+        url: '/api/auth/verify-forgot-otp',
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    resendForgotOTP: builder.mutation({
+      query: (data) => ({
+        url: '/api/auth/resend-forgot-otp',
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    resetPassword: builder.mutation({
+      query: (data) => ({
+        url: '/api/auth/reset-password',
+        method: 'POST',
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -72,4 +100,8 @@ export const {
   useVerifyOTPMutation,
   useResendOTPMutation,
   useRegisterCustomerMutation,
+  useForgotPasswordMutation,
+  useVerifyForgotOTPMutation,
+  useResendForgotOTPMutation,
+  useResetPasswordMutation,
 } = authApi;
