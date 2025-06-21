@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSelector } from 'react-redux';
+import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,6 +25,8 @@ const CustomerDashboard = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orderDialogOpen, setOrderDialogOpen] = useState(false);
 
+  const navigate = useNavigate();
+
   const { data: profile, isLoading: profileLoading } = useGetProfileQuery(undefined, {
     skip: !useSelector(selectShouldFetchProfile)
   });
@@ -31,6 +34,9 @@ const CustomerDashboard = () => {
     page: ordersPage,
     limit: ordersLimit
   });
+
+
+  console.log(JSON.stringify(ordersData, null, 2))
 
   const { toast } = useToast();
   const [updateProfile] = useUpdateCustomerProfileMutation();
@@ -83,9 +89,8 @@ const CustomerDashboard = () => {
     }
   };
 
-  const handleViewOrderDetails = (order: Order) => {
-    setSelectedOrder(order);
-    setOrderDialogOpen(true);
+  const handleViewOrderDetails = (order: any) => {
+    navigate(`/order/${order.orderId}`, { state: { order } });
   };
 
   if (profileLoading) {
@@ -135,7 +140,7 @@ const CustomerDashboard = () => {
                     </div>
                   </div>
                 </div>
-                <div className="bg-market-50 p-4 rounded-lg">
+                {/* <div className="bg-market-50 p-4 rounded-lg">
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-md bg-market-100">
                       <Heart className="h-5 w-5 text-market-600" />
@@ -145,7 +150,7 @@ const CustomerDashboard = () => {
                       <p className="text-xl font-bold">0</p>
                     </div>
                   </div>
-                </div>
+                </div> */}
                 <div className="bg-market-50 p-4 rounded-lg">
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-md bg-market-100">
@@ -181,10 +186,10 @@ const CustomerDashboard = () => {
                 <ShoppingBag className="h-4 w-4" />
                 Orders History
               </TabsTrigger>
-              <TabsTrigger value="wishlist" className="flex items-center gap-2 py-4 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-market-600">
+              {/* <TabsTrigger value="wishlist" className="flex items-center gap-2 py-4 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-market-600">
                 <Heart className="h-4 w-4" />
                 Wishlist
-              </TabsTrigger>
+              </TabsTrigger> */}
               <TabsTrigger value="profile" className="flex items-center gap-2 py-4 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-market-600">
                 <User className="h-4 w-4" />
                 Profile
@@ -236,7 +241,7 @@ const CustomerDashboard = () => {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200 bg-white">
-                        {ordersData?.orders.map((order) => (
+                        {ordersData?.orders?.map((order:any) => (
                           <tr key={order.orderId} className="hover:bg-gray-50 transition-colors">
                             <td className="px-6 py-4 font-medium text-market-600">{order.orderId}</td>
                             <td className="px-6 py-4">
@@ -302,7 +307,7 @@ const CustomerDashboard = () => {
               </div>
             )}
           </TabsContent>
-
+{/* 
           <TabsContent value="wishlist" className="space-y-4 mt-4">
             <Card className="border-none shadow-sm">
               <CardHeader className="bg-white rounded-t-xl pb-2">
@@ -320,7 +325,7 @@ const CustomerDashboard = () => {
                 <Button className="bg-market-600 hover:bg-market-700">Explore Products</Button>
               </CardContent>
             </Card>
-          </TabsContent>
+          </TabsContent> */}
 
           <TabsContent value="profile" className="space-y-4 mt-4">
             <Card className="border-none shadow-sm">
@@ -425,11 +430,13 @@ const CustomerDashboard = () => {
       </div>
       
       {/* Order Details Dialog */}
+      {/*
       <OrderDetailsDialog 
         order={selectedOrder} 
         open={orderDialogOpen} 
         onOpenChange={setOrderDialogOpen} 
       />
+      */}
     </Layout>
   );
 };

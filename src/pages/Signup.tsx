@@ -243,9 +243,18 @@ const Signup = () => {
                       id="phone"
                       name="phone"
                       value={formData.phone}
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        // Only allow numbers and max 11 digits
+                        const value = e.target.value.replace(/\D/g, "").slice(0, 11);
+                        // Ensure first digit is 0
+                        if (value.length === 1 && value !== "0") return;
+                        setFormData(prev => ({ ...prev, phone: value }));
+                      }}
                       placeholder="07011951761"
                       className="border-gray-200 focus:border-market-300 focus:ring focus:ring-market-200 focus:ring-opacity-50"
+                      inputMode="numeric"
+                      pattern="0[0-9]{10}"
+                      maxLength={11}
                     />
                   </div>
                 </div>

@@ -40,6 +40,7 @@ import PaymentCallback from "@/pages/PaymentCallback";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
 import AdminCategories from "./pages/admin/Categories";
 import Vendors from "./pages/Vendors";
+import OrderDetailsPage from "./pages/OrderDetailsPage";
 
 // Create a new QueryClient instance inside the component
 const App = () => {
@@ -83,6 +84,7 @@ const App = () => {
               <Route path="/vendor/:vendorId" element={<VendorDetail />} />
               <Route path="/vendors" element={<Vendors />} />
               <Route path="/cart" element={<Cart />} />
+              <Route path="/order/:orderId" element={<OrderDetailsPage />} />
 
               {/* Protected Customer Routes */}
               <Route path="/checkout" element={

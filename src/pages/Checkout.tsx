@@ -25,7 +25,10 @@ import { useCreateCustomerOrderMutation, useInitiateCustomerPaymentMutation } fr
 
 const formSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
-  phoneNumber: z.string().min(10, "Please enter a valid phone number"),
+  phoneNumber: z.string()
+    .regex(/^0\d{10}$/, "Phone number must be 11 digits and start with 0 (e.g., 090xxxxxxxx)")
+    .min(11, "Phone number must be 11 digits")
+    .max(11, "Phone number must be 11 digits"),
   street: z.string().min(5, "Street address must be at least 5 characters"),
   city: z.string().min(2, "City must be at least 2 characters"),
   state: z.string().min(2, "State must be at least 2 characters"),
@@ -73,7 +76,7 @@ const Checkout = () => {
 
     try {
       // Create order with modified structure
-      const orderData = {
+      const orderData:any = {
         items: items.map(item => ({
           productId: item.id,
           quantity: item.quantity
@@ -169,7 +172,19 @@ const Checkout = () => {
                       <FormItem>
                         <FormLabel>Phone Number</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter your phone number" {...field} />
+                          <Input
+                            placeholder="07011951761"
+                            {...field}
+                            inputMode="numeric"
+                            pattern="0[0-9]{10}"
+                            maxLength={11}
+                            onChange={e => {
+                              // Only allow numbers and max 11 digits, first digit must be 0
+                              const value = e.target.value.replace(/\D/g, "").slice(0, 11);
+                              if (value.length === 1 && value !== "0") return;
+                              field.onChange(value);
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
