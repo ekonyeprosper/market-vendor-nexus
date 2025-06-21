@@ -18,8 +18,9 @@ const ResetPassword = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [resetPassword, { isLoading }] = useResetPasswordMutation();
 
-  // Get email from location.state
+  // Get email and otp from location.state
   const email = location.state?.email || "";
+  const otp = location.state?.otp || "";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,7 +41,7 @@ const ResetPassword = () => {
       return;
     }
     try {
-    //   await resetPassword({ email, password }).unwrap();
+      await resetPassword({ email, otp, newPassword: password }).unwrap();
       toast({
         title: "Success",
         description: "Your password has been reset. Please log in.",

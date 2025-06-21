@@ -27,7 +27,7 @@ const ForgotPassword = () => {
     }
 
     try {
-    //   await forgotPassword({ email }).unwrap();
+      await forgotPassword({ email }).unwrap();
       setIsSubmitted(true);
       navigate("/forgot-otp-verification", { state: { email } });
     } catch (error) {

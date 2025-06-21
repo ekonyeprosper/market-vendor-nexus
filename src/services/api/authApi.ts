@@ -65,14 +65,14 @@ export const authApi = createApi({
     }),
     forgotPassword: builder.mutation({
       query: (credentials) => ({
-        url: 'auth/forgot-password',
+        url: '/api/auth/forgot-password',
         method: 'POST',
         body: credentials,
       }),
     }),
     verifyForgotOTP: builder.mutation({
       query: (data) => ({
-        url: '/api/auth/verify-forgot-otp',
+        url: '/api/auth/verify-reset-otp',
         method: 'POST',
         body: data,
       }),

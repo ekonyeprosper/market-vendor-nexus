@@ -73,12 +73,12 @@ const ForgotOTPVerification = () => {
   const handleVerifyOTP = async () => {
     if (otp.length < 6) return;
     try {
-    //   const result = await verifyForgotOTP({ email, otp }).unwrap();
-    //   toast({
-    //     title: "Success",
-    //     description: result.message || "OTP verified successfully!",
-    //   });
-      navigate("/reset-password", { state: { email } });
+      const result = await verifyForgotOTP({ email, otp }).unwrap();
+      toast({
+        title: "Success",
+        description: result.message || "OTP verified successfully!",
+      });
+      navigate("/reset-password", { state: { email, otp } });
     } catch (error) {
       setOtp("");
       toast({
